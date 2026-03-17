@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Image\1.png" />
+    <None Remove="Image\2.png" />
+    <None Remove="Image\3.png" />
+    <None Remove="Image\4.png" />
+    <None Remove="Image\5.png" />
+    <None Remove="Image\6.png" />
+    <None Remove="Image\account.png" />
+    <None Remove="Image\booking %281%29.png" />
+    <None Remove="Image\cau1.png" />
+    <None Remove="Image\cau2.png" />
+    <None Remove="Image\homeicon.png" />
+    <None Remove="Image\lavie.png" />
+    <None Remove="Image\logo.png" />
+    <None Remove="Image\nen.png" />
+    <None Remove="Image\padlock.png" />
+    <None Remove="Image\quancan.png" />
+    <None Remove="Image\rvtrang.png" />
+    <None Remove="Image\rvvang.png" />
+    <None Remove="Image\sancl.png" />
+    <None Remove="Image\user1.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Image\1.png" />
+    <Resource Include="Image\2.png" />
+    <Resource Include="Image\3.png" />
+    <Resource Include="Image\4.png" />
+    <Resource Include="Image\5.png" />
+    <Resource Include="Image\6.png" />
+    <Resource Include="Image\account.png" />
+    <Resource Include="Image\booking (1).png" />
+    <Resource Include="Image\cau1.png" />
+    <Resource Include="Image\cau2.png" />
+    <Resource Include="Image\homeicon.png" />
+    <Resource Include="Image\lavie.png" />
+    <Resource Include="Image\logo.png" />
+    <Resource Include="Image\nen.png" />
+    <Resource Include="Image\padlock.png" />
+    <Resource Include="Image\quancan.png" />
+    <Resource Include="Image\rvtrang.png" />
+    <Resource Include="Image\rvvang.png" />
+    <Resource Include="Image\sancl.png" />
+    <Resource Include="Image\user1.png" />
+  </ItemGroup>
+
+</Project>

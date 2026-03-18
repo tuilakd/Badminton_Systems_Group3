@@ -77,42 +77,42 @@
 
         <Viewbox Grid.Row="1" Stretch="Uniform" Margin="20">
             <UniformGrid Columns="3" Rows="2" Width="1000" Height="480">
-                <Button Style="{StaticResource FlatButton}" Margin="15">
+                <Button x:Name="btnSanBai" Style="{StaticResource FlatButton}" Margin="15" Click="btnSanBai_Click">
                     <Button.Background>
                         <ImageBrush ImageSource="/Image/1.png" Stretch="Uniform"/>
                     </Button.Background>
                     <TextBlock Text="Quản lý&#x0a;Sân bãi" FontSize="30" FontWeight="Bold" TextAlignment="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 30 0"/>
                 </Button>
 
-                <Button Style="{StaticResource FlatButton}" Margin="15">
+                <Button x:Name="btnDatSan" Style="{StaticResource FlatButton}" Margin="15" Click="btnDatSan_Click">
                     <Button.Background>
                         <ImageBrush ImageSource="/Image/2.png" Stretch="Uniform"/>
                     </Button.Background>
                     <TextBlock Text="Quản lý&#x0a;Đặt sân" FontSize="30" FontWeight="Bold" TextAlignment="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 30 0"/>
                 </Button>
 
-                <Button Style="{StaticResource FlatButton}" Margin="15">
+                <Button x:Name="btnKho" Style="{StaticResource FlatButton}" Margin="15" Click="btnKho_Click">
                     <Button.Background>
                         <ImageBrush ImageSource="/Image/3.png" Stretch="Uniform"/>
                     </Button.Background>
                     <TextBlock Text="Quản lý Kho" FontSize="30" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 30 0"/>
                 </Button>
 
-                <Button Style="{StaticResource FlatButton}" Margin="15">
+                <Button x:Name="btnDoanhThu" Style="{StaticResource FlatButton}" Margin="15" Click="btnDoanhThu_Click">
                     <Button.Background>
                         <ImageBrush ImageSource="/Image/4.png" Stretch="Uniform"/>
                     </Button.Background>
                     <TextBlock Text="Quản lý&#x0a;Doanh thu" FontSize="30" FontWeight="Bold" TextAlignment="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 30 0"/>
                 </Button>
 
-                <Button Style="{StaticResource FlatButton}" Margin="15">
+                <Button x:Name="btnKhachHang" Style="{StaticResource FlatButton}" Margin="15" Click="btnKhachHang_Click">
                     <Button.Background>
                         <ImageBrush ImageSource="/Image/5.png" Stretch="Uniform"/>
                     </Button.Background>
                     <TextBlock Text="Quản lý&#x0a;Khách hàng" FontSize="30" FontWeight="Bold" TextAlignment="Right" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 30 0"/>
                 </Button>
 
-                <Button Style="{StaticResource FlatButton}" Margin="15">
+                <Button x:Name="btnBanHang" Style="{StaticResource FlatButton}" Margin="15" Click="btnBanHang_Click">
                     <Button.Background>
                         <ImageBrush ImageSource="/Image/6.png" Stretch="Uniform"/>
                     </Button.Background>
@@ -128,7 +128,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <RadioButton Grid.Column="0" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu">
+            <RadioButton x:Name="btnTrangChu" Grid.Column="0" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Checked="btnTrangChu_Checked">
                 <Viewbox Margin="10">
                     <StackPanel Orientation="Vertical">
                         <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">
@@ -141,7 +141,7 @@
                 </Viewbox>
             </RadioButton>
 
-            <RadioButton Grid.Column="1" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" >
+            <RadioButton x:Name="btnLichDat" Grid.Column="1" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Checked="btnLichDat_Checked" >
                 <Viewbox Margin="10">
                     <StackPanel Orientation="Vertical">
                         <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">
@@ -154,7 +154,7 @@
                 </Viewbox>
             </RadioButton>
 
-            <RadioButton Grid.Column="2" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu">
+            <RadioButton x:Name="btnThongTin" Grid.Column="2" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Checked="btnThongTin_Checked">
                 <Viewbox Margin="10">
                     <StackPanel Orientation="Vertical">
                         <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">

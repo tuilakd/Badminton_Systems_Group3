@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Badminton_Systems_Group3.GUI.Login"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Login - GR3 Badminton" Height="700" Width="950" WindowStartupLocation="CenterScreen">
+        Title="Đăng nhập" Height="700" Width="950" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Style x:Key="LoginCardStyle" TargetType="Border">

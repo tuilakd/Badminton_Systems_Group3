@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Badminton_Systems_Group3.GUI.Sales"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Bán hàng - GR3 Badminton" Height="750" Width="1200" 
+        Title="Bán hàng" Height="750" Width="1200" 
         WindowState="Maximized" MinWidth="900" MinHeight="600"
         WindowStartupLocation="CenterScreen">
 

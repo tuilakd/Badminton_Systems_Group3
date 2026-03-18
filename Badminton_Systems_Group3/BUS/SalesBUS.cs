@@ -6,6 +6,6 @@ namespace Badminton_Systems_Group3.BUS
 {
     class SalesBUS
     {
-        //cặc
+       
     }
 }

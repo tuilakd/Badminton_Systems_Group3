@@ -9,6 +9,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="BUS\**" />
+    <Compile Remove="DAL\**" />
+    <Compile Remove="DTO\**" />
+    <EmbeddedResource Remove="BUS\**" />
+    <EmbeddedResource Remove="DAL\**" />
+    <EmbeddedResource Remove="DTO\**" />
+    <None Remove="BUS\**" />
+    <None Remove="DAL\**" />
+    <None Remove="DTO\**" />
+    <Page Remove="BUS\**" />
+    <Page Remove="DAL\**" />
+    <Page Remove="DTO\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Image\1.png" />
     <None Remove="Image\2.png" />
     <None Remove="Image\3.png" />
@@ -52,12 +67,6 @@
     <Resource Include="Image\rvvang.png" />
     <Resource Include="Image\sancl.png" />
     <Resource Include="Image\user1.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DTO\" />
-    <Folder Include="DAL\" />
-    <Folder Include="BUS\" />
   </ItemGroup>
 
   <ItemGroup>

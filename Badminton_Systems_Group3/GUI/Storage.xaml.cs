@@ -21,5 +21,10 @@ namespace Badminton_Systems_Group3.GUI
         {
             InitializeComponent();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //skibidi//
+        }
     }
 }

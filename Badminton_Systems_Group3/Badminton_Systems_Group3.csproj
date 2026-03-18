@@ -54,4 +54,14 @@
     <Resource Include="Image\user1.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTO\" />
+    <Folder Include="DAL\" />
+    <Folder Include="BUS\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
+  </ItemGroup>
+
 </Project>

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Badminton_Systems_Group3.GUI.Client"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Quản lý Khách Hàng - GR3 Badminton" 
+        Title="Quản lý Khách Hàng" 
         WindowState="Maximized" 
         MinWidth="900" MinHeight="600"
         WindowStartupLocation="CenterScreen">
@@ -117,17 +117,25 @@
 
                 <Grid Grid.Row="1" Margin="0,0,0,15">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Height="35" VerticalContentAlignment="Center" FontSize="14" Margin="0,2,167,2"/>
+                    <TextBox Height="35" VerticalContentAlignment="Center" FontSize="14" Margin="0,10,160,10"/>
 
-                    <Button Content="Tìm kiếm 🔍" Style="{StaticResource ActionButtonStyle}" Padding="20,0" Margin="378,0,0,0"/>
+                    <Button Content="Tìm kiếm 🔍" Style="{StaticResource ActionButtonStyle}" Margin="355,8,0,8" />
                 </Grid>
 
-                <DataGrid Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" 
-                          Background="#A6A6A6" RowBackground="White" AlternatingRowBackground="#F9F9F9"
-                          HeadersVisibility="Column" GridLinesVisibility="All" ColumnWidth="*">
+                <DataGrid Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" Background="#A6A6A6" RowBackground="White" AlternatingRowBackground="#F9F9F9"
+                    HeadersVisibility="Column" GridLinesVisibility="All" ColumnWidth="*">
+
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="Padding" Value="5"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Mã KH" Binding="{Binding MaKH}"/>
                         <DataGridTextColumn Header="Họ tên" Width="2*" Binding="{Binding HoTen}"/>

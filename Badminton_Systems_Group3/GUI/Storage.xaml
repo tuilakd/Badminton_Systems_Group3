@@ -80,9 +80,9 @@
             <Viewbox Grid.Column="0" Stretch="Uniform" VerticalAlignment="Top" Margin="0,0,15,0">
                 <StackPanel Width="220">
                     <TextBlock Text="Danh mục sản phẩm" Foreground="Red" FontSize="20" FontWeight="Bold" Margin="0,0,0,15" TextWrapping="Wrap"/>
-                    <CheckBox Content="Revive vàng" FontSize="16" Margin="0,8"/>
-                    <CheckBox Content="Revive trắng" FontSize="16" Margin="0,8"/>
-                    <CheckBox Content="Nước Lavie 500ml" FontSize="16" Margin="0,8"/>
+                    <CheckBox x:Name="chkReviveVang" Content="Revive vàng" FontSize="16" Margin="0,8"/>
+                    <CheckBox x:Name="chkReviveTrang" Content="Revive trắng" FontSize="16" Margin="0,8"/>
+                    <CheckBox x:Name="chkNuocLavie" Content="Nước Lavie 500ml" FontSize="16" Margin="0,8"/>
                     <CheckBox Content="Quấn cán HBT" FontSize="16" Margin="0,8"/>
                     <CheckBox Content="Cầu Thành công" FontSize="16" Margin="0,8"/>
                     <CheckBox Content="Cầu XSMash" FontSize="16" Margin="0,8"/>

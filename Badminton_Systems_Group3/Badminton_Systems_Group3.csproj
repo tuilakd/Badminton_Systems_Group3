@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+    <Page Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Image\1.png" />
     <None Remove="Image\2.png" />
     <None Remove="Image\3.png" />
@@ -56,10 +63,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="bin\Debug\net10.0-windows\" />
   </ItemGroup>
 
 </Project>

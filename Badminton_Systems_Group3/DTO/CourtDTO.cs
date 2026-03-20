@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Badminton_Systems_Group3.DTO
 {
-    internal class SanBaiDTO
+    internal class CourtDTO
     {
         public string MaSan { get; set; }
         public string TenSan { get; set; }

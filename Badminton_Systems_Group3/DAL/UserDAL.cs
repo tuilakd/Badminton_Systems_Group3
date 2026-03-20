@@ -13,7 +13,6 @@ namespace Badminton_Systems_Group3.DAL
         public bool CheckLogin(UserDTO user)
         {
             bool isValid = false;
-            // Lưu ý: Đặt tên bảng là [user] trong ngoặc vuông vì user là từ khóa của SQL
             string query = "SELECT COUNT(*) FROM [user] WHERE username = @username AND password = @password";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -29,7 +28,7 @@ namespace Badminton_Systems_Group3.DAL
                         int count = (int)cmd.ExecuteScalar();
                         if (count > 0)
                         {
-                            isValid = true; // Tìm thấy user trong database
+                            isValid = true; 
                         }
                     }
                     catch (SqlException ex)

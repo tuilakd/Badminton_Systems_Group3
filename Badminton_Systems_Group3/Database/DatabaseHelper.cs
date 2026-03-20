@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Data.SqlClient;
-
 namespace Badminton_Systems_Group3.Database
 {
-    internal class DatabaseHelper
-    {
-        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True";
-
+        internal class DatabaseHelper
+        {
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=master;Integrated Security=True";
         public DataTable GetData(string query)
         {
             DataTable dt = new DataTable();
@@ -28,7 +26,6 @@ namespace Badminton_Systems_Group3.Database
             }
             return dt;
         }
-
         public bool ExecuteNonQuery(string query)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -49,5 +46,3 @@ namespace Badminton_Systems_Group3.Database
         }
     }
 }
-
-

@@ -1,35 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Badminton_Systems_Group3.DAL;
+﻿using Badminton_Systems_Group3.DAL;
 using Badminton_Systems_Group3.DTO;
+using System;
+using System.Data;
 
 namespace Badminton_Systems_Group3.BUS
 {
     internal class SanPhamBUS
     {
         SanPhamDAL dal = new SanPhamDAL();
+
         public DataTable GetAll()
         {
-            return dal.GetAll(); // Gọi xuống DAL để lấy dữ liệu từ Database
+            return dal.GetAll();
         }
 
         public string ThucHienNhapKho(ProductDTO dto)
         {
-            // Luồng ngoại lệ 6: Kiểm tra bỏ trống (đã xử lý 1 phần ở GUI nhưng BUS vẫn nên check lại)
+            // 1. Kiểm tra bỏ trống
             if (string.IsNullOrEmpty(dto.MaSP)) return "Mã sản phẩm không được để trống!";
+            if (dto.SoLuongTon <= 0) return "Số lượng nhập phải lớn hơn 0!";
 
-            if (dal.CheckExists(dto.MaSP))
+            // 2. Kiểm tra xem mã SP đã có trong danh mục (bảng sanpham) chưa
+            // Thay vì dùng CheckExists cũ, ta dùng hàm mới ở DAL
+            if (dal.CheckMaSPExistsInDanhMuc(dto.MaSP))
             {
-                // Nếu tồn tại -> Cộng dồn (Luồng 3)
-                return dal.Update(dto) ? "Cập nhật số lượng thành công!" : "Lỗi cập nhật.";
+                // Nếu đã có trong danh mục -> Tiến hành ghi vào nhật ký nhập kho
+                // Hàm InsertNhapKho này bên trong DAL đã tự gọi hàm cộng dồn TonKho rồi
+                return dal.InsertNhapKho(dto) ? "Nhập kho và cập nhật số lượng thành công!" : "Lỗi hệ thống khi nhập kho.";
             }
             else
             {
-                // Nếu chưa có -> Thêm mới
-                return dal.Insert(dto) ? "Thêm mới sản phẩm thành công!" : "Lỗi thêm mới.";
+                // 3. Nếu chưa có trong danh mục -> Bắt người dùng đi khai báo SP trước
+                // Để tránh lỗi Foreign Key (Khóa ngoại)
+                return "Lỗi: Mã sản phẩm này chưa tồn tại trong danh mục. Vui lòng thêm sản phẩm mới trước!";
             }
         }
-    
     }
 }

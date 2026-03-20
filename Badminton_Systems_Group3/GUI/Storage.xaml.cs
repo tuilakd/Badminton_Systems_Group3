@@ -1,53 +1,47 @@
 ﻿using Badminton_Systems_Group3.BUS;
-using Badminton_Systems_Group3.DAL;
 using Badminton_Systems_Group3.DTO;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+
 namespace Badminton_Systems_Group3.GUI
 {
-    /// <summary>
-    //l
     public partial class Storage : Window
     {
         SanPhamBUS bus = new SanPhamBUS();
+
         public Storage()
         {
             InitializeComponent();
             LoadData();
         }
+
+        // ================= LOAD DATA =================
         void LoadData()
         {
             dgSanPham.ItemsSource = bus.GetAll().DefaultView;
         }
-       private void dgSanPham_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (dgSanPham.SelectedItem == null) return;
 
-            var sp = dgSanPham.SelectedItem as ProductDTO;
-            if (sp != null)
-            {
-                txtMaSP.Text  = sp.MaSP;
-                txtTenSP.Text = sp.TenSP;
-                txtDonGia.Text = sp.DonGia.ToString();
-                txtSoLuong.Text = sp.SoLuongTon.ToString();
-                dpNgayNhap.SelectedDate = sp.NgayNhap;
-            }
+        // ================= CLICK DATAGRID =================
+        private void dgSanPham_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var row = dgSanPham.SelectedItem as DataRowView;
+            if (row == null) return;
+
+            txtMaSP.Text = row["MaSP"].ToString();
+            txtTenSP.Text = row["TenSP"].ToString();
+            txtDonGia.Text = row["DonGia"].ToString();
+            txtSoLuong.Text = row["TonKho"].ToString();
+            dpNgayNhap.SelectedDate = Convert.ToDateTime(row["NgayNhap"]);
         }
+
+        // ================= LỌC CHECKBOX =================
         private void LocSanPham()
         {
-            DataTable dt = bus.GetAll();
-
+            DataTable dt = bus.GetAll();   
             List<string> chon = new List<string>();
 
             if (chkReviveVang.IsChecked == true)
@@ -58,126 +52,134 @@ namespace Badminton_Systems_Group3.GUI
 
             if (chkNuocLavie.IsChecked == true)
                 chon.Add("Nước Lavie 500ml");
-            if (chkQuanCanHBT.IsChecked == true) chon.Add("Quấn cán HBT");
-            if (chkCauThanhCong.IsChecked == true) chon.Add("Cầu Thành công");
-            if (chkCauXSmash.IsChecked == true) chon.Add("Cầu XSmash");
+
+            if (chkQuanCanHBT.IsChecked == true)
+                chon.Add("Quấn cán HBT");
+
+            if (chkCauThanhCong.IsChecked == true)
+                chon.Add("Cầu Thành công");
+
+            if (chkCauXSmash.IsChecked == true)
+                chon.Add("Cầu XSmash");
 
             if (chon.Count > 0)
             {
-                var filteredData = dt.AsEnumerable()
-                             .Where(x => chon.Contains(x.Field<string>("TenSP")))
-                             .AsDataView();
-                dgSanPham.ItemsSource = filteredData;
+                var filtered = dt.AsEnumerable()
+                                 .Where(x => chon.Contains(x.Field<string>("TenSP")))
+                                 .AsDataView();
+
+                dgSanPham.ItemsSource = filtered;
             }
             else
             {
                 dgSanPham.ItemsSource = dt.DefaultView;
             }
         }
+
         private void CheckBox_Changed(object sender, RoutedEventArgs e)
         {
             LocSanPham();
         }
 
+        // ================= NHẬP KHO =================
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtMaSP.Text) ||
+                string.IsNullOrEmpty(txtTenSP.Text) ||
+                string.IsNullOrEmpty(txtDonGia.Text) ||
+                string.IsNullOrEmpty(txtSoLuong.Text))
+            {
+                MessageBox.Show("Nhập thiếu!");
+                return;
+            }
+
+            double gia;
+            int sl;
+
+            if (!double.TryParse(txtDonGia.Text, out gia) ||
+                !int.TryParse(txtSoLuong.Text, out sl))
+            {
+                MessageBox.Show("Sai định dạng!");
+                return;
+            }
+
+            ProductDTO sp = new ProductDTO()
+            {
+                MaSP = txtMaSP.Text,
+                TenSP = txtTenSP.Text,
+                DonGia = gia,
+                SoLuongTon = sl,
+                NgayNhap = dpNgayNhap.SelectedDate ?? DateTime.Now
+            };
+
+            string result = bus.ThucHienNhapKho(sp);
+
+            MessageBox.Show(result);
+            LoadData();
+            ClearForm();
+        }
+
+        // ================= KIỂM KÊ =================
         private void btnKiemKe_Click(object sender, RoutedEventArgs e)
         {
-            if (dgSanPham.SelectedItem == null)
+            var row = dgSanPham.SelectedItem as DataRowView;
+            if (row == null)
             {
-                MessageBox.Show("Chọn sản phẩm cần kiểm kê từ bảng!");
+                MessageBox.Show("Chọn sản phẩm!");
                 return;
             }
-
-            var sp = dgSanPham.SelectedItem as ProductDTO;
 
             int slThucTe;
-
-            if (int.TryParse(txtSoLuong.Text, out slThucTe))
+            if (!int.TryParse(txtSoLuong.Text, out slThucTe))
             {
-                MessageBox.Show("Nhập số lượng thực tế!");
+                MessageBox.Show("Nhập số lượng hợp lệ!");
                 return;
             }
 
-            int chenhLech = slThucTe - sp.SoLuongTon;
+            int soLuongTon = Convert.ToInt32(row["TonKho"]);
+            int chenhLech = slThucTe - soLuongTon;
 
             if (chenhLech == 0)
             {
-                MessageBox.Show("Số liệu kho trùng khớp thực tế!");
-            }
-            else
-            {
-                string tinhTrang = chenhLech > 0 ? "thừa" : "thiếu";
-                var result = MessageBox.Show(
-            $"Kho đang {tinhTrang} {Math.Abs(chenhLech)} sản phẩm so với thực tế.\n" +
-            "Bạn có muốn điều chỉnh lại số liệu kho không?",
-            "Xác nhận kiểm kê",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    // TẠO ĐỐI TƯỢNG MỚI ĐỂ CẬP NHẬT
-                    // Vì hàm ThucHienNhapKho của bạn sẽ cộng dồn (Update)
-                    // Ta gửi số lượng chênh lệch (chenhLech) để DAL cộng vào database
-                    ProductDTO spDieuChinh = new ProductDTO()
-                    {
-                        MaSP = sp.MaSP,
-                        TenSP = sp.TenSP,
-                        DonGia = sp.DonGia,
-                        SoLuongTon = chenhLech, // Gửi phần chênh lệch để cộng dồn
-                        NgayNhap = DateTime.Now
-                    };
-
-                    // GỌI ĐÚNG HÀM TRONG BUS: ThucHienNhapKho
-                    string message = bus.ThucHienNhapKho(spDieuChinh);
-
-                    MessageBox.Show(message);
-                    LoadData();  // Cập nhật lại DataGrid
-                    ClearForm(); // Xóa sạch form
-                }
-            }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(txtMaSP.Text) || string.IsNullOrEmpty(txtSoLuong.Text) || string.IsNullOrEmpty(txtDonGia.Text))
-            {
-                MessageBox.Show("Vui lòng nhập đầy đủ thông tin");
+                MessageBox.Show("Kho chính xác!");
                 return;
             }
 
-        
-        double gia;
-        int sl;
-         if (!double.TryParse(txtDonGia.Text, out gia) ||
-            !int.TryParse(txtSoLuong.Text, out sl))
-        {
-            MessageBox.Show("Sai định dạng!");
-            return;
+            string tinhTrang = chenhLech > 0 ? "thừa" : "thiếu";
+
+            if (MessageBox.Show($"Kho đang {tinhTrang} {Math.Abs(chenhLech)}. Cập nhật?",
+                "Kiểm kê", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                ProductDTO sp = new ProductDTO()
+                {
+                    MaSP = row["MaSP"].ToString(),
+                    TenSP = row["TenSP"].ToString(),
+                    DonGia = Convert.ToDouble(row["DonGia"]),
+                    SoLuongTon = chenhLech,
+                    NgayNhap = DateTime.Now
+                };
+
+                string kq = bus.ThucHienNhapKho(sp);
+
+                MessageBox.Show(kq);
+                LoadData();
+                ClearForm();
             }
-        
+        }
 
-        ProductDTO sp = new ProductDTO()
+        // ================= CLEAR =================
+        void ClearForm()
         {
-            MaSP = txtMaSP.Text,
-            TenSP = txtTenSP.Text,
-            DonGia = gia,
-            SoLuongTon = sl,
-            NgayNhap = dpNgayNhap.SelectedDate ?? DateTime.Now
-        };
-        string result = bus.ThucHienNhapKho(sp);
- MessageBox.Show(result); // Hiện thông báo theo đặc tả
-            LoadData();              // Làm mới bảng dữ liệu
-    ClearForm();             // Xóa form sau khi nhập
-}
-
-void ClearForm()
-{
             txtMaSP.Clear();
             txtTenSP.Clear();
             txtDonGia.Clear();
             txtSoLuong.Clear();
             dpNgayNhap.SelectedDate = DateTime.Now;
         }
-}
-    }
 
+        private void txtDonGia_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+    }
+}

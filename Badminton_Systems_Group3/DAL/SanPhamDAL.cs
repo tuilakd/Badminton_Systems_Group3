@@ -1,10 +1,7 @@
 ﻿using Badminton_Systems_Group3.Database;
 using Badminton_Systems_Group3.DTO;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Text;
 
 namespace Badminton_Systems_Group3.DAL
 {
@@ -12,31 +9,57 @@ namespace Badminton_Systems_Group3.DAL
     {
         DatabaseHelper helper = new DatabaseHelper();
 
-        // Lấy danh sách để hiện lên DataGrid
+        // 1. Lấy dữ liệu: JOIN để có TenSP và ép tên cột SoLuongTon cho GUI dễ đọc
         public DataTable GetAll()
         {
-            return helper.GetData("SELECT * FROM nhapkho");
+            // GROUP BY MaSP và TenSP để gộp dòng
+            // SUM để cộng dồn tất cả các lần nhập
+            // MAX để lấy ngày nhập gần đây nhất
+            string query = @"SELECT 
+                        nk.MaSP, 
+                        sp.TenSP, 
+                        MAX(nk.DonGia) AS DonGia, 
+                        SUM(nk.SoLuongNhap) AS TonKho, 
+                        MAX(nk.NgayNhap) AS NgayNhap
+                     FROM nhapkho nk
+                     INNER JOIN sanpham sp ON nk.MaSP = sp.MaSP
+                     GROUP BY nk.MaSP, sp.TenSP";
+
+            return helper.GetData(query);
         }
 
-        // Kiểm tra tồn tại
-        public bool CheckExists(string maSP)
+        // 2. Kiểm tra danh mục sản phẩm (Bảng Cha)
+        public bool CheckMaSPExistsInDanhMuc(string maSP)
         {
-            DataTable dt = helper.GetData($"SELECT * FROM nhapkho WHERE MaSP = '{maSP}'");
+            string query = $"SELECT MaSP FROM sanpham WHERE MaSP = '{maSP}'";
+            DataTable dt = helper.GetData(query);
             return dt.Rows.Count > 0;
         }
 
-        // Thêm mới
-        public bool Insert(ProductDTO dto)
+        // 3. Thêm bản ghi vào lịch sử NHAPKHO (Bảng Con)
+        public bool InsertNhapKho(ProductDTO dto)
         {
-            string query = $"INSERT INTO nhapkho VALUES ('{dto.MaSP}', {dto.DonGia}, {dto.SoLuongTon}, '{dto.NgayNhap:yyyy-MM-dd}')";
-            return helper.ExecuteNonQuery(query);
+            // Ép kiểu số để SQL không bị loạn dấu phẩy/dấu chấm
+            string donGia = dto.DonGia.ToString().Replace(",", ".");
+
+            string query = $@"INSERT INTO nhapkho (MaSP, DonGia, SoLuongNhap, NgayNhap) 
+                             VALUES ('{dto.MaSP}', {donGia}, {dto.SoLuongTon}, '{dto.NgayNhap:yyyy-MM-dd}')";
+
+            bool result = helper.ExecuteNonQuery(query);
+
+            // Nếu lưu lịch sử xong thì cập nhật tổng kho ở bảng sanpham
+            if (result)
+            {
+                CapNhatTonKhoTong(dto.MaSP, dto.SoLuongTon);
+            }
+            return result;
         }
 
-        // Cập nhật (Cộng dồn số lượng theo đặc tả Luồng 3)
-        public bool Update(ProductDTO dto)
+        // 4. Cập nhật số lượng tồn vào bảng gốc
+        public void CapNhatTonKhoTong(string maSP, int soLuongThem)
         {
-            string query = $"UPDATE nhapkho SET SoLuongTon = SoLuongTon + {dto.SoLuongTon}, DonGia = {dto.DonGia} WHERE MaSP = '{dto.MaSP}'";
-            return helper.ExecuteNonQuery(query);
+            string query = $"UPDATE sanpham SET SoLuongTon = SoLuongTon + {soLuongThem} WHERE MaSP = '{maSP}'";
+            helper.ExecuteNonQuery(query);
         }
     }
 }

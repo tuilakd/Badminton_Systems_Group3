@@ -6,21 +6,21 @@ using System.Text;
 
 namespace Badminton_Systems_Group3.BUS
 {
-    internal class SanBaiBUS
+    internal class CourtBUS
     {
-        private SanBaiDAL dal = new SanBaiDAL();
+        private CourtDAL dal = new CourtDAL();
 
-        public List<SanBaiDTO> GetAll()
+        public List<CourtDTO> GetAll()
         {
             return dal.GetAll();
         }
 
-        public bool Insert(SanBaiDTO sb)
+        public bool Insert(CourtDTO sb)
         {
             return dal.Insert(sb);
         }
 
-        public bool Update(SanBaiDTO sb)
+        public bool Update(CourtDTO sb)
         {
             return dal.Update(sb);
         }

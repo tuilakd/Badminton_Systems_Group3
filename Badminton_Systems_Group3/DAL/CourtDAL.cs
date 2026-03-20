@@ -6,23 +6,22 @@ using System.Text;
 
 namespace Badminton_Systems_Group3.DAL
 {
-    internal class SanBaiDAL
+    internal class CourtDAL
     {
         private string connectionString = "Data Source=desktop-3453jgg\\sqlexpress;Initial Catalog=QL_SanCL;Integrated Security=True;Encrypt=False";
 
-        public List<SanBaiDTO> GetAll()
+        public List<CourtDTO> GetAll()
         {
-            List<SanBaiDTO> list = new List<SanBaiDTO>();
+            List<CourtDTO> list = new List<CourtDTO>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                // Đã sửa 'SanBai' thành 'san'
                 string query = "SELECT MaSan, TenSan, TrangThai, GiaThue FROM san";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    list.Add(new SanBaiDTO()
+                    list.Add(new CourtDTO()
                     {
                         MaSan = reader["MaSan"].ToString(),
                         TenSan = reader["TenSan"].ToString(),
@@ -34,12 +33,11 @@ namespace Badminton_Systems_Group3.DAL
             return list;
         }
 
-        public bool Insert(SanBaiDTO sb)
+        public bool Insert(CourtDTO sb)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                // Đã sửa 'SanBai' thành 'san'
                 string query = "INSERT INTO san (MaSan, TenSan, TrangThai, GiaThue) VALUES (@MaSan, @TenSan, @TrangThai, @GiaThue)";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@MaSan", sb.MaSan);
@@ -50,7 +48,7 @@ namespace Badminton_Systems_Group3.DAL
             }
         }
 
-        public bool Update(SanBaiDTO sb)
+        public bool Update(CourtDTO sb)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {

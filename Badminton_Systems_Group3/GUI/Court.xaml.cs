@@ -19,7 +19,7 @@ namespace Badminton_Systems_Group3.GUI
     /// </summary>
     public partial class Court : Window
     {
-        private SanBaiBUS bus = new SanBaiBUS();
+        private CourtBUS bus = new CourtBUS();
         public Court()
         {
             InitializeComponent();
@@ -53,7 +53,7 @@ namespace Badminton_Systems_Group3.GUI
 
         private void dgSanBai_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dgSanBai.SelectedItem is SanBaiDTO selectedSB)
+            if (dgSanBai.SelectedItem is CourtDTO selectedSB)
             {
                 txtMaSan.Text = selectedSB.MaSan;
                 txtTenSan.Text = selectedSB.TenSan;
@@ -78,7 +78,7 @@ namespace Badminton_Systems_Group3.GUI
                 return;
             }
 
-            SanBaiDTO sb = new SanBaiDTO()
+            CourtDTO sb = new CourtDTO()
             {
                 MaSan = txtMaSan.Text.Trim(),
                 TenSan = txtTenSan.Text.Trim(),
@@ -112,7 +112,7 @@ namespace Badminton_Systems_Group3.GUI
                 return;
             }
 
-            SanBaiDTO sb = new SanBaiDTO()
+            CourtDTO sb = new CourtDTO()
             {
                 MaSan = txtMaSan.Text.Trim(),
                 TenSan = txtTenSan.Text.Trim(),

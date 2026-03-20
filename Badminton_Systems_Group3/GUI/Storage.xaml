@@ -159,7 +159,7 @@
                         </StackPanel>
                     </Viewbox>
                 </RadioButton>
-                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu">
+                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Click="RadioButton_Click">
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">
                             <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">

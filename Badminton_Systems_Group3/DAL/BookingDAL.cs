@@ -39,6 +39,27 @@ namespace Badminton_Systems_Group3.DAL
                 return false;
             }
         }
+        public DataRow GetThongTinKhachDatSan(string maSan, DateTime ngay, DateTime batDau, DateTime ketThuc)
+        {
+            // db ở đây là thực thể DatabaseHelper bạn đã khai báo trong DAL
+            string query = @"SELECT k.HoTen, k.SDT, d.MaDatSan, d.ThanhTien 
+                     FROM datsan d 
+                     JOIN khachhang k ON d.MaKH = k.MaKH 
+                     WHERE d.MaSan = @maSan 
+                     AND d.NgayDat = @ngay 
+                     AND CAST(d.GioBD AS TIME) = CAST(@start AS TIME) 
+                     AND CAST(d.GioKT AS TIME) = CAST(@end AS TIME)";
+
+            SqlParameter[] parameters = {
+        new SqlParameter("@maSan", maSan),
+        new SqlParameter("@ngay", ngay),
+        new SqlParameter("@start", batDau),
+        new SqlParameter("@end", ketThuc)
+    };
+
+            DataTable dt = db.ExecuteQuery(query, parameters);
+            return dt.Rows.Count > 0 ? dt.Rows[0] : null;
+        }
 
         // ================== 2. LƯU ĐƠN ĐẶT SÂN ==================
         public bool InsertBooking(BookingDTO booking)

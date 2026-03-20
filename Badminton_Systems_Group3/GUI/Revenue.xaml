@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Badminton_Systems_Group3.GUI.Revenue"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Quản lý Doanh thu " Height="752" Width="1613" 
+        Title="Quản lý Doanh thu " Height="830" Width="1613" 
         WindowState="Maximized" MinWidth="900" MinHeight="600"
         WindowStartupLocation="CenterScreen">
 

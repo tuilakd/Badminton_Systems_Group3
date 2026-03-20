@@ -22,10 +22,6 @@ namespace Badminton_Systems_Group3.GUI
             InitializeComponent();
         }
 
-      
-
-       
-
         private void btnKho_Click(object sender, RoutedEventArgs e)
         {
             Storage window = new Storage();
@@ -80,23 +76,16 @@ namespace Badminton_Systems_Group3.GUI
             this.Close();
         }
 
-        private void btnThongTin_Checked(object sender, RoutedEventArgs e)
+     
+
+        private void btnThongTin_Click(object sender, RoutedEventArgs e)
         {
-            string appInfo = "Phần mềm Quản lý Sân Cầu Lông GR3\n" +
-                             "Phiên bản: 1.0\n" +
-                             "Nhà phát triển: Nhóm 3\n" +
-                             "-----------------------------------\n" +
-                             "Bạn có muốn ĐĂNG XUẤT khỏi hệ thống không?";
+            Badminton_Systems_Group3.GUI.Info thongTinWindow = new Badminton_Systems_Group3.GUI.Info();
+            thongTinWindow.ShowDialog();
 
-            MessageBoxResult result = MessageBox.Show(appInfo, "Thông tin & Đăng xuất", MessageBoxButton.YesNo, MessageBoxImage.Information);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                Login loginWindow = new Login();
-                loginWindow.Show();
-
-                this.Close();
-            }
+            btnThongTin.IsChecked = false;
         }
+
+       
     }
 }

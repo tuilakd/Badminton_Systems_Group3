@@ -81,7 +81,7 @@
             <Viewbox Grid.Column="0" Stretch="Uniform" VerticalAlignment="Top" Margin="0,0,20,0">
                 <StackPanel Width="350">
                     <TextBlock Text="Thông tin sân bãi" Foreground="Red" FontSize="22" FontWeight="Bold" Margin="0,0,0,20"/>
-
+                    
                     <Grid Margin="0,0,0,20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" MinWidth="110"/>
@@ -95,21 +95,24 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Text="Mã sân:" VerticalAlignment="Center" FontSize="18" FontWeight="SemiBold"/>
-                        <TextBox Grid.Row="0" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
+                        <TextBox x:Name="txtMaSan" Grid.Row="0" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
 
                         <TextBlock Grid.Row="1" Text="Tên sân:" VerticalAlignment="Center" FontSize="18" FontWeight="SemiBold"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
+                        <TextBox x:Name="txtTenSan" Grid.Row="1" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
 
                         <TextBlock Grid.Row="2" Text="Trạng thái:" VerticalAlignment="Center" FontSize="18" FontWeight="SemiBold"/>
-                        <ComboBox Grid.Row="2" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
+                        <ComboBox x:Name="cboTrangThai" Grid.Row="2" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5">
+                            <ComboBoxItem Content="Đang hoạt động" IsSelected="True"/>
+                            <ComboBoxItem Content="Bảo trì"/>
+                        </ComboBox>
 
                         <TextBlock Grid.Row="3" Text="Giá thuê:" VerticalAlignment="Center" FontSize="18" FontWeight="SemiBold"/>
-                        <TextBox Grid.Row="3" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
+                        <TextBox x:Name="txtGiaThue" Grid.Row="3" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
                     </Grid>
 
-                    <Button Content="➕ Thêm sân" Style="{StaticResource ActionButtonStyle}"/>
-                    <Button Content="🗑 Xóa sân" Style="{StaticResource ActionButtonStyle}"/>
-                    <Button Content="✏ Sửa sân" Style="{StaticResource ActionButtonStyle}"/>
+                    <Button x:Name="btnThem" Content="➕ Thêm sân" Style="{StaticResource ActionButtonStyle}" Click="btnThem_Click"/>
+                    <Button x:Name="btnXoa" Content="🗑 Xóa sân" Style="{StaticResource ActionButtonStyle}" Click="btnXoa_Click"/>
+                    <Button x:Name="btnSua" Content="✏ Sửa sân" Style="{StaticResource ActionButtonStyle}" Click="btnSua_Click"/>
                 </StackPanel>
             </Viewbox>
 
@@ -122,13 +125,16 @@
                 <StackPanel Grid.Row="0" Margin="0,0,0,15">
                     <TextBlock Text="Danh sách sân bãi" Foreground="Red" FontSize="22" FontWeight="Bold" Margin="0,0,0,15"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="Hiển thị:" FontSize="18" Width="83"/>
-                        <ComboBox Width="434" Height="35" VerticalContentAlignment="Center" FontSize="16"/>
+                        <TextBlock Text="Hiển thị:" FontSize="18" Width="83" Height="21"/>
+                        <ComboBox x:Name="cboHienThi" Width="434" Height="35" VerticalContentAlignment="Center" FontSize="16">
+                            <ComboBoxItem Content="Đang hoạt động" IsSelected="True"/>
+                            <ComboBoxItem Content="Bảo trì"/>
+                        </ComboBox>
                     </StackPanel>
                 </StackPanel>
 
-                <DataGrid Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" 
-                          Background="LightGray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="16">
+                <DataGrid x:Name="dgSanBai" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" 
+                          Background="LightGray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="16" SelectionChanged="dgSanBai_SelectionChanged">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="FontWeight" Value="Bold"/>
@@ -148,7 +154,7 @@
 
         <Border Grid.Row="2" Background="#024D2A">
             <UniformGrid Columns="3">
-                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" >
+                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Checked="RadioButton_Checked_1" >
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">
                             <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">
@@ -161,7 +167,7 @@
                     </Viewbox>
                 </RadioButton>
 
-                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu">
+                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Checked="RadioButton_Checked">
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">
                             <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">
@@ -174,7 +180,8 @@
                     </Viewbox>
                 </RadioButton>
 
-                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu">
+
+                <RadioButton x:Name="btnThongTin" Grid.Column="2" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Click="btnThongTin_Click" >
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">
                             <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">

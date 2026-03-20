@@ -9,6 +9,10 @@ namespace Badminton_Systems_Group3.BUS
     internal class SanPhamBUS
     {
         SanPhamDAL dal = new SanPhamDAL();
+        public DataTable GetAll()
+        {
+            return dal.GetAll(); // Gọi xuống DAL để lấy dữ liệu từ Database
+        }
 
         public string ThucHienNhapKho(ProductDTO dto)
         {

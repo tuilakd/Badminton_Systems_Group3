@@ -95,7 +95,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <DataGrid x:Name="dgSanPham" Grid.Row="0" AutoGenerateColumns="False" CanUserAddRows="False" 
-                          Background="Gray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="15">
+                          Background="Gray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="15" SelectionChanged="dgSanPham_SelectionChanged">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -111,7 +111,7 @@
                         <DataGridTextColumn Header="Ngày nhập" Width="1.2*" Binding="{Binding NgayNhap}"/>
                     </DataGrid.Columns>
                 </DataGrid>
-                <Button x:Name="btnKiemKe" Grid.Row="1" Content="📋 Kiểm kê kho" Style="{StaticResource ActionButtonStyle}" Margin="0,15,0,0"/>
+                <Button x:Name="btnKiemKe" Grid.Row="1" Content="📋 Kiểm kê kho" Style="{StaticResource ActionButtonStyle}" Margin="0,15,0,0" Click="btnKiemKe_Click"/>
             </Grid>
 
             <Viewbox Grid.Column="2" Stretch="Uniform" VerticalAlignment="Top" Margin="15,0,0,0">
@@ -134,7 +134,7 @@
                         <TextBlock Grid.Row="1" Text="Tên SP:" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"/>
                         <TextBox x:Name="txtTenSP" Grid.Row="1" Grid.Column="1" Height="32" VerticalContentAlignment="Center" Margin="5"/>
                         <TextBlock Grid.Row="2" Text="Đơn giá:" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"/>
-                        <TextBox x:Name="txtDonGia" Grid.Row="2" Grid.Column="1" Height="32" VerticalContentAlignment="Center" Margin="5"/>
+                        <TextBox x:Name="txtDonGia" Grid.Row="2" Grid.Column="1" Height="32" VerticalContentAlignment="Center" Margin="5" TextChanged="txtDonGia_TextChanged"/>
                         <TextBlock Grid.Row="3" Text="Số lượng:" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"/>
                         <TextBox x:Name="txtSoLuong" Grid.Row="3" Grid.Column="1" Height="32" VerticalContentAlignment="Center" Margin="5"/>
                         <TextBlock Grid.Row="4" Text="Ngày nhập:" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"/>

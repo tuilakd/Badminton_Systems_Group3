@@ -148,7 +148,7 @@
 
         <Border Grid.Row="2" Background="#024D2A">
             <UniformGrid Columns="3">
-                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" >
+                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Checked="RadioButton_Checked_1" >
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">
                             <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">
@@ -161,7 +161,7 @@
                     </Viewbox>
                 </RadioButton>
 
-                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu">
+                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Checked="RadioButton_Checked">
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">
                             <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">
@@ -174,7 +174,8 @@
                     </Viewbox>
                 </RadioButton>
 
-                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu">
+
+                <RadioButton x:Name="btnThongTin" Grid.Column="2" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Click="btnThongTin_Click" >
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">
                             <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">

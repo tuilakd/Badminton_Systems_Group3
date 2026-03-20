@@ -67,18 +67,18 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="76.477"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="85"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Background="#024D2A" Padding="20,15" Margin="0,0,0,585" Grid.RowSpan="2">
+        <Border Grid.Row="0" Background="#024D2A" Padding="20,15">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Bán hàng" Foreground="White" FontSize="32" FontWeight="Bold"/>
                 <TextBlock Text=" 🛒" Foreground="White" FontSize="32" Margin="10,0,0,0"/>
             </StackPanel>
         </Border>
 
-        <Grid Grid.Row="1" Margin="20,20,20,20">
+        <Grid Grid.Row="1" Margin="20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4.5*"/>
                 <ColumnDefinition Width="5.5*"/>
@@ -276,7 +276,7 @@
                     </Viewbox>
                 </RadioButton>
 
-
+ 
                 <RadioButton x:Name="btnThongTin" Grid.Column="2" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Click="btnThongTin_Click" >
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">

@@ -39,7 +39,6 @@ namespace Badminton_Systems_Group3.DAL
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                // Đã sửa 'SanBai' thành 'san'
                 string query = "INSERT INTO san (MaSan, TenSan, TrangThai, GiaThue) VALUES (@MaSan, @TenSan, @TrangThai, @GiaThue)";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@MaSan", sb.MaSan);

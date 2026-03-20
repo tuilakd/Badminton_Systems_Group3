@@ -47,9 +47,10 @@ namespace Badminton_Systems_Group3.GUI
         {
             if (string.IsNullOrEmpty(maSan)) return;
 
-            // Tìm TextBlock trạng thái (VD: txtStatus_SB0001)
+            // Tìm TextBlock hiển thị trạng thái (VD: txtStatus_SB0001)
             var txt = this.FindName("txtStatus_" + maSan) as TextBlock;
-            // Tìm Button đặt sân (Dựa vào x:Name bạn đặt trong XAML, VD: btn_SB0001)
+
+            // Tìm Button đặt sân (Yêu cầu bạn phải đặt x:Name cho Button trong XAML là btn_SB0001, btn_SB0002...)
             var btn = this.FindName("btn_" + maSan) as Button;
 
             if (txt != null)
@@ -62,14 +63,17 @@ namespace Badminton_Systems_Group3.GUI
             {
                 if (isBusy)
                 {
+                    // Chuyển sang chế độ Thanh toán khi sân đã có người đặt trong khung giờ này
                     btn.Content = "THANH TOÁN";
                     btn.Background = Brushes.Red;
                     btn.Foreground = Brushes.White;
                 }
                 else
                 {
+                    // Trả về trạng thái đặt sân bình thường
                     btn.Content = "Đặt sân";
-                    btn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF2D8C57")); // Màu xanh cũ
+                    // Mã màu xanh lá mặc định của bạn
+                    btn.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF2D8C57"));
                     btn.Foreground = Brushes.White;
                 }
             }
@@ -77,7 +81,6 @@ namespace Badminton_Systems_Group3.GUI
 
         private void LocSan()
         {
-            // Lấy giờ từ SelectedItem để đảm bảo chính xác nhất
             string strStart = (cboGioBD.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? cboGioBD.Text;
             string strEnd = (cboGioKT.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? cboGioKT.Text;
 
@@ -91,14 +94,15 @@ namespace Badminton_Systems_Group3.GUI
                     if (end <= start) return;
 
                     var dal = new Badminton_Systems_Group3.DAL.BookingDAL();
-                    // Truy vấn những sân đã có người đặt trong khoảng start - end của ngày đã chọn
                     DataTable dtDaDat = dal.GetSanDaDat(dpNgayDat.SelectedDate.Value, start, end);
+
+                    // Lấy danh sách mã sân đã bị đặt trong khung giờ này
                     var busyLanes = dtDaDat.AsEnumerable().Select(r => r["MaSan"].ToString()).ToList();
 
-                    // QUAN TRỌNG: Duyệt qua tất cả các sân (từ 1 đến 8) để cập nhật lại trạng thái
-                    string[] tatCaMaSan = { "SB0001", "SB0002", "SB0003", "SB0004", "SB0005", "SB0006", "SB0007", "SB0008" };
+                    // Duyệt danh sách mã sân cố định từ SB0001 đến SB0008
+                    string[] dsMaSan = { "SB0001", "SB0002", "SB0003", "SB0004", "SB0005", "SB0006", "SB0007", "SB0008" };
 
-                    foreach (string ma in tatCaMaSan)
+                    foreach (string ma in dsMaSan)
                     {
                         bool isBusy = busyLanes.Contains(ma);
                         UpdateCourtStatusUI(ma, isBusy);
@@ -107,7 +111,7 @@ namespace Badminton_Systems_Group3.GUI
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Lỗi Lọc Sân: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Lỗi lọc sân: " + ex.Message);
             }
         }
 

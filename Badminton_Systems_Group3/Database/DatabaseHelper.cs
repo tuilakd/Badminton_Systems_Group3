@@ -12,6 +12,7 @@ namespace Badminton_Systems_Group3.Database
 
         public DataTable GetData(string query)
         {
+            //
             DataTable dt = new DataTable();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {

@@ -29,20 +29,23 @@
             </Setter>
         </Style>
 
-        <Style x:Key="NavButtonStyle" TargetType="Button">
+        <Style x:Key="MenuButtonStyle" TargetType="RadioButton">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}">
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border Background="{TemplateBinding Background}" Cursor="Hand">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background" Value="#CDE8F6"/>
+                                <Setter Property="Foreground" Value="#004D26"/>
+                            </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#CDE8F6"/>
+                                <Setter Property="Background" Value="#CDE8F6"/>
                                 <Setter Property="Foreground" Value="#004D26"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -122,28 +125,51 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <Border Grid.Row="2" Background="#004D26">
+        <Border Grid.Row="2" Background="#024D2A">
             <UniformGrid Columns="3">
-                <Button Style="{StaticResource NavButtonStyle}">
-                    <StackPanel>
-                        <TextBlock Text="🏠" FontSize="30" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Trang chủ" FontSize="16" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
 
-                <Button Style="{StaticResource NavButtonStyle}">
-                    <StackPanel>
-                        <TextBlock Text="📅" FontSize="30" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Lịch đặt" FontSize="16" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu"
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Checked="RadioButton_Checked">
+                    <Viewbox Margin="10">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Rectangle Width="30" Height="30" HorizontalAlignment="Center" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">
+                                <Rectangle.OpacityMask>
+                                    <ImageBrush ImageSource="pack://application:,,,/Image/homeicon.png"/>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                            <TextBlock Text="Trang chủ" FontSize="16" Margin="0 5 0 0" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Viewbox>
+                </RadioButton>
 
-                <Button Style="{StaticResource NavButtonStyle}">
-                    <StackPanel>
-                        <TextBlock Text="👤" FontSize="30" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Thông tin" FontSize="16" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu"
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <Viewbox Margin="10">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Rectangle Width="30" Height="30" HorizontalAlignment="Center" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">
+                                <Rectangle.OpacityMask>
+                                    <ImageBrush ImageSource="pack://application:,,,/Image/booking (1).png"/>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                            <TextBlock Text="Lịch đặt" FontSize="16" Margin="0 5 0 0" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Viewbox>
+                </RadioButton>
+
+                <RadioButton x:Name="btnThongTin" Grid.Column="2" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu"
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="btnThongTin_Click">
+                    <Viewbox Margin="10">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Rectangle Width="30" Height="30" HorizontalAlignment="Center" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">
+                                <Rectangle.OpacityMask>
+                                    <ImageBrush ImageSource="/Image/user1.png"/>
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                            <TextBlock Text="Thông tin" FontSize="16" Margin="0 5 0 0" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Viewbox>
+                </RadioButton>
+
             </UniformGrid>
         </Border>
     </Grid>

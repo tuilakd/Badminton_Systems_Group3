@@ -21,5 +21,27 @@ namespace Badminton_Systems_Group3.GUI
         {
             InitializeComponent();
         }
+
+        private void btnThongTin_Click(object sender, RoutedEventArgs e)
+        {
+            Badminton_Systems_Group3.GUI.Info thongTinWindow = new Badminton_Systems_Group3.GUI.Info();
+            thongTinWindow.ShowDialog();
+
+            btnThongTin.IsChecked = false;
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            BookingSchedule window = new BookingSchedule();
+            window.Show();
+            this.Close();
+        }
+
+        private void RadioButton_Checked_1(object sender, RoutedEventArgs e)
+        {
+            Home window = new Home();
+            window.Show();
+            this.Close();
+        }
     }
 }

@@ -140,14 +140,14 @@
                         <TextBlock Grid.Row="4" Text="Ngày nhập:" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"/>
                         <DatePicker Grid.Row="4" Grid.Column="1" Height="32" Margin="5" VerticalContentAlignment="Center"/>
                     </Grid>
-                    <Button Content="➕ Nhập kho" Style="{StaticResource ActionButtonStyle}" Margin="0,20,0,0" Click="Button_Click"/>
+                    <Button Content="➕ Nhập kho" Style="{StaticResource ActionButtonStyle}" Margin="0,20,0,0" />
                 </StackPanel>
             </Viewbox>
         </Grid>
 
         <Border Grid.Row="2" Background="#024D2A">
             <UniformGrid Columns="3">
-                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu">
+                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Checked="RadioButton_Checked">
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">
                             <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">
@@ -171,7 +171,7 @@
                         </StackPanel>
                     </Viewbox>
                 </RadioButton>
-                <RadioButton Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu">
+                <RadioButton x:Name="btnThongTin" Grid.Column="2" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Click="btnThongTin_Click">
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">
                             <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">

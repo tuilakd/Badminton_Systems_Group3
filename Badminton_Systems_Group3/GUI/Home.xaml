@@ -128,7 +128,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <RadioButton x:Name="btnTrangChu" Grid.Column="0" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Checked="btnTrangChu_Checked" IsChecked="True">
+            <RadioButton x:Name="btnTrangChu" Grid.Column="0" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Checked="btnTrangChu_Checked" >
                 <Viewbox Margin="10">
                     <StackPanel Orientation="Vertical">
                         <Rectangle Width="30" Height="30" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}">

@@ -9,21 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="BUS\**" />
-    <Compile Remove="DAL\**" />
-    <Compile Remove="DTO\**" />
-    <EmbeddedResource Remove="BUS\**" />
-    <EmbeddedResource Remove="DAL\**" />
-    <EmbeddedResource Remove="DTO\**" />
-    <None Remove="BUS\**" />
-    <None Remove="DAL\**" />
-    <None Remove="DTO\**" />
-    <Page Remove="BUS\**" />
-    <Page Remove="DAL\**" />
-    <Page Remove="DTO\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Image\1.png" />
     <None Remove="Image\2.png" />
     <None Remove="Image\3.png" />
@@ -70,6 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
   </ItemGroup>
 

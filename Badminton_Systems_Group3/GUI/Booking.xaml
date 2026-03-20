@@ -93,8 +93,7 @@
                 <TextBlock Grid.Row="0" Text="Danh sách sân" Foreground="#006400" FontSize="24" FontWeight="Bold" Margin="0,0,0,15"/>
 
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
-                    <UniformGrid Columns="4" VerticalAlignment="Top">
-
+                    <UniformGrid x:Name="gridSan" Columns="4" VerticalAlignment="Top">
                         <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F0F0F0" Margin="0,0,0,10">
@@ -104,8 +103,8 @@
                                     <TextBlock Text="Sân 01" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
                                     <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
-                                <TextBlock Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
-                                <Button Content="Đặt sân" Style="{StaticResource ActionButtonStyle}"/>
+                                <TextBlock x:Name="txtStatus_SB0001" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
+                                <Button x:Name="SB0001" Tag="SB0001" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
                             </StackPanel>
                         </Border>
 
@@ -118,8 +117,8 @@
                                     <TextBlock Text="Sân 02" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
                                     <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
-                                <TextBlock Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
-                                <Button Content="Đặt sân" Style="{StaticResource ActionButtonStyle}"/>
+                                <TextBlock x:Name="txtStatus_SB0002" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
+                                <Button x:Name="SB0002" Tag="SB0002" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
                             </StackPanel>
                         </Border>
 
@@ -132,8 +131,8 @@
                                     <TextBlock Text="Sân 03" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
                                     <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
-                                <TextBlock Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
-                                <Button Content="Đặt sân" Style="{StaticResource ActionButtonStyle}"/>
+                                <TextBlock x:Name="txtStatus_SB0003" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
+                                <Button x:Name="SB0003" Tag="SB0003" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
                             </StackPanel>
                         </Border>
 
@@ -146,8 +145,8 @@
                                     <TextBlock Text="Sân 04" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
                                     <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
-                                <TextBlock Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
-                                <Button Content="Đặt sân" Style="{StaticResource ActionButtonStyle}"/>
+                                <TextBlock x:Name="txtStatus_SB0004" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
+                                <Button x:Name="SB0004" Tag="SB0004" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
                             </StackPanel>
                         </Border>
 
@@ -160,8 +159,8 @@
                                     <TextBlock Text="Sân 05" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
                                     <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
-                                <TextBlock Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
-                                <Button Content="Đặt sân" Style="{StaticResource ActionButtonStyle}"/>
+                                <TextBlock x:Name="txtStatus_SB0005" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
+                                <Button x:Name="SB0005" Tag="SB0005" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
                             </StackPanel>
                         </Border>
 
@@ -174,8 +173,8 @@
                                     <TextBlock Text="Sân 06" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
                                     <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
-                                <TextBlock Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
-                                <Button Content="Đặt sân" Style="{StaticResource ActionButtonStyle}"/>
+                                <TextBlock x:Name="txtStatus_SB0006" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
+                                <Button x:Name="SB0006" Tag="SB0006" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
                             </StackPanel>
                         </Border>
 
@@ -188,8 +187,8 @@
                                     <TextBlock Text="Sân 07" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
                                     <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
-                                <TextBlock Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
-                                <Button Content="Đặt sân" Style="{StaticResource ActionButtonStyle}"/>
+                                <TextBlock x:Name="txtStatus_SB0007" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
+                                <Button x:Name="SB0007" Tag="SB0007" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
                             </StackPanel>
                         </Border>
 
@@ -202,8 +201,8 @@
                                     <TextBlock Text="Sân 08" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
                                     <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
-                                <TextBlock Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
-                                <Button Content="Đặt sân" Style="{StaticResource ActionButtonStyle}"/>
+                                <TextBlock x:Name="txtStatus_SB0008" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
+                                <Button x:Name="SB0008" Tag="SB0008" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
                             </StackPanel>
                         </Border>
 
@@ -230,38 +229,66 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Text="Tên khách hàng:" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Height="32" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
+                            <TextBox x:Name="txtTenKH" Grid.Row="0" Grid.Column="1" Height="32" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
 
                             <TextBlock Grid.Row="1" Text="SĐT:" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" Height="32" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
+                            <TextBox x:Name="txtSDT" Grid.Row="1" Grid.Column="1" Height="32" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
 
                             <TextBlock Grid.Row="2" Text="Ngày đặt:" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
-                            <DatePicker Grid.Row="2" Grid.Column="1" Height="32" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
+                            <DatePicker x:Name="dpNgayDat" Grid.Row="2" Grid.Column="1" Height="32" VerticalContentAlignment="Center" FontSize="16" Margin="5" SelectedDateChanged="dpNgayDat_SelectedDateChanged"/>
 
                             <TextBlock Grid.Row="3" Text="Giờ bắt đầu:" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
-                            <ComboBox Grid.Row="3" Grid.Column="1" Height="32" Margin="5" FontSize="16" VerticalContentAlignment="Center" IsEditable="True" Text="11:00 SA">
-                                <ComboBoxItem Content="08:00 SA"/>
-                                <ComboBoxItem Content="09:00 SA"/>
-                                <ComboBoxItem Content="10:00 SA"/>
-                                <ComboBoxItem Content="11:00 SA"/>
+                            <ComboBox x:Name="cboGioBD" Grid.Row="3" Grid.Column="1" Height="32" Margin="5" FontSize="16" VerticalContentAlignment="Center" IsEditable="True" Text="11:00 SA" SelectionChanged="cboGioBD_SelectionChanged">
+                                <ComboBoxItem Content="09:00"/>
+                                    <ComboBoxItem Content="10:00"/>
+                                    <ComboBoxItem Content="11:00"/>
+                                    <ComboBoxItem Content="12:00"/>
+                                    <ComboBoxItem Content="13:00"/>
+                                    <ComboBoxItem Content="14:00"/>
+                                    <ComboBoxItem Content="15:00"/>
+                                    <ComboBoxItem Content="16:00"/>
+                                    <ComboBoxItem Content="17:00"/>
+                                    <ComboBoxItem Content="18:00"/>
+                                    <ComboBoxItem Content="19:00"/>
+                                    <ComboBoxItem Content="20:00"/>
+                                    <ComboBoxItem Content="21:00"/>
+                                    <ComboBoxItem Content="22:00"/>
+                                    <ComboBoxItem Content="23:00"/>
                             </ComboBox>
 
                             <TextBlock Grid.Row="4" Text="Giờ kết thúc:" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
-                            <ComboBox Grid.Row="4" Grid.Column="1" Height="32" Margin="5" FontSize="16" VerticalContentAlignment="Center" IsEditable="True" Text="13:00 CH">
-                                <ComboBoxItem Content="09:00 SA"/>
-                                <ComboBoxItem Content="10:00 SA"/>
-                                <ComboBoxItem Content="11:00 SA"/>
-                                <ComboBoxItem Content="12:00 CH"/>
-                                <ComboBoxItem Content="13:00 CH"/>
+                            <ComboBox x:Name="cboGioKT" Grid.Row="4" Grid.Column="1" Height="32" Margin="5" FontSize="16" VerticalContentAlignment="Center" IsEditable="True" Text="13:00 CH" SelectionChanged="cboGioKT_SelectionChanged">
+                                    <ComboBoxItem Content="09:00"/>
+                                    <ComboBoxItem Content="10:00"/>
+                                    <ComboBoxItem Content="11:00"/>
+                                    <ComboBoxItem Content="12:00"/>
+                                    <ComboBoxItem Content="13:00"/>
+                                    <ComboBoxItem Content="14:00"/>
+                                    <ComboBoxItem Content="15:00"/>
+                                    <ComboBoxItem Content="16:00"/>
+                                    <ComboBoxItem Content="17:00"/>
+                                    <ComboBoxItem Content="18:00"/>
+                                    <ComboBoxItem Content="19:00"/>
+                                    <ComboBoxItem Content="20:00"/>
+                                    <ComboBoxItem Content="21:00"/>
+                                    <ComboBoxItem Content="22:00"/>
+                                    <ComboBoxItem Content="23:00"/>
                             </ComboBox>
                         </Grid>
 
                         <StackPanel Margin="0,20,0,10">
-                            <TextBlock Text="Tổng thời gian:" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-                            <TextBlock Text="Tạm tính:" FontSize="18" FontWeight="Bold" Foreground="Red" Margin="0,0,0,20"/>
-                        </StackPanel>
+    <TextBlock FontSize="18" FontWeight="Bold" Foreground="Blue" Margin="0,0,0,10">
+        <Run Text="Tổng thời gian: "/>
+        <Run x:Name="lblTongGio" Text="0 giờ" Foreground="Blue"/>
+    </TextBlock>
 
-                        <Button Content="XÁC NHẬN ĐẶT SÂN" Style="{StaticResource ConfirmButtonStyle}"/>
+    <TextBlock FontSize="18" FontWeight="Bold" Foreground="Red" Margin="0,0,0,20">
+        <Run Text="Tạm tính: "/>
+        <Run x:Name="lblTamTinh" Text="0 VNĐ"/>
+    </TextBlock>
+</StackPanel>
+
+                        <Button x:Name="btnXacNhan" Content="XÁC NHẬN ĐẶT SÂN" Style="{StaticResource ConfirmButtonStyle}" Click="btnXacNhan_Click_1"/>
                     </StackPanel>
                 </Border>
             </Viewbox>
@@ -310,4 +337,5 @@
             </UniformGrid>
         </Border>
     </Grid>
+
 </Window>

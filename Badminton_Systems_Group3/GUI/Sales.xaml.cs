@@ -24,7 +24,7 @@ namespace Badminton_Systems_Group3.GUI
         private void LoadProducts()
         {
             var allProducts = bus.GetAllProducts();
-            icProducts.ItemsSource = allProducts; // Hiện thẻ sản phẩm
+            icProducts.ItemsSource = allProducts; 
             if (allProducts != null)
     {
         itemSP0001.DataContext = allProducts.FirstOrDefault(x => x.MaSP == "SP0001");
@@ -120,12 +120,10 @@ namespace Badminton_Systems_Group3.GUI
             string maHD = "HD" + DateTime.Now.ToString("mmss");
             decimal tongTien = cart.Sum(x => x.ThanhTien);
 
-            // 1. Lưu bảng cha và kiểm tra xem có thành công không
             bool isFatherSaved = bus.CreateHoaDon(maHD, tongTien);
 
             if (isFatherSaved)
             {
-                // 2. Nếu cha đã lưu xong thì mới lưu con (chitiethoadon_sp)
                 foreach (var item in cart)
                 {
                     bus.SaveBillDetail(maHD, item);
@@ -138,7 +136,6 @@ namespace Badminton_Systems_Group3.GUI
             }
             else
             {
-                // Nếu chui vào đây là do lệnh INSERT vào bảng 'hoadon' bị sai tên cột hoặc sai kiểu dữ liệu
                 MessageBox.Show("Lỗi: Không thể tạo hóa đơn tổng. Vui lòng kiểm tra tên cột trong bảng 'hoadon'!");
             }
         }

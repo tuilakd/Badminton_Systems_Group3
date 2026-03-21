@@ -2,6 +2,7 @@
 using Badminton_Systems_Group3.DTO;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace Badminton_Systems_Group3.BUS
@@ -29,5 +30,11 @@ namespace Badminton_Systems_Group3.BUS
         {
             return dal.Delete(maSan);
         }
+        public DataTable LayDanhSachSan(string filter)
+        {
+
+            return dal.LayDanhSachSan(filter);
+        }
     }
+
 }

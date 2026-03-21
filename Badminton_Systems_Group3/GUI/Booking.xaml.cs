@@ -32,7 +32,6 @@ namespace Badminton_Systems_Group3.GUI
             DisableForm();
         }
 
-        // ================= UI =================
         private void UpdateUI(string maSan, bool isBusy)
         {
             var txt = FindName("txtStatus_" + maSan) as TextBlock;
@@ -57,7 +56,6 @@ namespace Badminton_Systems_Group3.GUI
                 UpdateUI(ma, false);
         }
 
-        // ================= LỌC SÂN =================
         private void LocSan()
         {
             if (dpNgayDat.SelectedDate == null) return;
@@ -75,7 +73,6 @@ namespace Badminton_Systems_Group3.GUI
                 UpdateUI(ma, busy.Contains(ma));
         }
 
-        // ================= CLICK CHUNG =================
         private void SB0001_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button btn || btn.Tag == null) return;
@@ -87,7 +84,7 @@ namespace Badminton_Systems_Group3.GUI
 
             if (coBooking)
             {
-                LoadThongTin(); // load dữ liệu khách chưa thanh toán
+                LoadThongTin(); 
             }
             else
             {
@@ -98,7 +95,6 @@ namespace Badminton_Systems_Group3.GUI
             }
         }
 
-        // ================= LOAD THÔNG TIN =================
         private void LoadThongTin()
         {
             if (string.IsNullOrEmpty(maSanDangChon) || dpNgayDat.SelectedDate == null)
@@ -129,7 +125,6 @@ namespace Badminton_Systems_Group3.GUI
             DisableForm();
         }
 
-        // ================= TÍNH TIỀN =================
         private void CapNhatTien()
         {
             if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
@@ -146,7 +141,6 @@ namespace Badminton_Systems_Group3.GUI
             lblTamTinh.Text = string.Format("{0:N0} VNĐ", tien);
         }
 
-        // ================= ĐẶT SÂN =================
         private void DatSan()
         {
             if (dpNgayDat.SelectedDate == null || string.IsNullOrEmpty(maSanDangChon))
@@ -181,7 +175,6 @@ namespace Badminton_Systems_Group3.GUI
             }
         }
 
-        // ================= NÚT XÁC NHẬN =================
         private void btnXacNhan_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(maSanDangChon))
@@ -221,7 +214,6 @@ namespace Badminton_Systems_Group3.GUI
             }
         }
 
-        // ================= FORM =================
         private void ResetForm()
         {
             txtTenKH.Clear();
@@ -260,7 +252,6 @@ namespace Badminton_Systems_Group3.GUI
             LocSan();
         }
 
-        // ================= HỖ TRỢ =================
         private bool TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT)
         {
             gioBD = TimeSpan.Zero;

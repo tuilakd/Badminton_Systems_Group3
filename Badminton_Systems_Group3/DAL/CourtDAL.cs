@@ -1,8 +1,10 @@
 ﻿using Badminton_Systems_Group3.DTO;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using Badminton_Systems_Group3.Database;
 
 namespace Badminton_Systems_Group3.DAL
 {
@@ -10,13 +12,13 @@ namespace Badminton_Systems_Group3.DAL
     {
         private string connectionString = "Data Source=desktop-3453jgg\\sqlexpress;Initial Catalog=QL_SanCL;Integrated Security=True;Encrypt=False";
 
+        private DatabaseHelper db = new DatabaseHelper();
         public List<CourtDTO> GetAll()
         {
             List<CourtDTO> list = new List<CourtDTO>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                // Đã sửa 'SanBai' thành 'san'
                 string query = "SELECT MaSan, TenSan, TrangThai, GiaThue FROM san";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -74,6 +76,17 @@ namespace Badminton_Systems_Group3.DAL
                 cmd.Parameters.AddWithValue("@MaSan", maSan);
                 return cmd.ExecuteNonQuery() > 0;
             }
+        }
+
+        public DataTable LayDanhSachSan(string filter = "")
+        {
+            string query = "SELECT MaSan, TenSan, TrangThai, GiaThue FROM san";
+
+            if (!string.IsNullOrEmpty(filter) && filter != "Tất cả")
+            {
+                query += $" WHERE TrangThai = N'{filter}'";
+            }
+            return db.ExecuteQuery(query);
         }
     }
 }

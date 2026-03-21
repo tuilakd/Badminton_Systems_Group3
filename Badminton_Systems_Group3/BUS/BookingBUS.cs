@@ -10,7 +10,6 @@ namespace Badminton_Systems_Group3.BUS
     {
         private readonly BookingDAL dal = new BookingDAL();
 
-        // ================= ĐẶT SÂN =================
         public (bool success, string message) ThucHienDatSan(BookingDTO booking)
         {
             if (string.IsNullOrWhiteSpace(booking.MaSan))
@@ -33,24 +32,19 @@ namespace Badminton_Systems_Group3.BUS
 
             try
             {
-                // Kiểm tra trùng giờ
                 if (dal.KiemTraTrungGio(booking))
                     return (false, "Sân đã có người đặt trong khung giờ này!");
 
-                // Tạo mã khách hàng
                 booking.MaKH = "KH" + booking.SDT.Trim().Replace(" ", "");
 
-                // Lưu khách hàng nếu chưa tồn tại
                 if (!dal.KhachHangTonTai(booking.MaKH))
                 {
                     if (!dal.InsertKhachHang(booking.MaKH, booking.TenKhachHang, booking.SDT))
                         return (false, "Lỗi lưu khách hàng!");
                 }
 
-                // Tạo mã đặt sân
                 booking.MaDatSan = "DS" + DateTime.Now.ToString("ddHHmmss");
 
-                // Tính tiền trước khi lưu
                 booking.TinhThanhTien();
 
                 if (!dal.InsertBooking(booking))
@@ -64,14 +58,11 @@ namespace Badminton_Systems_Group3.BUS
             }
         }
 
-        // ================= LỌC SÂN =================
         public DataTable GetSanDaDat(DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
         {
-            // DAL cần TimeSpan
             return dal.GetSanDaDat(ngay, gioBD, gioKT);
         }
 
-        // ================= THANH TOÁN =================
         public (bool success, string message) ThanhToan(string maDatSan, string sdt, decimal tongTien)
         {
             if (string.IsNullOrEmpty(maDatSan))
@@ -85,11 +76,9 @@ namespace Badminton_Systems_Group3.BUS
 
             try
             {
-                // Mã khách và mã hóa đơn
                 string maKH = "KH" + sdt.Trim();
                 string maHD = "HD" + DateTime.Now.ToString("ddHHmmss");
 
-                // Gọi DAL (4 tham số)
                 bool ok = dal.ThanhToan(maDatSan, maKH, (double)tongTien);
                 if (!ok)
                     return (false, "Thanh toán thất bại!");
@@ -101,13 +90,11 @@ namespace Badminton_Systems_Group3.BUS
                 return (false, "Lỗi hệ thống: " + ex.Message);
             }
         }
-        // ================= KIỂM TRA SÂN =================
         public bool KiemTraSanDaDat(string maSan, DateTime ngay)
         {
             var dt = dal.GetThongTinKhachDatSanChuaThanhToan(maSan, ngay);
-            return dt != null; // true nếu có booking chưa thanh toán
+            return dt != null; 
         }
-        // ================= TÍNH TIỀN =================
         public decimal TinhTien(TimeSpan start, TimeSpan end, decimal giaMoiGio = 120000)
         {
             var duration = end - start;

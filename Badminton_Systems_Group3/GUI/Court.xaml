@@ -126,7 +126,7 @@
                     <TextBlock Text="Danh sách sân bãi" Foreground="Red" FontSize="22" FontWeight="Bold" Margin="0,0,0,15"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="Hiển thị:" FontSize="18" Width="83" Height="21"/>
-                        <ComboBox x:Name="cboHienThi" Width="434" Height="35" VerticalContentAlignment="Center" FontSize="16">
+                        <ComboBox x:Name="cboHienThi" Width="434" Height="35" VerticalContentAlignment="Center" FontSize="16" SelectionChanged="cboHienThi_SelectionChanged" >
                             <ComboBoxItem Content="Đang hoạt động" IsSelected="True"/>
                             <ComboBoxItem Content="Bảo trì"/>
                         </ComboBox>

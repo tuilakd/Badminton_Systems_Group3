@@ -1,6 +1,8 @@
-﻿using Badminton_Systems_Group3.DTO;
+﻿using Badminton_Systems_Group3.BUS;
+using Badminton_Systems_Group3.DTO;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Badminton_Systems_Group3.BUS;
 
 namespace Badminton_Systems_Group3.GUI
 {
@@ -100,6 +101,35 @@ namespace Badminton_Systems_Group3.GUI
 
         private void btnXoa_Click(object sender, RoutedEventArgs e)
         {
+            string maSan = txtMaSan.Text.Trim();
+            string trangThai = cboTrangThai.Text.Trim();
+
+            if (string.IsNullOrEmpty(maSan))
+            {
+                MessageBox.Show("Vui lòng chọn sân cần xóa!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (trangThai.ToLower().Contains("đang hoạt động"))
+            {
+                MessageBox.Show("Sân đang hoạt động, không thể xóa lúc này", "Từ chối", MessageBoxButton.OK, MessageBoxImage.Stop);
+                return;
+            }
+
+            MessageBoxResult result = MessageBox.Show("Bạn có chắc chắn muốn xóa sân này?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                if (bus.Delete(maSan))
+                {
+                    MessageBox.Show("Đã xóa thành công", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadData();
+                    ClearForm();
+                }
+            }
+        }
+
+        private void btnSua_Click(object sender, RoutedEventArgs e)
+        {
             if (string.IsNullOrEmpty(txtMaSan.Text) || string.IsNullOrEmpty(txtTenSan.Text))
             {
                 MessageBox.Show("Vui lòng chọn sân cần sửa và điền đủ thông tin", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -127,42 +157,26 @@ namespace Badminton_Systems_Group3.GUI
                 ClearForm();
             }
         }
-
-        private void btnSua_Click(object sender, RoutedEventArgs e)
-        {
-            string maSan = txtMaSan.Text.Trim();
-            string trangThai = cboTrangThai.Text.Trim();
-
-            if (string.IsNullOrEmpty(maSan))
-            {
-                MessageBox.Show("Vui lòng chọn sân cần xóa!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (trangThai.ToLower().Contains("đang hoạt động") || trangThai.ToLower().Contains("đang đánh"))
-            {
-                MessageBox.Show("Sân đang hoạt động, không thể xóa lúc này", "Từ chối", MessageBoxButton.OK, MessageBoxImage.Stop);
-                return;
-            }
-
-            MessageBoxResult result = MessageBox.Show("Bạn có chắc chắn muốn xóa sân này?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
-            {
-                if (bus.Delete(maSan))
-                {
-                    MessageBox.Show("Đã xóa thành công", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    LoadData();
-                    ClearForm();
-                }
-            }
-        }
         private void ClearForm()
         {
             txtMaSan.Clear();
             txtTenSan.Clear();
             txtGiaThue.Clear();
-            cboTrangThai.SelectedIndex = -1; // Reset combobox
-            txtMaSan.IsEnabled = true;       // Mở lại ô Mã Sân để thêm mới
+            cboTrangThai.SelectedIndex = -1; 
+            txtMaSan.IsEnabled = true;       
+        }
+
+        private void cboHienThi_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(dgSanBai != null && cboHienThi != null && cboHienThi.SelectedItem != null)
+    {
+                ComboBoxItem item = (ComboBoxItem)cboHienThi.SelectedItem;
+                string filter = item.Content.ToString();
+
+                DataTable dt = bus.LayDanhSachSan(filter);
+
+                dgSanBai.ItemsSource = dt.DefaultView;
+            }
         }
     }
 }

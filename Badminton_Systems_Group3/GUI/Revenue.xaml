@@ -119,10 +119,10 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Text="Từ ngày:" VerticalAlignment="Center" FontSize="18" FontWeight="SemiBold"/>
-                        <DatePicker Grid.Row="0" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
+                        <DatePicker x:Name="dpTuNgay" Grid.Row="0" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
 
                         <TextBlock Grid.Row="1" Text="Đến ngày:" VerticalAlignment="Center" FontSize="18" FontWeight="SemiBold"/>
-                        <DatePicker Grid.Row="1" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
+                        <DatePicker x:Name="dpDenNgay" Grid.Row="1" Grid.Column="1" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="5"/>
                     </Grid>
 
                     <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="0,5,0,10" Padding="15,10">
@@ -134,7 +134,7 @@
                             <TextBlock Text="💲" FontSize="45" Foreground="#38A169" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="TỔNG DOANH THU" FontSize="18" FontWeight="Bold" Foreground="#38A169" HorizontalAlignment="Right"/>
-                                <TextBlock Text="0 VNĐ" FontSize="24" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                <TextBlock x:Name="txtTongDoanhThu" Text="0 VNĐ" FontSize="24" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,5,0,0"/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -148,7 +148,7 @@
                             <TextBlock Text="☀️" FontSize="45" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="HÔM NAY" FontSize="18" FontWeight="Bold" Foreground="#F4B41A" HorizontalAlignment="Right"/>
-                                <TextBlock Text="0 VNĐ" FontSize="24" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                <TextBlock x:Name="txtHomNay" Text="0 VNĐ" FontSize="24" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,5,0,0"/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -162,12 +162,12 @@
                             <TextBlock Text="📅" FontSize="45" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <TextBlock Text="THÁNG NÀY" FontSize="18" FontWeight="Bold" Foreground="#1A8CD8" HorizontalAlignment="Right"/>
-                                <TextBlock Text="0 VNĐ" FontSize="24" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,5,0,0"/>
+                                <TextBlock x:Name="txtThangNay" Text="0 VNĐ" FontSize="24" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,5,0,0"/>
                             </StackPanel>
                         </Grid>
                     </Border>
 
-                    <Button Content="BÁO CÁO DOANH SỐ" Style="{StaticResource ReportButtonStyle}" Height="44"/>
+                    <Button x:Name="btnBaoCao" Content="BÁO CÁO DOANH SỐ" Style="{StaticResource ReportButtonStyle}" Height="44" Click="btnBaoCao_Click"/>
                 </StackPanel>
             </Viewbox>
 
@@ -181,13 +181,14 @@
                     <TextBlock Text="Bảng giao dịch" Foreground="Red" FontSize="22" FontWeight="Bold" Margin="0,0,0,15"/>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="Loại hóa đơn:" FontSize="18" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
-                        <ComboBox Width="283" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="0,0,15,0"/>
-                        <TextBox Width="335" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="0,0,15,0"/>
-                        <Button Content="Tìm kiếm 🔍" Style="{StaticResource ActionButtonStyle}" Height="36" Padding="15,0" Margin="0" Width="218"/>
+
+                        <ComboBox x:Name="cboLoaiHoaDon" Width="283" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="0,0,15,0"/>
+
+                        <Button x:Name="btnTimKiem" Click="btnTimKiem_Click" Content="Tìm kiếm 🔍" Style="{StaticResource ActionButtonStyle}" Height="36" Padding="15,0" Margin="0" Width="309"/>
                     </StackPanel>
                 </StackPanel>
 
-                <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" 
+                <DataGrid x:Name="dgvDoanhThu" AutoGenerateColumns="False" CanUserAddRows="False" 
                           Background="LightGray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="15" Margin="0,95,0,0" Grid.RowSpan="2">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
@@ -198,12 +199,15 @@
                     </DataGrid.ColumnHeaderStyle>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Mã HD" Width="0.8*" Binding="{Binding MaHD}"/>
-                        <DataGridTextColumn Header="Ngày lập HD" Width="1.2*" Binding="{Binding NgayLap}"/>
-                        <DataGridTextColumn Header="Loại hóa đơn" Width="1.2*" Binding="{Binding LoaiHD}"/>
+
+                        <DataGridTextColumn Header="Ngày lập HD" Width="1.2*" Binding="{Binding NgayLapHD, StringFormat=dd/MM/yyyy HH:mm}"/>
+
+                        <DataGridTextColumn Header="Loại hóa đơn" Width="1.2*" Binding="{Binding LoaiHoaDon}"/>
+
                         <DataGridTextColumn Header="Chi tiết" Width="2*" Binding="{Binding ChiTiet}"/>
-                        <DataGridTextColumn Header="Đơn giá/Giá thuê" Width="1.5*" Binding="{Binding DonGia}"/>
+                        <DataGridTextColumn Header="Đơn giá/Giá thuê" Width="1.5*" Binding="{Binding DonGia, StringFormat={}{0:N0}}"/>
                         <DataGridTextColumn Header="Số lượng" Width="0.8*" Binding="{Binding SoLuong}"/>
-                        <DataGridTextColumn Header="Thành tiền" Width="1.5*" Binding="{Binding ThanhTien}"/>
+                        <DataGridTextColumn Header="Thành tiền" Width="1.5*" Binding="{Binding ThanhTien, StringFormat={}{0:N0}}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

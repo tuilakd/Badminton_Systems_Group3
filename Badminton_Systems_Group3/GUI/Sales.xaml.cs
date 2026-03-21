@@ -35,14 +35,11 @@ namespace Badminton_Systems_Group3.GUI
         itemSP0006.DataContext = allProducts.FirstOrDefault(x => x.MaSP == "SP0006");
     }
         }
-
-        // Xử lý nút gõ tay
         private void btnThem_Static_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
             string maSP = btn.Tag?.ToString();
 
-            // Lấy list sản phẩm đang có
             var allProducts = bus.GetAllProducts();
             var sp = allProducts.FirstOrDefault(x => x.MaSP == maSP);
 
@@ -52,12 +49,10 @@ namespace Badminton_Systems_Group3.GUI
             }
             else
             {
-                // Nếu nó chui vào đây là do cái Tag "SP000x" của bà không giống trong DB
                 MessageBox.Show($"Không tìm thấy sản phẩm có mã: '{maSP}' trong Database!");
             }
         }
 
-        // Xử lý nút động từ SQL
         private void btnAddToCart_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
@@ -121,19 +116,15 @@ namespace Badminton_Systems_Group3.GUI
         {
             if (cart.Count == 0) { MessageBox.Show("Hóa đơn đang trống!"); return; }
 
-            // 1. CHẠY LỆNH TRỪ KHO TRONG DATABASE
             foreach (var item in cart)
             {
-                // Gọi xuống BUS để thực hiện lệnh UPDATE SQL
                 bus.UpdateInventory(item.MaSP, item.SoLuong);
             }
 
             MessageBox.Show("Thanh toán thành công và đã trừ tồn kho!");
-
-            // 2. CẬP NHẬT LẠI GIAO DIỆN
-            cart.Clear();          // Xóa giỏ hàng
-            UpdateTotal();         // Cập nhật lại tổng tiền về 0
-            LoadProducts();        // QUAN TRỌNG: Load lại sản phẩm từ DB để cập nhật con số "Kho" mới
+            cart.Clear();          
+            UpdateTotal();       
+            LoadProducts();       
         }
 
         private void UpdateTotal()
@@ -158,11 +149,9 @@ namespace Badminton_Systems_Group3.GUI
                     OnPropertyChanged("SoLuongTon");
                 }
             }
-
             public event PropertyChangedEventHandler PropertyChanged;
             protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
         private void dgHoaDon_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (dgHoaDon.SelectedItem is SalesDTO selected)
@@ -170,13 +159,10 @@ namespace Badminton_Systems_Group3.GUI
                 txtSoluong.Text = selected.SoLuong.ToString();
             }
         }
-       
 
-        // Các hàm điều hướng
         private void btnThongTin_Click(object sender, RoutedEventArgs e) { new Info().ShowDialog(); btnThongTin.IsChecked = false; }
         private void RadioButton_Checked(object sender, RoutedEventArgs e) { new BookingSchedule().Show(); this.Close(); }
         private void RadioButton_Checked_1(object sender, RoutedEventArgs e) { new Home().Show(); this.Close(); }
     }
-
 
 }

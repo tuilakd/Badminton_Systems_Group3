@@ -41,7 +41,6 @@ namespace Badminton_Systems_Group3.BUS
         }
         public bool UpdateInventory(string maSP, int qty)
         {
-            // Có thể thêm logic kiểm tra nghiệp vụ ở đây nếu cần
             return dal.UpdateStock(maSP, qty);
         }
     }

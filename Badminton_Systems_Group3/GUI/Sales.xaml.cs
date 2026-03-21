@@ -113,6 +113,7 @@ namespace Badminton_Systems_Group3.GUI
         }
 
         private void btnThanhToan_Click(object sender, RoutedEventArgs e)
+
         {
             if (cart.Count == 0) return;
 

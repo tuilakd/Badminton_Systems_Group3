@@ -8,7 +8,7 @@ namespace Badminton_Systems_Group3.DAL
 {
     public class ClientDAL
     {
-        string connStr = @"Data Source=.\SQLEXPRESS;Initial Catalog=QLKH;Integrated Security=True";
+        string connStr = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True";
         public List<ClientDTO> GetAll()
         {
             List<ClientDTO> list = new List<ClientDTO>();
@@ -99,20 +99,17 @@ namespace Badminton_Systems_Group3.DAL
         public List<ClientDTO> Search(string keyword)
         {
             List<ClientDTO> list = new List<ClientDTO>();
-
             using (SqlConnection conn = new SqlConnection(connStr))
             {
+                // Chỉ để lại điều kiện lọc theo MaKH
                 string query = @"
-            SELECT kh.MaKH, kh.HoTen, kh.SDT,
-                   ds.MaDatSan, ds.TrangThai
+            SELECT kh.MaKH, kh.HoTen, kh.SDT, ds.MaDatSan, ds.TrangThai
             FROM khachhang kh
             LEFT JOIN datsan ds ON kh.MaKH = ds.MaKH
-            WHERE kh.MaKH LIKE @kw 
-               OR kh.HoTen LIKE @kw 
-               OR kh.SDT LIKE @kw
-        ";
+            WHERE kh.MaKH LIKE @kw";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
+                // Thêm dấu % để tìm gần đúng, hoặc bỏ % đi nếu muốn gõ chính xác 100% mã mới tìm ra
                 cmd.Parameters.AddWithValue("@kw", "%" + keyword + "%");
 
                 conn.Open();

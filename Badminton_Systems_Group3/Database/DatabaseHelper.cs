@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Data.SqlClient;
-
 namespace Badminton_Systems_Group3.Database
 {
     internal class DatabaseHelper
@@ -28,7 +27,6 @@ namespace Badminton_Systems_Group3.Database
             }
             return dt;
         }
-
         public bool ExecuteNonQuery(string query)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -49,5 +47,3 @@ namespace Badminton_Systems_Group3.Database
         }
     }
 }
-
-

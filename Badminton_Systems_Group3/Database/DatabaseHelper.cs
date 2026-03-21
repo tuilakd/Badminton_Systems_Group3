@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
+using System;
 using System.Data;
-using System.Text;
 using System.Data.SqlClient;
+
 namespace Badminton_Systems_Group3.Database
 {
-    internal class DatabaseHelper
+    public class DatabaseHelper
     {
-        private string connectionString =
-        "Data Source=.\\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
-        public DataTable GetData(string query)
+        // KIỂM TRA LẠI TÊN DATABASE TẠI ĐÂY (Initial Catalog)
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
+        public SqlConnection GetConnection()
+        {
+            return new SqlConnection(connectionString);
+        }
+        // Hàm thực thi SELECT trả về DataTable (Dùng cho hiển thị danh sách)
+        public DataTable ExecuteQuery(string query, SqlParameter[] parameters = null)
         {
             DataTable dt = new DataTable();
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -17,30 +22,77 @@ namespace Badminton_Systems_Group3.Database
                 try
                 {
                     conn.Open();
-                    SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
-                    adapter.Fill(dt);
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        if (parameters != null)
+                        {
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.AddRange(parameters);
+                        }
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            adapter.Fill(dt);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.MessageBox.Show("Lỗi kết nối CSDL: " + ex.Message);
+                    System.Windows.MessageBox.Show("Lỗi ExecuteQuery: " + ex.Message);
                 }
             }
             return dt;
         }
-        public bool ExecuteNonQuery(string query)
+
+        // Hàm thực thi trả về 1 giá trị duy nhất (Dùng cho SELECT COUNT để check trùng lịch)
+        public object ExecuteScalar(string query, SqlParameter[] parameters = null)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 try
                 {
                     conn.Open();
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    int rowsAffected = cmd.ExecuteNonQuery();
-                    return rowsAffected > 0;
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        if (parameters != null)
+                        {
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.AddRange(parameters);
+                        }
+                        return cmd.ExecuteScalar();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.MessageBox.Show("Lỗi thực thi lệnh: " + ex.Message);
+                    System.Windows.MessageBox.Show("Lỗi ExecuteScalar: " + ex.Message);
+                    return null;
+                }
+            }
+        }
+
+        // Hàm thực thi INSERT, UPDATE, DELETE (Dùng để lưu đặt sân)
+        public bool ExecuteNonQuery(string query, SqlParameter[] parameters)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        if (parameters != null)
+                        {
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.AddRange(parameters);
+                        }
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Nếu lỗi Invalid Column Name xuất hiện ở đây, nghĩa là query truyền vào sai tên cột
+                    System.Windows.MessageBox.Show("Lỗi thực thi lệnh SQL: " + ex.Message);
                     return false;
                 }
             }

@@ -114,17 +114,32 @@ namespace Badminton_Systems_Group3.GUI
 
         private void btnThanhToan_Click(object sender, RoutedEventArgs e)
         {
-            if (cart.Count == 0) { MessageBox.Show("Hóa đơn đang trống!"); return; }
+            if (cart.Count == 0) return;
 
-            foreach (var item in cart)
+            string maHD = "HD" + DateTime.Now.ToString("mmss");
+            decimal tongTien = cart.Sum(x => x.ThanhTien);
+
+            // 1. Lưu bảng cha và kiểm tra xem có thành công không
+            bool isFatherSaved = bus.CreateHoaDon(maHD, tongTien);
+
+            if (isFatherSaved)
             {
-                bus.UpdateInventory(item.MaSP, item.SoLuong);
+                // 2. Nếu cha đã lưu xong thì mới lưu con (chitiethoadon_sp)
+                foreach (var item in cart)
+                {
+                    bus.SaveBillDetail(maHD, item);
+                    bus.UpdateInventory(item.MaSP, item.SoLuong);
+                }
+                MessageBox.Show("Thanh toán & lưu hóa đơn thành công!");
+                cart.Clear();
+                UpdateTotal();
+                LoadProducts();
             }
-
-            MessageBox.Show("Thanh toán thành công và đã trừ tồn kho!");
-            cart.Clear();          
-            UpdateTotal();       
-            LoadProducts();       
+            else
+            {
+                // Nếu chui vào đây là do lệnh INSERT vào bảng 'hoadon' bị sai tên cột hoặc sai kiểu dữ liệu
+                MessageBox.Show("Lỗi: Không thể tạo hóa đơn tổng. Vui lòng kiểm tra tên cột trong bảng 'hoadon'!");
+            }
         }
 
         private void UpdateTotal()

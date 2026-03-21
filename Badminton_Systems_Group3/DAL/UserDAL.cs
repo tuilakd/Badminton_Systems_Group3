@@ -9,7 +9,6 @@ namespace Badminton_Systems_Group3.DAL
     internal class UserDAL
     {
         private string connectionString = "Data Source=DESKTOP-GL8IADV\\sqlexpress;Initial Catalog=master;Integrated Security=True;Encrypt=False";
-
         public bool CheckLogin(UserDTO user)
         {
             bool isValid = false;

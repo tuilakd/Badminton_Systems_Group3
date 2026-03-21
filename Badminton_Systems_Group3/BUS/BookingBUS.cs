@@ -106,6 +106,10 @@ namespace Badminton_Systems_Group3.BUS
                 return (false, "Lỗi hệ thống: " + ex.Message);
             }
         }
+        public DataTable LayLichDatSanFull()
+        {
+            return dal.GetAllBookingSchedule();
+        }
         // ================= KIỂM TRA SÂN =================
         public bool KiemTraSanDaDat(string maSan, DateTime ngay)
         {

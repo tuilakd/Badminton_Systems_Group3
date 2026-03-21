@@ -16,18 +16,18 @@ namespace Badminton_Systems_Group3.DAL
             List<CourtDTO> list = new List<CourtDTO>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                conn.Open();
-                // Đã sửa 'SanBai' thành 'san'
-                string query = "SELECT MaSan, TenSan, TrangThai, GiaThue FROM san";
+                string query = "SELECT * FROM San"; // Tên bảng của bạn có thể là 'San' hoặc 'Courts'
                 SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    list.Add(new CourtDTO()
+                    list.Add(new CourtDTO
                     {
-                        MaSan = reader["MaSan"].ToString(),
-                        TenSan = reader["TenSan"].ToString(),
-                        TrangThai = reader["TrangThai"].ToString(),
+                        MaSan = reader["MaSan"]?.ToString() ?? "",
+                        TenSan = reader["TenSan"]?.ToString() ?? "",
+                        TrangThai = reader["TrangThai"]?.ToString() ?? "Trống",
+
                         GiaThue = reader["GiaThue"] != DBNull.Value ? Convert.ToDouble(reader["GiaThue"]) : 0
                     });
                 }

@@ -92,12 +92,12 @@ namespace Badminton_Systems_Group3.DAL
 
                 return db.ExecuteNonQuery(query, parameters);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
         }
-        public DataRow GetThongTinKhachDatSanChuaThanhToan(string maSan, DateTime ngayDat)
+        public DataRow? GetThongTinKhachDatSanChuaThanhToan(string maSan, DateTime ngayDat)
         {
             string query = @"
         SELECT TOP 1 k.HoTen, k.SDT, d.MaDatSan, d.GioBD, d.GioKT, d.ThanhTien 
@@ -174,7 +174,7 @@ namespace Badminton_Systems_Group3.DAL
         }
 
         // ================= 6. LOAD THÔNG TIN =================
-        public DataRow GetThongTinKhachDatSan(string maSan, DateTime ngay, DateTime batDau, DateTime ketThuc)
+        public DataRow? GetThongTinKhachDatSan(string maSan, DateTime ngay, DateTime batDau, DateTime ketThuc)
         {
             string query = @"SELECT k.HoTen, k.SDT, d.MaDatSan, d.ThanhTien 
                              FROM datsan d 
@@ -195,22 +195,37 @@ namespace Badminton_Systems_Group3.DAL
 
             return dt.Rows.Count > 0 ? dt.Rows[0] : null;
         }
+        public DataTable GetAllBookingSchedule()
+        {
+            // Sử dụng db.ExecuteQuery để lấy DataTable mà không cần lo về connectionString
+            string query = @"SELECT d.MaDatSan, s.TenSan, d.TrangThai, kh.HoTen, kh.SDT, 
+                            d.NgayDat, d.GioBD, d.GioKT
+                     FROM datsan d
+                     JOIN san s ON d.MaSan = s.MaSan
+                     JOIN khachhang kh ON d.MaKH = kh.MaKH
+                     ORDER BY d.NgayDat DESC, d.GioBD ASC";
+
+            return db.ExecuteQuery(query);
+        }
 
         // ================= 7. THANH TOÁN (FIX CHUẨN) =================
         public bool ThanhToan(string maDatSan, string maKH, double tongTien)
         {
-            // 1. Tự tạo mã HD đúng định dạng HD + 4 số (ví dụ: HD0005)
+            // 1. Tự tạo mã HD đúng định dạng HD + 4 số
             string queryMax = "SELECT TOP 1 MaHD FROM hoadon ORDER BY MaHD DESC";
-            object result = db.ExecuteScalar(queryMax);
+            object resultObj = db.ExecuteScalar(queryMax);
             string maHDmoi = "HD0001";
 
-            if (result != null && result != DBNull.Value)
+            if (resultObj != null && resultObj != DBNull.Value)
             {
-                string currentMa = result.ToString();
-                if (currentMa.Length >= 6) // Đảm bảo chuỗi có dạng HDxxxx
+                string currentMa = resultObj.ToString();
+                // Kiểm tra độ dài để tránh lỗi Substring
+                if (currentMa.Length >= 6)
                 {
-                    int lastNum = int.Parse(currentMa.Substring(2));
-                    maHDmoi = "HD" + (lastNum + 1).ToString("D4");
+                    if (int.TryParse(currentMa.Substring(2), out int lastNum))
+                    {
+                        maHDmoi = "HD" + (lastNum + 1).ToString("D4");
+                    }
                 }
             }
 

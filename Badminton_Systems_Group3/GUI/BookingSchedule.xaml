@@ -100,7 +100,7 @@
             </Grid>
         </StackPanel>
 
-        <DataGrid Grid.Row="1" Margin="25,0,25,15" AutoGenerateColumns="False" CanUserAddRows="False" 
+        <DataGrid x:Name="dgLichDat" Grid.Row="1" Margin="25,0,25,15" AutoGenerateColumns="False" CanUserAddRows="False" 
                   Background="LightGray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="14">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">

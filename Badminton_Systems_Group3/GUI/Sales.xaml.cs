@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Badminton_Systems_Group3.BUS;
+using Badminton_Systems_Group3.DTO;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Badminton_Systems_Group3.BUS;
-using Badminton_Systems_Group3.DTO;
 
 namespace Badminton_Systems_Group3.GUI
 {
@@ -20,11 +21,19 @@ namespace Badminton_Systems_Group3.GUI
             LoadProducts();
             dgHoaDon.ItemsSource = cart;
         }
-
         private void LoadProducts()
         {
             var allProducts = bus.GetAllProducts();
             icProducts.ItemsSource = allProducts; // Hiện thẻ sản phẩm
+            if (allProducts != null)
+    {
+        itemSP0001.DataContext = allProducts.FirstOrDefault(x => x.MaSP == "SP0001");
+        itemSP0002.DataContext = allProducts.FirstOrDefault(x => x.MaSP == "SP0002");
+        itemSP0003.DataContext = allProducts.FirstOrDefault(x => x.MaSP == "SP0003");
+        itemSP0004.DataContext = allProducts.FirstOrDefault(x => x.MaSP == "SP0004");
+        itemSP0005.DataContext = allProducts.FirstOrDefault(x => x.MaSP == "SP0005");
+        itemSP0006.DataContext = allProducts.FirstOrDefault(x => x.MaSP == "SP0006");
+    }
         }
 
         // Xử lý nút gõ tay
@@ -131,6 +140,27 @@ namespace Badminton_Systems_Group3.GUI
         {
             decimal total = cart.Sum(x => x.ThanhTien);
             lblTong.Text = string.Format("{0:N0} VNĐ", total);
+        }
+
+        public class SanPham : INotifyPropertyChanged
+        {
+            public string MaSP { get; set; }
+            public string TenSP { get; set; }
+            public decimal DonGia { get; set; }
+
+            private int _soLuongTon;
+            public int SoLuongTon
+            {
+                get => _soLuongTon;
+                set
+                {
+                    _soLuongTon = value;
+                    OnPropertyChanged("SoLuongTon");
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         private void dgHoaDon_SelectionChanged(object sender, SelectionChangedEventArgs e)

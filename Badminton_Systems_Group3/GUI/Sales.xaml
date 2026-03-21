@@ -127,74 +127,74 @@
 
                     <UniformGrid Columns="2" VerticalAlignment="Top">
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0001" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/rvvang.png" Stretch="Uniform" Margin="0,5,0,5"/>
                                 </Border>
                                 <TextBlock Text="Revive vàng" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="12,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock x:Name="txtKho_SP0001" Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
                                 <Button x:Name="btnThem1" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0" Tag="SP0001" Click="btnThem_Static_Click"/>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0002" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/rvtrang.png" Stretch="Uniform" Margin="0,5,0,5" />
                                 </Border>
                                 <TextBlock Text="Revive trắng" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="12,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock x:Name="txtKho_SP0002" Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
                                 <Button x:Name="btnThem2" Click="btnThem_Static_Click" Tag="SP0002" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0003" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/lavie.png" Stretch="Uniform" Margin="0,5,0,5" />
                                 </Border>
                                 <TextBlock Text="Nước Lavie 500ml" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="10,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock x:Name="txtKho_SP0003" Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
                                 <Button x:Name="btnThem3" Click="btnThem_Static_Click" Tag="SP0003" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0004" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/quancan.png" Stretch="Uniform" Margin="0,5,0,5" />
                                 </Border>
                                 <TextBlock Text="Quấn cán HBT" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="15,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock x:Name="txtKho_SP0004" Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
                                 <Button x:Name="btnThem4" Click="btnThem_Static_Click" Tag="SP0004" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0005" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/cau1.png" Stretch="Uniform" Margin="0,5,0,5"/>
                                 </Border>
                                 <TextBlock Text="Cầu Thành công" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="330,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock x:Name="txtKho_SP0005" Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
                                 <Button x:Name="btnThem5" Click="btnThem_Static_Click" Tag="SP0005" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0006" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/cau2.png" Stretch="Uniform" Margin="0,5,0,5"/>
                                 </Border>
                                 <TextBlock Text="Cầu XSMash" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="330,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock x:Name="txtKho_SP0006" Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
                                 <Button x:Name="btnThem6" Click="btnThem_Static_Click" Tag="SP0006" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
                             </StackPanel>
                         </Border>

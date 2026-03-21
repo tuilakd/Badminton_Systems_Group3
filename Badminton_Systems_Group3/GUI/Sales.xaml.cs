@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-
 namespace Badminton_Systems_Group3.GUI
 {
     public partial class Sales : Window

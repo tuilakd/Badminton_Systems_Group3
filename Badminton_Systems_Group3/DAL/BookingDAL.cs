@@ -62,29 +62,38 @@ namespace Badminton_Systems_Group3.DAL
         {
             try
             {
-                // Tính tiền trước khi lưu
-                booking.TinhThanhTien();
+                // 1. LẤY GIÁ THUÊ THỰC TẾ TỪ BẢNG 'san'
+                string sqlGetGia = "SELECT GiaThue FROM san WHERE MaSan = @maSan";
+                SqlParameter[] pGetGia = { new SqlParameter("@maSan", booking.MaSan) };
+                object giaGoc = db.ExecuteScalar(sqlGetGia, pGetGia);
 
+                // Gán giá lấy được vào DTO để tính tiền
+                booking.GiaThue = giaGoc != DBNull.Value ? Convert.ToDecimal(giaGoc) : 0;
+                booking.TinhThanhTien(); // Tính dựa trên giá vừa lấy
+
+                // 2. LƯU VÀO BẢNG 'datsan'
                 string query = @"INSERT INTO datsan 
-                        (MaDatSan, NgayDat, GioBD, GioKT, TrangThai, MaKH, MaSan, ThanhTien) 
-                        VALUES (@mads, @ngay, @giobd, @giokt, @tt, @makh, @masan, @thanhtien)";
+                (MaDatSan, NgayDat, GioBD, GioKT, TrangThai, MaKH, MaSan, GiaThue, ThanhTien) 
+                VALUES (@mads, @ngay, @giobd, @giokt, @tt, @makh, @masan, @giathue, @thanhtien)";
 
                 SqlParameter[] parameters = {
-            new SqlParameter("@mads", booking.MaDatSan),
-            new SqlParameter("@ngay", booking.NgayDat.Date),
-            new SqlParameter("@giobd", SqlDbType.Time) { Value = booking.GioBatDau },
-            new SqlParameter("@giokt", SqlDbType.Time) { Value = booking.GioKetThuc },
-            new SqlParameter("@tt", booking.TrangThai),
-            new SqlParameter("@makh", booking.MaKH),
-            new SqlParameter("@masan", booking.MaSan),
-            new SqlParameter("@thanhtien", booking.ThanhTien)
-        };
+                new SqlParameter("@mads", booking.MaDatSan),
+                new SqlParameter("@ngay", booking.NgayDat.Date),
+                // Đối với kiểu Time, bạn cần chỉ rõ SqlDbType như thế này:
+                new SqlParameter("@giobd", SqlDbType.Time) { Value = booking.GioBatDau },
+                new SqlParameter("@giokt", SqlDbType.Time) { Value = booking.GioKetThuc },
+                // Đối với chuỗi N'Đã đặt', dùng cú pháp đơn giản nhất:
+                new SqlParameter("@tt", booking.TrangThai ?? "Đã đặt"),
+                new SqlParameter("@makh", booking.MaKH),
+                new SqlParameter("@masan", booking.MaSan),
+                new SqlParameter("@giathue", booking.GiaThue),
+                new SqlParameter("@thanhtien", booking.ThanhTien)
+            };
 
                 return db.ExecuteNonQuery(query, parameters);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Lỗi InsertBooking: " + ex.Message);
                 return false;
             }
         }
@@ -156,7 +165,7 @@ namespace Badminton_Systems_Group3.DAL
             }
 
             // Tách phần số ra khỏi chuỗi "HDxxxx"
-            string currentMa = result.ToString(); // Ví dụ: "HD0005"
+            string currentMa = result?.ToString() ?? "HD0000";
             int currentNumber = int.Parse(currentMa.Substring(2));
             int nextNumber = currentNumber + 1;
 
@@ -193,46 +202,71 @@ namespace Badminton_Systems_Group3.DAL
             // 1. Tự tạo mã HD đúng định dạng HD + 4 số (ví dụ: HD0005)
             string queryMax = "SELECT TOP 1 MaHD FROM hoadon ORDER BY MaHD DESC";
             object result = db.ExecuteScalar(queryMax);
-            string maHDmoi = "HD0001"; // Mặc định nếu chưa có HD nào
+            string maHDmoi = "HD0001";
 
             if (result != null && result != DBNull.Value)
             {
-                int lastNum = int.Parse(result.ToString().Substring(2));
-                maHDmoi = "HD" + (lastNum + 1).ToString("D4");
+                string currentMa = result.ToString();
+                if (currentMa.Length >= 6) // Đảm bảo chuỗi có dạng HDxxxx
+                {
+                    int lastNum = int.Parse(currentMa.Substring(2));
+                    maHDmoi = "HD" + (lastNum + 1).ToString("D4");
+                }
             }
 
             using (SqlConnection conn = db.GetConnection())
             {
                 if (conn.State == ConnectionState.Closed) conn.Open();
                 SqlTransaction tran = conn.BeginTransaction();
+
                 try
                 {
-                    // UPDATE trạng thái đặt sân
+                    // 1. Cập nhật trạng thái datsan thành 'Đã thanh toán'
                     SqlCommand updateCmd = new SqlCommand(
                         "UPDATE datsan SET TrangThai = N'Đã thanh toán' WHERE MaDatSan = @ma", conn, tran);
                     updateCmd.Parameters.AddWithValue("@ma", maDatSan);
                     updateCmd.ExecuteNonQuery();
 
-                    // INSERT hóa đơn với mã mới tự tạo
-                    SqlCommand insertCmd = new SqlCommand(
+                    // 2. Chèn Hóa đơn tổng vào bảng hoadon
+                    SqlCommand insertHDCmd = new SqlCommand(
                         @"INSERT INTO hoadon (MaHD, MaKH, NgayLapHD, TongTien) 
                   VALUES (@hd, @kh, @ngay, @tien)", conn, tran);
-                    insertCmd.Parameters.AddWithValue("@hd", maHDmoi);
-                    insertCmd.Parameters.AddWithValue("@kh", maKH);
-                    insertCmd.Parameters.AddWithValue("@ngay", DateTime.Now);
-                    insertCmd.Parameters.AddWithValue("@tien", tongTien);
-                    insertCmd.ExecuteNonQuery();
+                    insertHDCmd.Parameters.AddWithValue("@hd", maHDmoi);
+                    insertHDCmd.Parameters.AddWithValue("@kh", maKH);
+                    insertHDCmd.Parameters.AddWithValue("@ngay", DateTime.Now);
+                    insertHDCmd.Parameters.AddWithValue("@tien", tongTien);
+                    insertHDCmd.ExecuteNonQuery();
 
+                    // 3. Chèn Chi tiết hóa đơn sân (Lưu vết giá thuê thực tế từ bảng san)
+                    SqlCommand detailCmd = new SqlCommand(
+                        @"INSERT INTO chitiethoadon_san (MaHD, MaDatSan, GiaThue, ThanhTien)
+                  SELECT @hd, MaDatSan, 
+                         (SELECT GiaThue FROM san WHERE san.MaSan = datsan.MaSan), 
+                         ThanhTien
+                  FROM datsan WHERE MaDatSan = @maDS", conn, tran);
+                    detailCmd.Parameters.AddWithValue("@hd", maHDmoi);
+                    detailCmd.Parameters.AddWithValue("@maDS", maDatSan);
+                    detailCmd.ExecuteNonQuery();
+
+                    // 4. Giải phóng sân: Cập nhật trạng thái sân trong bảng 'san' về 'Trống'
+                    SqlCommand updateSan = new SqlCommand(
+                        @"UPDATE san SET TrangThai = N'Trống' 
+                  WHERE MaSan = (SELECT MaSan FROM datsan WHERE MaDatSan = @maDS)", conn, tran);
+                    updateSan.Parameters.AddWithValue("@maDS", maDatSan);
+                    updateSan.ExecuteNonQuery();
+
+                    // Xác nhận hoàn tất giao dịch
                     tran.Commit();
                     return true;
                 }
                 catch (Exception ex)
                 {
+                    // Nếu có lỗi, hoàn tác toàn bộ các bước trên
                     tran.Rollback();
-                    System.Diagnostics.Debug.WriteLine("Lỗi: " + ex.Message);
+                    System.Diagnostics.Debug.WriteLine("Lỗi trong quá trình thanh toán: " + ex.Message);
                     return false;
                 }
-            }
+            } // Kết thúc using sẽ tự động đóng kết nối
         }
     }
 }

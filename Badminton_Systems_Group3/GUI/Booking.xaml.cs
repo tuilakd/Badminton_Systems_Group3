@@ -130,8 +130,11 @@ namespace Badminton_Systems_Group3.GUI
         }
 
         // ================= TÍNH TIỀN =================
+        // Sửa lại hàm CapNhatTien()
         private void CapNhatTien()
         {
+            if (string.IsNullOrEmpty(maSanDangChon)) return;
+
             if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
             {
                 lblTongGio.Text = "0 giờ";
@@ -139,46 +142,77 @@ namespace Badminton_Systems_Group3.GUI
                 return;
             }
 
+            // LẤY GIÁ TỪ QUẢN LÝ SÂN
+            CourtDAL courtDAL = new CourtDAL();
+            var court = courtDAL.GetByMaSan(maSanDangChon);
+            decimal giaThue = court != null ? (decimal)court.GiaThue : 0;
+
             double gio = (gioKT - gioBD).TotalHours;
             lblTongGio.Text = $"{gio} giờ";
 
-            decimal tien = (decimal)gio * 120000;
+            decimal tien = (decimal)gio * giaThue; // Dùng giá từ DB thay vì 120000
             lblTamTinh.Text = string.Format("{0:N0} VNĐ", tien);
         }
 
-        // ================= ĐẶT SÂN =================
+        // Sửa lại hàm DatSan() để gán giá thuê thật trước khi lưu
         private void DatSan()
         {
+            // 1. Kiểm tra đầu vào cơ bản
             if (dpNgayDat.SelectedDate == null || string.IsNullOrEmpty(maSanDangChon))
             {
-                MessageBox.Show("Chọn sân và ngày trước!");
+                MessageBox.Show("Vui lòng chọn ngày và sân trước khi đặt!");
                 return;
             }
 
             if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
             {
-                MessageBox.Show("Chọn giờ hợp lệ!");
+                MessageBox.Show("Khung giờ chọn không hợp lệ!");
                 return;
             }
 
+            // 2. Lấy thông tin sân từ database để lấy GIÁ THUÊ thực tế
+            CourtDAL courtDAL = new CourtDAL();
+            var court = courtDAL.GetByMaSan(maSanDangChon);
+
+            if (court == null)
+            {
+                MessageBox.Show("Không tìm thấy thông tin sân trong hệ thống!");
+                return;
+            }
+
+            // 3. Khởi tạo đối tượng DTO và gán dữ liệu
             BookingDTO booking = new BookingDTO
             {
                 MaSan = maSanDangChon,
-                TenKhachHang = txtTenKH.Text,
-                SDT = txtSDT.Text,
+                TenKhachHang = txtTenKH.Text.Trim(),
+                SDT = txtSDT.Text.Trim(),
                 NgayDat = dpNgayDat.SelectedDate.Value,
                 GioBatDau = gioBD,
-                GioKetThuc = gioKT
+                GioKetThuc = gioKT,
+                // Ép kiểu an toàn từ database, nếu null thì mặc định là 0
+                GiaThue = court.GiaThue != null ? Convert.ToDecimal(court.GiaThue) : 0
             };
 
-            var result = bus.ThucHienDatSan(booking);
-            MessageBox.Show(result.message);
+            // 4. Tính toán thành tiền dựa trên số giờ và giá thuê
+            booking.TinhThanhTien();
 
+            // 5. Gọi lớp BUS để xử lý nghiệp vụ (Kiểm tra trùng lịch, Lưu khách hàng, Lưu đơn đặt)
+            var result = bus.ThucHienDatSan(booking);
+
+            // 6. Xử lý sau khi đặt thành công
             if (result.success)
             {
+                // Cập nhật trạng thái sân sang "Đã đặt" để hiển thị màu Đỏ trên giao diện
+                court.TrangThai = "Đã đặt";
+                courtDAL.Update(court);
+
+                // Làm mới form và tải lại danh sách sân để cập nhật màu sắc UI
                 ResetForm();
                 LocSan();
             }
+
+            // Hiển thị thông báo cho người dùng (Thành công hoặc lỗi từ BUS)
+            MessageBox.Show(result.message);
         }
 
         // ================= NÚT XÁC NHẬN =================

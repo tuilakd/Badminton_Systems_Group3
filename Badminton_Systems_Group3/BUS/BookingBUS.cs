@@ -74,30 +74,35 @@ namespace Badminton_Systems_Group3.BUS
         // ================= THANH TOÁN =================
         public (bool success, string message) ThanhToan(string maDatSan, string sdt, decimal tongTien)
         {
+            // 1. Kiểm tra đầu vào cơ bản
             if (string.IsNullOrEmpty(maDatSan))
                 return (false, "Chưa chọn dữ liệu thanh toán!");
 
             if (string.IsNullOrWhiteSpace(sdt))
-                return (false, "Thiếu số điện thoại!");
+                return (false, "Thiếu số điện thoại khách hàng!");
 
             if (tongTien <= 0)
-                return (false, "Số tiền không hợp lệ!");
+                return (false, "Số tiền thanh toán không hợp lệ!");
 
             try
             {
-                // Mã khách và mã hóa đơn
-                string maKH = "KH" + sdt.Trim();
-                string maHD = "HD" + DateTime.Now.ToString("ddHHmmss");
+                // 2. Chuẩn hóa mã khách hàng từ số điện thoại
+                string maKH = "KH" + sdt.Trim().Replace(" ", "");
 
-                // Gọi DAL (4 tham số)
+                // 3. Gọi DAL để thực hiện Transaction (bao gồm: Tạo mã HD tự tăng, 
+                //    Lưu hóa đơn, Lưu chi tiết, Cập nhật trạng thái datsan và san)
+                // LƯU Ý: Không tạo mã HD tại đây vì DAL đã có logic tự tăng HD0001, HD0002...
                 bool ok = dal.ThanhToan(maDatSan, maKH, (double)tongTien);
-                if (!ok)
-                    return (false, "Thanh toán thất bại!");
 
-                return (true, "Thanh toán thành công!");
+                if (!ok)
+                    return (false, "Quá trình thanh toán thất bại tại hệ thống dữ liệu!");
+
+                return (true, "Thanh toán thành công và hóa đơn đã được lưu!");
             }
             catch (Exception ex)
             {
+                // Ghi log lỗi để kiểm tra sau này
+                System.Diagnostics.Debug.WriteLine("Lỗi BUS ThanhToan: " + ex.Message);
                 return (false, "Lỗi hệ thống: " + ex.Message);
             }
         }

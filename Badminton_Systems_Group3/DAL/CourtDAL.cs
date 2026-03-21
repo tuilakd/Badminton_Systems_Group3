@@ -1,14 +1,15 @@
 ﻿using Badminton_Systems_Group3.DTO;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Text;
+ 
 
 namespace Badminton_Systems_Group3.DAL
 {
     internal class CourtDAL
     {
-        private string connectionString = "Data Source=desktop-3453jgg\\sqlexpress;Initial Catalog=QL_SanCL;Integrated Security=True;Encrypt=False";
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QuanLySanCau;Integrated Security=True;TrustServerCertificate=True";
 
         public List<CourtDTO> GetAll()
         {
@@ -27,11 +28,33 @@ namespace Badminton_Systems_Group3.DAL
                         MaSan = reader["MaSan"].ToString(),
                         TenSan = reader["TenSan"].ToString(),
                         TrangThai = reader["TrangThai"].ToString(),
-                        GiaThue = Convert.ToDouble(reader["GiaThue"])
+                        GiaThue = reader["GiaThue"] != DBNull.Value ? Convert.ToDouble(reader["GiaThue"]) : 0
                     });
                 }
             }
             return list;
+        }
+        public CourtDTO GetByMaSan(string maSan)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT MaSan, TenSan, TrangThai, GiaThue FROM san WHERE MaSan = @MaSan";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@MaSan", maSan);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    return new CourtDTO()
+                    {
+                        MaSan = reader["MaSan"].ToString(),
+                        TenSan = reader["TenSan"].ToString(),
+                        TrangThai = reader["TrangThai"].ToString(),
+                        GiaThue = reader["GiaThue"] != DBNull.Value ? Convert.ToDouble(reader["GiaThue"]) : 0
+                    };
+                }
+            }
+            return null;
         }
 
         public bool Insert(CourtDTO sb)

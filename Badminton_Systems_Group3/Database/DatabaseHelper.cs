@@ -8,7 +8,10 @@ namespace Badminton_Systems_Group3.Database
     {
         // KIỂM TRA LẠI TÊN DATABASE TẠI ĐÂY (Initial Catalog)
         private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QuanLySanCau;Integrated Security=True;TrustServerCertificate=True";
-
+        public SqlConnection GetConnection()
+        {
+            return new SqlConnection(connectionString);
+        }
         // Hàm thực thi SELECT trả về DataTable (Dùng cho hiển thị danh sách)
         public DataTable ExecuteQuery(string query, SqlParameter[] parameters = null)
         {

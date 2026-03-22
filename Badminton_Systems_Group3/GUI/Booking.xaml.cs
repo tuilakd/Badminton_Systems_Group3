@@ -32,30 +32,62 @@ namespace Badminton_Systems_Group3.GUI
             DisableForm();
         }
 
+        // ================= UI =================
         private void UpdateUI(string maSan, bool isBusy)
         {
             var txt = FindName("txtStatus_" + maSan) as TextBlock;
             var btn = FindName("btn_" + maSan) as Button;
 
-            if (txt != null)
-            {
-                txt.Text = isBusy ? "ĐÃ ĐẶT" : "TRỐNG";
-                txt.Foreground = isBusy ? Brushes.Red : Brushes.Green;
-            }
+            if (txt == null || btn == null) return;
 
-            if (btn != null)
+            // Reset mặc định trước khi check
+            btn.IsEnabled = true;
+
+            if (status == "Bảo trì")
             {
-                btn.Content = isBusy ? "THANH TOÁN" : "Đặt sân";
-                btn.Background = isBusy ? Brushes.Red : Brushes.Green;
+                txt.Text = "BẢO TRÌ";
+                txt.Foreground = Brushes.Orange; // Chữ màu vàng cam cho dễ nhìn
+
+                btn.Content = "Bảo trì";
+                btn.Background = Brushes.Yellow; // Nút màu vàng
+                btn.Foreground = Brushes.Black;  // Chữ đen trên nền vàng
+                btn.IsEnabled = false;           // Khóa nút không cho bấm
+            }
+            else if (status == "Đã đặt")
+            {
+                txt.Text = "ĐÃ ĐẶT";
+                txt.Foreground = Brushes.Red;
+
+                btn.Content = "THANH TOÁN";
+                btn.Background = Brushes.Red;
+                btn.Foreground = Brushes.White;
+            }
+            else // Trạng thái TRỐNG
+            {
+                txt.Text = "TRỐNG";
+                txt.Foreground = Brushes.Green;
+
+                btn.Content = "Đặt sân";
+                btn.Background = Brushes.Green;
+                btn.Foreground = Brushes.White;
             }
         }
 
         private void LoadSanMacDinh()
         {
+            CourtDAL courtDAL = new CourtDAL();
+            var allCourts = courtDAL.GetAll();
+
             foreach (var ma in dsSan)
-                UpdateUI(ma, false);
+            {
+                var court = allCourts.FirstOrDefault(c => c.MaSan == ma);
+                // Nếu sân đang bảo trì thì truyền "Bảo trì", ngược lại là "Trống"
+                string status = (court != null && court.TrangThai == "Bảo trì") ? "Bảo trì" : "Trống";
+                UpdateUI(ma, status);
+            }
         }
 
+        // ================= LỌC SÂN =================
         private void LocSan()
         {
             if (dpNgayDat.SelectedDate == null) return;
@@ -66,11 +98,30 @@ namespace Badminton_Systems_Group3.GUI
                 return;
             }
 
+            // 1. Lấy danh sách các sân đã có người đặt trong khung giờ này
             DataTable dt = bus.GetSanDaDat(dpNgayDat.SelectedDate.Value, gioBD, gioKT);
-            var busy = dt.AsEnumerable().Select(r => r["MaSan"]?.ToString() ?? "").ToList();
+            var busyList = dt.AsEnumerable().Select(r => r["MaSan"]?.ToString() ?? "").ToList();
+
+            // 2. Lấy toàn bộ thông tin sân để check trạng thái "Bảo trì"
+            CourtDAL courtDAL = new CourtDAL();
+            var allCourts = courtDAL.GetAll(); // Giả sử bạn có hàm GetAll trả về List<CourtDTO>
 
             foreach (var ma in dsSan)
-                UpdateUI(ma, busy.Contains(ma));
+            {
+                var court = allCourts.FirstOrDefault(c => c.MaSan == ma);
+                string currentStatus = "Trống";
+
+                if (court != null && court.TrangThai == "Bảo trì")
+                {
+                    currentStatus = "Bảo trì";
+                }
+                else if (busyList.Contains(ma))
+                {
+                    currentStatus = "Đã đặt";
+                }
+
+                UpdateUI(ma, currentStatus);
+            }
         }
 
         private void SB0001_Click(object sender, RoutedEventArgs e)
@@ -125,8 +176,13 @@ namespace Badminton_Systems_Group3.GUI
             DisableForm();
         }
 
+        // ================= TÍNH TIỀN =================
         private void CapNhatTien()
         {
+            // 1. Kiểm tra mã sân có đang được chọn hay không
+            if (string.IsNullOrEmpty(maSanDangChon)) return;
+
+            // 2. Lấy thời gian từ ComboBox, nếu không hợp lệ thì reset nhãn hiển thị
             if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
             {
                 lblTongGio.Text = "0 giờ";
@@ -134,45 +190,90 @@ namespace Badminton_Systems_Group3.GUI
                 return;
             }
 
-            double gio = (gioKT - gioBD).TotalHours;
-            lblTongGio.Text = $"{gio} giờ";
+            // 3. Lấy thông tin sân từ Database để lấy giá thuê thực tế
+            CourtDAL courtDAL = new CourtDAL();
+            var court = courtDAL.GetByMaSan(maSanDangChon);
 
-            decimal tien = (decimal)gio * 120000;
-            lblTamTinh.Text = string.Format("{0:N0} VNĐ", tien);
+            // 4. Xử lý ép kiểu an toàn: Chuyển từ double sang decimal để tính tiền chính xác
+            // Sử dụng Convert.ToDecimal để tránh lỗi InvalidCastException nếu dữ liệu không khớp
+            decimal giaThue = 0;
+            if (court != null)
+            {
+                giaThue = Convert.ToDecimal(court.GiaThue);
+            }
+
+            // 5. Tính toán số giờ và tổng tiền
+            double tongSoGio = (gioKT - gioBD).TotalHours;
+
+            // Đảm bảo số giờ không âm (phòng trường hợp logic TryGetTime bị sót)
+            if (tongSoGio < 0) tongSoGio = 0;
+
+            decimal tongTien = (decimal)tongSoGio * giaThue;
+
+            // 6. Cập nhật giao diện (UI)
+            lblTongGio.Text = $"{tongSoGio} giờ";
+            lblTamTinh.Text = string.Format("{0:N0} VNĐ", tongTien);
         }
 
+        // ================= ĐẶT SÂN =================
         private void DatSan()
         {
+            // 1. Kiểm tra đầu vào cơ bản
             if (dpNgayDat.SelectedDate == null || string.IsNullOrEmpty(maSanDangChon))
             {
-                MessageBox.Show("Chọn sân và ngày trước!");
+                MessageBox.Show("Vui lòng chọn ngày và sân trước khi đặt!");
                 return;
             }
 
             if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
             {
-                MessageBox.Show("Chọn giờ hợp lệ!");
+                MessageBox.Show("Khung giờ chọn không hợp lệ!");
                 return;
             }
 
+            // 2. Lấy thông tin sân từ database để lấy GIÁ THUÊ thực tế
+            CourtDAL courtDAL = new CourtDAL();
+            var court = courtDAL.GetByMaSan(maSanDangChon);
+
+            if (court == null)
+            {
+                MessageBox.Show("Không tìm thấy thông tin sân trong hệ thống!");
+                return;
+            }
+
+            // 3. Khởi tạo đối tượng DTO và gán dữ liệu
             BookingDTO booking = new BookingDTO
             {
                 MaSan = maSanDangChon,
-                TenKhachHang = txtTenKH.Text,
-                SDT = txtSDT.Text,
+                TenKhachHang = txtTenKH.Text.Trim(),
+                SDT = txtSDT.Text.Trim(),
                 NgayDat = dpNgayDat.SelectedDate.Value,
                 GioBatDau = gioBD,
-                GioKetThuc = gioKT
+                GioKetThuc = gioKT,
+                // Ép kiểu an toàn từ database, nếu null thì mặc định là 0
+                GiaThue = court.GiaThue != null ? Convert.ToDecimal(court.GiaThue) : 0
             };
 
-            var result = bus.ThucHienDatSan(booking);
-            MessageBox.Show(result.message);
+            // 4. Tính toán thành tiền dựa trên số giờ và giá thuê
+            booking.TinhThanhTien();
 
+            // 5. Gọi lớp BUS để xử lý nghiệp vụ (Kiểm tra trùng lịch, Lưu khách hàng, Lưu đơn đặt)
+            var result = bus.ThucHienDatSan(booking);
+
+            // 6. Xử lý sau khi đặt thành công
             if (result.success)
             {
+                // Cập nhật trạng thái sân sang "Đã đặt" để hiển thị màu Đỏ trên giao diện
+                court.TrangThai = "Đã đặt";
+                courtDAL.Update(court);
+
+                // Làm mới form và tải lại danh sách sân để cập nhật màu sắc UI
                 ResetForm();
                 LocSan();
             }
+
+            // Hiển thị thông báo cho người dùng (Thành công hoặc lỗi từ BUS)
+            MessageBox.Show(result.message);
         }
 
         private void btnXacNhan_Click(object sender, RoutedEventArgs e)
@@ -188,19 +289,16 @@ namespace Badminton_Systems_Group3.GUI
             if (content == "THANH TOÁN")
             {
                 var drTemp = dal.GetThongTinKhachDatSanChuaThanhToan(maSanDangChon, dpNgayDat.SelectedDate ?? DateTime.Today);
-                if (drTemp == null)
-                {
-                    MessageBox.Show("Không tìm thấy booking chưa thanh toán!");
-                    return;
-                }
+                if (drTemp == null) return;
 
-                maDatSanDangChon = drTemp["MaDatSan"].ToString();
-                string sdt = drTemp["SDT"].ToString();
-                decimal thanhTien = Convert.ToDecimal(drTemp["ThanhTien"]);
+                string maDS = drTemp["MaDatSan"]?.ToString() ?? "";
+                string sdtKhach = drTemp["SDT"]?.ToString() ?? "";
+                decimal tien = Convert.ToDecimal(drTemp["ThanhTien"]);
 
-                var result = bus.ThanhToan(maDatSanDangChon, sdt, thanhTien);
+                // Gọi hàm BUS (đảm bảo hàm này trong BUS nhận: string, string, decimal)
+                var result = bus.ThanhToan(maDS, sdtKhach, tien);
+
                 MessageBox.Show(result.message);
-
                 if (result.success)
                 {
                     ResetForm();

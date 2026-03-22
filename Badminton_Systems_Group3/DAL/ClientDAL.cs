@@ -1,19 +1,19 @@
 ﻿using Badminton_Systems_Group3.DTO;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Windows;
 
 namespace Badminton_Systems_Group3.DAL
 {
     public class ClientDAL
     {
-        string connStr = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True";
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QuanLySanCau;Integrated Security=True;TrustServerCertificate=True";
         public List<ClientDTO> GetAll()
         {
             List<ClientDTO> list = new List<ClientDTO>();
 
-            using (SqlConnection conn = new SqlConnection(connStr))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 string query = @"
             SELECT kh.MaKH, kh.HoTen, kh.SDT,
@@ -42,7 +42,7 @@ namespace Badminton_Systems_Group3.DAL
         }
         public void Insert(ClientDTO kh)
         {
-            using (SqlConnection conn = new SqlConnection(connStr))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 string query = "INSERT INTO khachhang (MaKH, HoTen, SDT) VALUES (@MaKH, @HoTen, @SDT)";
                 SqlCommand cmd = new SqlCommand(query, conn);
@@ -60,7 +60,7 @@ namespace Badminton_Systems_Group3.DAL
         }
         public void Delete(string maKH)
         {
-            using (SqlConnection conn = new SqlConnection(connStr))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
 
@@ -80,7 +80,7 @@ namespace Badminton_Systems_Group3.DAL
 
         public void Update(ClientDTO kh)
         {
-            using (SqlConnection conn = new SqlConnection(connStr))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 string query = @"UPDATE khachhang 
                          SET HoTen=@HoTen, SDT=@SDT
@@ -99,7 +99,8 @@ namespace Badminton_Systems_Group3.DAL
         public List<ClientDTO> Search(string keyword)
         {
             List<ClientDTO> list = new List<ClientDTO>();
-            using (SqlConnection conn = new SqlConnection(connStr))
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 // Chỉ để lại điều kiện lọc theo MaKH
                 string query = @"
@@ -131,7 +132,7 @@ namespace Badminton_Systems_Group3.DAL
         }
         public bool CheckExist(string maKH)
         {
-            using (SqlConnection conn = new SqlConnection(connStr))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 string query = "SELECT COUNT(*) FROM khachhang WHERE MaKH = @MaKH";
                 SqlCommand cmd = new SqlCommand(query, conn);

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient; 
-using Badminton_Systems_Group3.DTO;
-using Badminton_Systems_Group3.Database;
+using System.Text;
 
 namespace Badminton_Systems_Group3.DAL
 {

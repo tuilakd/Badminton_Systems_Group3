@@ -65,31 +65,76 @@ namespace Badminton_Systems_Group3.BUS
 
         public (bool success, string message) ThanhToan(string maDatSan, string sdt, decimal tongTien)
         {
+            // 1. Kiểm tra đầu vào cơ bản
             if (string.IsNullOrEmpty(maDatSan))
                 return (false, "Chưa chọn dữ liệu thanh toán!");
 
             if (string.IsNullOrWhiteSpace(sdt))
-                return (false, "Thiếu số điện thoại!");
+                return (false, "Thiếu số điện thoại khách hàng!");
 
             if (tongTien <= 0)
-                return (false, "Số tiền không hợp lệ!");
+                return (false, "Số tiền thanh toán không hợp lệ!");
 
             try
             {
-                string maKH = "KH" + sdt.Trim();
-                string maHD = "HD" + DateTime.Now.ToString("ddHHmmss");
+                // 2. Chuẩn hóa mã khách hàng từ số điện thoại
+                string maKH = "KH" + sdt.Trim().Replace(" ", "");
 
+                // 3. Gọi DAL để thực hiện Transaction (bao gồm: Tạo mã HD tự tăng, 
+                //    Lưu hóa đơn, Lưu chi tiết, Cập nhật trạng thái datsan và san)
+                // LƯU Ý: Không tạo mã HD tại đây vì DAL đã có logic tự tăng HD0001, HD0002...
                 bool ok = dal.ThanhToan(maDatSan, maKH, (double)tongTien);
-                if (!ok)
-                    return (false, "Thanh toán thất bại!");
 
-                return (true, "Thanh toán thành công!");
+                if (!ok)
+                    return (false, "Quá trình thanh toán thất bại tại hệ thống dữ liệu!");
+
+                return (true, "Thanh toán thành công và hóa đơn đã được lưu!");
             }
             catch (Exception ex)
             {
+                // Ghi log lỗi để kiểm tra sau này
+                System.Diagnostics.Debug.WriteLine("Lỗi BUS ThanhToan: " + ex.Message);
                 return (false, "Lỗi hệ thống: " + ex.Message);
             }
         }
+        public (bool success, string message) HuyLich(string maDatSan)
+        {
+            if (string.IsNullOrEmpty(maDatSan))
+                return (false, "Chưa chọn lịch!");
+
+            bool ok = dal.HuyLich(maDatSan);
+
+            return ok
+                ? (true, "Hủy lịch thành công!")
+                : (false, "Hủy lịch thất bại!");
+        }
+        public (bool success, string message) UpdateBooking(string maDatSan, DateTime ngay, TimeSpan bd, TimeSpan kt, string maSan)
+        {
+            if (kt <= bd)
+                return (false, "Giờ không hợp lệ!");
+
+            BookingDTO temp = new BookingDTO
+            {
+                MaSan = maSan,
+                NgayDat = ngay,
+                GioBatDau = bd,
+                GioKetThuc = kt
+            };
+
+            if (dal.KiemTraTrungGioUpdate(temp, maDatSan))
+                return (false, "Trùng giờ!");
+
+            bool ok = dal.UpdateBooking(maDatSan, ngay, bd, kt);
+
+            return ok
+                ? (true, "Sửa thành công!")
+                : (false, "Sửa thất bại!");
+        }
+        public DataTable LayLichDatSanFull()
+        {
+            return dal.GetAllBookingSchedule();
+        }
+        // ================= KIỂM TRA SÂN =================
         public bool KiemTraSanDaDat(string maSan, DateTime ngay)
         {
             var dt = dal.GetThongTinKhachDatSanChuaThanhToan(maSan, ngay);
@@ -99,6 +144,10 @@ namespace Badminton_Systems_Group3.BUS
         {
             var duration = end - start;
             return duration.TotalHours > 0 ? (decimal)duration.TotalHours * giaMoiGio : 0;
+        }
+        public DataTable SearchBooking(string trangThai, string keyword, DateTime? ngay)
+        {
+            return dal.SearchBooking(trangThai, keyword, ngay);
         }
     }
 }

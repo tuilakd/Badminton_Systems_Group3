@@ -4,10 +4,15 @@ using System.Data.SqlClient;
 
 namespace Badminton_Systems_Group3.Database
 {
-    public class DatabaseHelper
+    internal class DatabaseHelper
     {
-        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
-
+<<<<<<<<< Temporary merge branch 1
+        private string connectionString =
+        "Data Source=.\\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
+        public DataTable GetData(string query)
+=========
+        // KIỂM TRA LẠI TÊN DATABASE TẠI ĐÂY (Initial Catalog)
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QuanLySanCau;Integrated Security=True;TrustServerCertificate=True";
         public SqlConnection GetConnection()
         {
             return new SqlConnection(connectionString);

@@ -1,7 +1,7 @@
 ﻿using Badminton_Systems_Group3.DTO;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Text;
 
 namespace Badminton_Systems_Group3.DAL

@@ -77,31 +77,47 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" Text="Trạng thái:" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <ComboBox Grid.Column="1" Height="35" VerticalContentAlignment="Center" FontSize="16"/>
-                <TextBox Grid.Column="2" Height="35" Margin="15,0,0,0" VerticalContentAlignment="Center" FontSize="16"/>
+                <ComboBox x:Name="cbTrangThai" Grid.Column="1" Height="35"
+                          VerticalContentAlignment="Center" FontSize="16"
+                          SelectedIndex="0">
+                    <ComboBoxItem Content="Tất cả"/>
+                    <ComboBoxItem Content="Đã đặt"/>
+                    <ComboBoxItem Content="Đã thanh toán"/>
+                </ComboBox>
+                <TextBox x:Name="txtTen" Grid.Column="2" Height="35" Margin="15,0,0,0" VerticalContentAlignment="Center" FontSize="16"/>
 
-                <Button Grid.Column="3" Width="45" Height="35" Margin="8,0,0,0" Background="#E0E0E0">
+                <Button x:Name="btnSearch" Grid.Column="3" Width="45" Height="35" Margin="8,0,0,0" Background="#E0E0E0" Click="BtnSearch_Click">
                     <TextBlock Text="🔍" FontSize="18" VerticalAlignment="Center"/>
                 </Button>
 
-                <Button x:Name="btnCancel" Grid.Column="5" Style="{StaticResource HoverActionBtnStyle}">
+                <Button x:Name="btnCancel" Grid.Column="5" Style="{StaticResource HoverActionBtnStyle}" Click="btnCancel_Click">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="✖" Margin="0,0,10,0" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
                         <TextBlock Text="Hủy lịch" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="btnEdit" Grid.Column="6" Style="{StaticResource HoverActionBtnStyle}">
+                <Button x:Name="btnEdit" Grid.Column="6" Style="{StaticResource HoverActionBtnStyle}" Click="btnEdit_Click">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="✎" Margin="0,0,10,0" VerticalAlignment="Center" FontSize="20" FontWeight="Bold"/>
                         <TextBlock Text="Thay đổi lịch" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
                     </StackPanel>
                 </Button>
+                <DatePicker x:Name="dpNgay" Grid.Column="4" HorizontalAlignment="Left" Margin="19,0,0,0" VerticalAlignment="Center" Height="35" Width="67"/>
             </Grid>
         </StackPanel>
 
-        <DataGrid x:Name="dgLichDat" Grid.Row="1" Margin="25,0,25,15" AutoGenerateColumns="False" CanUserAddRows="False" 
-                  Background="LightGray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="14">
+        <DataGrid x:Name="dgLichDat"
+          Grid.Row="1"
+          Margin="25,0,25,15"
+          AutoGenerateColumns="False"
+          CanUserAddRows="False"
+          IsReadOnly="False"
+          CellEditEnding="dgLichDat_CellEditEnding"
+          Background="LightGray"
+          HeadersVisibility="Column"
+          GridLinesVisibility="All"
+          FontSize="14">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="FontWeight" Value="Bold"/>
@@ -119,9 +135,14 @@
                 <DataGridTextColumn Header="Trạng thái" Binding="{Binding TrangThai}" Width="1*"/>
                 <DataGridTextColumn Header="Họ tên" Binding="{Binding HoTen}" Width="1.5*"/>
                 <DataGridTextColumn Header="SĐT" Binding="{Binding SDT}" Width="1*"/>
-                <DataGridTextColumn Header="Ngày đặt" Binding="{Binding NgayDat}" Width="1*"/>
-                <DataGridTextColumn Header="Giờ BĐ" Binding="{Binding GioBD}" Width="1*"/>
-                <DataGridTextColumn Header="Giờ KT" Binding="{Binding GioKT}" Width="1*"/>
+                <DataGridTextColumn Header="Ngày đặt"
+                    Binding="{Binding NgayDat, Mode=TwoWay, StringFormat=dd/MM/yyyy}" />
+
+                <DataGridTextColumn Header="Giờ BĐ"
+                    Binding="{Binding GioBD, Mode=TwoWay}" />
+
+                <DataGridTextColumn Header="Giờ KT"
+                    Binding="{Binding GioKT, Mode=TwoWay}" />
             </DataGrid.Columns>
         </DataGrid>
 

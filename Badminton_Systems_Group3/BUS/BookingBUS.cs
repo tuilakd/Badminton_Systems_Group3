@@ -106,6 +106,39 @@ namespace Badminton_Systems_Group3.BUS
                 return (false, "Lỗi hệ thống: " + ex.Message);
             }
         }
+        public (bool success, string message) HuyLich(string maDatSan)
+        {
+            if (string.IsNullOrEmpty(maDatSan))
+                return (false, "Chưa chọn lịch!");
+
+            bool ok = dal.HuyLich(maDatSan);
+
+            return ok
+                ? (true, "Hủy lịch thành công!")
+                : (false, "Hủy lịch thất bại!");
+        }
+        public (bool success, string message) UpdateBooking(string maDatSan, DateTime ngay, TimeSpan bd, TimeSpan kt, string maSan)
+        {
+            if (kt <= bd)
+                return (false, "Giờ không hợp lệ!");
+
+            BookingDTO temp = new BookingDTO
+            {
+                MaSan = maSan,
+                NgayDat = ngay,
+                GioBatDau = bd,
+                GioKetThuc = kt
+            };
+
+            if (dal.KiemTraTrungGioUpdate(temp, maDatSan))
+                return (false, "Trùng giờ!");
+
+            bool ok = dal.UpdateBooking(maDatSan, ngay, bd, kt);
+
+            return ok
+                ? (true, "Sửa thành công!")
+                : (false, "Sửa thất bại!");
+        }
         public DataTable LayLichDatSanFull()
         {
             return dal.GetAllBookingSchedule();
@@ -121,6 +154,10 @@ namespace Badminton_Systems_Group3.BUS
         {
             var duration = end - start;
             return duration.TotalHours > 0 ? (decimal)duration.TotalHours * giaMoiGio : 0;
+        }
+        public DataTable SearchBooking(string trangThai, string keyword, DateTime? ngay)
+        {
+            return dal.SearchBooking(trangThai, keyword, ngay);
         }
     }
 }

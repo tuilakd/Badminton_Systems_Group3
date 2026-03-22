@@ -28,6 +28,7 @@ namespace Badminton_Systems_Group3.GUI
         {
             dataGrid.ItemsSource = bus.GetAll();
         }
+
         private void btnThem_Click(object sender, RoutedEventArgs e)
         {
             string maKH = txtMaKH.Text.Trim().ToUpper();

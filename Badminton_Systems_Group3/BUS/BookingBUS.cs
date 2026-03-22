@@ -130,7 +130,7 @@ namespace Badminton_Systems_Group3.BUS
                 GioKetThuc = kt
             };
 
-            if (dal.KiemTraTrungGioUpdate(temp, maDatSan))
+            if (dal.KiemTraTrungGio(temp))
                 return (false, "Trùng giờ!");
 
             bool ok = dal.UpdateBooking(maDatSan, ngay, bd, kt);

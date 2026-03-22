@@ -10,7 +10,6 @@ namespace Badminton_Systems_Group3.DAL
     {
         private readonly DatabaseHelper db = new DatabaseHelper();
 
-        // ================= 1. LƯU KHÁCH =================
         public bool InsertKhachHang(string maKH, string hoTen, string sdt)
         {
             try
@@ -43,7 +42,6 @@ namespace Badminton_Systems_Group3.DAL
             }
         }
 
-        // ================= 2. KIỂM TRA KHÁCH =================
         public bool KhachHangTonTai(string maKH)
         {
             string query = "SELECT COUNT(*) FROM khachhang WHERE MaKH = @ma";
@@ -57,7 +55,6 @@ namespace Badminton_Systems_Group3.DAL
             return result != null && Convert.ToInt32(result) > 0;
         }
 
-        // ================= 3. INSERT ĐẶT SÂN =================
         public bool InsertBooking(BookingDTO booking)
         {
             try
@@ -106,7 +103,7 @@ namespace Badminton_Systems_Group3.DAL
         WHERE d.MaSan = @maSan 
           AND CAST(d.NgayDat AS DATE) = @ngayDat
           AND d.TrangThai = N'Đã đặt'
-        ORDER BY d.GioBD"; // lấy booking sớm nhất hoặc mới nhất
+        ORDER BY d.GioBD"; 
 
             SqlParameter[] parameters = {
         new SqlParameter("@maSan", maSan),
@@ -116,7 +113,39 @@ namespace Badminton_Systems_Group3.DAL
             DataTable dt = db.ExecuteQuery(query, parameters);
             return dt.Rows.Count > 0 ? dt.Rows[0] : null;
         }
-        // ================= 4. KIỂM TRA TRÙNG GIỜ =================
+        public DataRow? GetThongTinKhachDatSan(string maSan, DateTime ngay, DateTime batDau, DateTime ketThuc)
+        {
+            string query = @"SELECT k.HoTen, k.SDT, d.MaDatSan, d.ThanhTien 
+                             FROM datsan d 
+                             JOIN khachhang k ON d.MaKH = k.MaKH 
+                             WHERE d.MaSan = @maSan 
+                             AND CAST(d.NgayDat AS DATE) = @ngay
+                             AND d.GioBD = @start 
+                             AND d.GioKT = @end";
+
+            SqlParameter[] parameters = {
+                new SqlParameter("@maSan", maSan),
+                new SqlParameter("@ngay", ngay.Date),
+                new SqlParameter("@start", SqlDbType.Time) { Value = batDau.TimeOfDay },
+                new SqlParameter("@end", SqlDbType.Time) { Value = ketThuc.TimeOfDay }
+            };
+
+            DataTable dt = db.ExecuteQuery(query, parameters);
+
+            return dt.Rows.Count > 0 ? dt.Rows[0] : null;
+        }
+        public DataTable GetAllBookingSchedule()
+        {
+            string query = @"SELECT d.MaDatSan,d.MaSan, s.TenSan, d.TrangThai, kh.HoTen, kh.SDT, 
+                            d.NgayDat, d.GioBD, d.GioKT
+                     FROM datsan d
+                     JOIN san s ON d.MaSan = s.MaSan
+                     JOIN khachhang kh ON d.MaKH = kh.MaKH
+                     ORDER BY d.NgayDat DESC, d.GioBD ASC";
+
+            return db.ExecuteQuery(query);
+        }
+
         public bool KiemTraTrungGio(BookingDTO booking)
         {
             string query = @"SELECT COUNT(*) FROM datsan 
@@ -136,8 +165,28 @@ namespace Badminton_Systems_Group3.DAL
 
             return result != null && Convert.ToInt32(result) > 0;
         }
+        public bool KiemTraTrungGioUpdate(BookingDTO booking, string maDatSan)
+        {
+            string query = @"SELECT COUNT(*) FROM datsan 
+                     WHERE MaSan = @masan 
+                     AND CAST(NgayDat AS DATE) = @ngaydat
+                     AND (@giobd < GioKT AND @giokt > GioBD)
+                     AND TrangThai <> N'Đã hủy'
+                     AND MaDatSan <> @ma"; // loại chính nó
 
-        // ================= 5. LỌC SÂN =================
+            SqlParameter[] parameters = {
+        new SqlParameter("@masan", booking.MaSan),
+        new SqlParameter("@ngaydat", booking.NgayDat.Date),
+        new SqlParameter("@giobd", SqlDbType.Time) { Value = booking.GioBatDau },
+        new SqlParameter("@giokt", SqlDbType.Time) { Value = booking.GioKetThuc },
+        new SqlParameter("@ma", maDatSan)
+    };
+
+            object result = db.ExecuteScalar(query, parameters);
+
+            return result != null && Convert.ToInt32(result) > 0;
+        }
+
         public DataTable GetSanDaDat(DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
         {
             string query = @"SELECT DISTINCT MaSan FROM datsan 
@@ -155,21 +204,19 @@ namespace Badminton_Systems_Group3.DAL
         }
         public string GetNewMaHD()
         {
-            // Lấy mã lớn nhất hiện có
             string query = "SELECT TOP 1 MaHD FROM hoadon ORDER BY MaHD DESC";
             object result = db.ExecuteScalar(query);
 
             if (result == null || result == DBNull.Value)
             {
-                return "HD0001"; // Nếu chưa có hóa đơn nào
+                return "HD0001"; 
             }
 
-            // Tách phần số ra khỏi chuỗi "HDxxxx"
+           
             string currentMa = result?.ToString() ?? "HD0000";
             int currentNumber = int.Parse(currentMa.Substring(2));
             int nextNumber = currentNumber + 1;
 
-            // Trả về định dạng HD + 4 chữ số (ví dụ: HD0006)
             return "HD" + nextNumber.ToString("D4");
         }
         public DataTable SearchBooking(string trangThai, string keyword, DateTime? ngay)
@@ -191,14 +238,12 @@ namespace Badminton_Systems_Group3.DAL
 
             List<SqlParameter> parameters = new List<SqlParameter>();
 
-            // 1. Trạng thái
             if (!string.IsNullOrEmpty(trangThai) && trangThai != "Tất cả")
             {
                 query += " AND ds.TrangThai = @TrangThai";
                 parameters.Add(new SqlParameter("@TrangThai", trangThai));
             }
 
-            // 2. Tìm kiếm keyword (Tên khách + SĐT + Tên sân)
             if (!string.IsNullOrEmpty(keyword))
             {
                 query += @" AND (
@@ -209,7 +254,6 @@ namespace Badminton_Systems_Group3.DAL
                 parameters.Add(new SqlParameter("@kw", "%" + keyword + "%"));
             }
 
-            // 3. Ngày
             if (ngay.HasValue)
             {
                 query += " AND CAST(ds.NgayDat AS DATE) = @Ngay";
@@ -249,61 +293,8 @@ namespace Badminton_Systems_Group3.DAL
             return db.ExecuteNonQuery(query, parameters);
         }
 
-        // ================= 6. LOAD THÔNG TIN =================
-        public DataRow? GetThongTinKhachDatSan(string maSan, DateTime ngay, DateTime batDau, DateTime ketThuc)
-        {
-            string query = @"SELECT k.HoTen, k.SDT, d.MaDatSan, d.ThanhTien 
-                             FROM datsan d 
-                             JOIN khachhang k ON d.MaKH = k.MaKH 
-                             WHERE d.MaSan = @maSan 
-                             AND CAST(d.NgayDat AS DATE) = @ngay
-                             AND d.GioBD = @start 
-                             AND d.GioKT = @end";
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@maSan", maSan),
-                new SqlParameter("@ngay", ngay.Date),
-                new SqlParameter("@start", SqlDbType.Time) { Value = batDau.TimeOfDay },
-                new SqlParameter("@end", SqlDbType.Time) { Value = ketThuc.TimeOfDay }
-            };
-
-            DataTable dt = db.ExecuteQuery(query, parameters);
-
-            return dt.Rows.Count > 0 ? dt.Rows[0] : null;
-        }
-        public DataTable GetAllBookingSchedule()
-        {
-            // Sử dụng db.ExecuteQuery để lấy DataTable mà không cần lo về connectionString
-            string query = @"SELECT d.MaDatSan,d.MaSan, s.TenSan, d.TrangThai, kh.HoTen, kh.SDT, 
-                            d.NgayDat, d.GioBD, d.GioKT
-                     FROM datsan d
-                     JOIN san s ON d.MaSan = s.MaSan
-                     JOIN khachhang kh ON d.MaKH = kh.MaKH
-                     ORDER BY d.NgayDat DESC, d.GioBD ASC";
-
-            return db.ExecuteQuery(query);
-        }
-        public bool KiemTraTrungGioUpdate(BookingDTO booking, string maDatSan)
-        {
-            string query = @"SELECT COUNT(*) FROM datsan 
-                     WHERE MaSan = @masan 
-                     AND CAST(NgayDat AS DATE) = @ngaydat
-                     AND (@giobd < GioKT AND @giokt > GioBD)
-                     AND TrangThai <> N'Đã hủy'
-                     AND MaDatSan <> @ma"; // loại chính nó
-
-            SqlParameter[] parameters = {
-        new SqlParameter("@masan", booking.MaSan),
-        new SqlParameter("@ngaydat", booking.NgayDat.Date),
-        new SqlParameter("@giobd", SqlDbType.Time) { Value = booking.GioBatDau },
-        new SqlParameter("@giokt", SqlDbType.Time) { Value = booking.GioKetThuc },
-        new SqlParameter("@ma", maDatSan)
-    };
-
-            object result = db.ExecuteScalar(query, parameters);
-
-            return result != null && Convert.ToInt32(result) > 0;
-        }
+    
 
         // ================= 7. THANH TOÁN (FIX CHUẨN) =================
         public bool ThanhToan(string maDatSan, string maKH, double tongTien)

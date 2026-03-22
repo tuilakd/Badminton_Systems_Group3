@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Badminton_Systems_Group3.BUS;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,9 +21,20 @@ namespace Badminton_Systems_Group3.GUI
     /// </summary>
     public partial class Revenue : Window
     {
+        private RevenueBUS bus = new RevenueBUS();
         public Revenue()
         {
             InitializeComponent();
+
+            if (cboLoaiHoaDon != null)
+            {
+                cboLoaiHoaDon.Items.Add(new ComboBoxItem { Content = "Tất cả", IsSelected = true });
+                cboLoaiHoaDon.Items.Add(new ComboBoxItem { Content = "Bán hàng" });
+                cboLoaiHoaDon.Items.Add(new ComboBoxItem { Content = "Đặt sân" });
+            }
+
+            LoadThongKe();
+            LoadDanhSachGiaoDich();
         }
 
         private void btnThongTin_Click(object sender, RoutedEventArgs e)
@@ -43,5 +58,117 @@ namespace Badminton_Systems_Group3.GUI
             window.Show();
             this.Close();
         }
+
+        private void LoadThongKe()
+        {
+            try
+            {
+                // Gọi BUS lấy số tiền và gán vào các TextBlock. 
+                // Lưu ý: Đảm bảo trong file XAML bạn đã đặt x:Name cho 3 TextBlock này.
+                txtTongDoanhThu.Text = string.Format("{0:N0} VNĐ", bus.GetDoanhThu("Tong"));
+                txtHomNay.Text = string.Format("{0:N0} VNĐ", bus.GetDoanhThu("HomNay"));
+                txtThangNay.Text = string.Format("{0:N0} VNĐ", bus.GetDoanhThu("ThangNay"));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải thống kê: " + ex.Message);
+            }
+        }
+
+        private void LoadDanhSachGiaoDich(string tuNgay = "", string denNgay = "", string loaiHoaDon = "Tất cả")
+        {
+            try
+            {
+                DataTable dt = bus.GetDanhSachGiaoDich(tuNgay, denNgay, loaiHoaDon);
+                dgvDoanhThu.ItemsSource = dt.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải danh sách: " + ex.Message);
+            }
+        }
+
+        private void btnBaoCao_Click(object sender, RoutedEventArgs e)
+        {
+            decimal tongTien = bus.GetDoanhThu("Tong");
+
+            if (tongTien <= 0)
+            {
+                MessageBox.Show("Chưa có doanh thu để báo cáo!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (bus.LuuBaoCaoDoanhThu(tongTien))
+            {
+                XuatFileExcel();
+            }
+            else
+            {
+                MessageBox.Show("Lỗi khi lưu báo cáo vào CSDL!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void btnTimKiem_Click(object sender, RoutedEventArgs e)
+        {
+            string tuNgay = dpTuNgay.SelectedDate.HasValue ? dpTuNgay.SelectedDate.Value.ToString("yyyy-MM-dd") : "";
+            string denNgay = dpDenNgay.SelectedDate.HasValue ? dpDenNgay.SelectedDate.Value.ToString("yyyy-MM-dd") : "";
+
+            // 2. Lấy loại hóa đơn (Dùng .Text là cách an toàn nhất)
+            string loaiHD = cboLoaiHoaDon.Text.Trim();
+
+            // Nếu chưa chọn gì thì mặc định là lấy tất cả
+            if (string.IsNullOrEmpty(loaiHD))
+            {
+                loaiHD = "Tất cả";
+            }
+
+            // 3. Gọi hàm tải lại bảng dữ liệu
+            LoadDanhSachGiaoDich(tuNgay, denNgay, loaiHD);
+        }
+
+        private void XuatFileExcel()
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Excel CSV (*.csv)|*.csv";
+            sfd.FileName = "BaoCaoDoanhThu_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".csv";
+
+            if (sfd.ShowDialog() == true)
+            {
+                try
+                {
+                    DataView view = (DataView)dgvDoanhThu.ItemsSource;
+                    if (view == null || view.Count == 0)
+                    {
+                        MessageBox.Show("Không có dữ liệu trong bảng để xuất!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    using (StreamWriter sw = new StreamWriter(sfd.FileName, false, new UTF8Encoding(true)))
+                    {
+                        sw.WriteLine("Mã HD,Ngày lập,Loại,Chi tiết,Đơn giá,Số lượng,Thành tiền");
+
+                        foreach (DataRowView row in view)
+                        {
+                            string maHD = row["MaHD"].ToString();
+                            string ngayLap = Convert.ToDateTime(row["NgayLapHD"]).ToString("dd/MM/yyyy HH:mm");
+                            string loai = row["LoaiHoaDon"].ToString();
+                            string chiTiet = row["ChiTiet"].ToString().Replace(",", " ");
+                            string donGia = row["DonGia"].ToString();
+                            string soLuong = row["SoLuong"].ToString();
+                            string thanhTien = row["ThanhTien"].ToString();
+
+                            sw.WriteLine($"{maHD},{ngayLap},{loai},{chiTiet},{donGia},{soLuong},{thanhTien}");
+                        }
+                    }
+
+                    MessageBox.Show("Đã xuất báo cáo và lưu vào CSDL thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi xuất file: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+     
     }
 }

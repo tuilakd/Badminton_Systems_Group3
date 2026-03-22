@@ -1,18 +1,23 @@
-﻿using System;
+using System;
 using System.Data;
-using Microsoft.Data.SqlClient;
+using System.Data.SqlClient;
 
 namespace Badminton_Systems_Group3.Database
 {
     internal class DatabaseHelper
     {
+<<<<<<<<< Temporary merge branch 1
+        private string connectionString =
+        "Data Source=.\\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
+        public DataTable GetData(string query)
+=========
         // KIỂM TRA LẠI TÊN DATABASE TẠI ĐÂY (Initial Catalog)
         private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QuanLySanCau;Integrated Security=True;TrustServerCertificate=True";
         public SqlConnection GetConnection()
         {
             return new SqlConnection(connectionString);
         }
-        // Hàm thực thi SELECT trả về DataTable (Dùng cho hiển thị danh sách)
+
         public DataTable ExecuteQuery(string query, SqlParameter[] parameters = null)
         {
             DataTable dt = new DataTable();
@@ -42,7 +47,11 @@ namespace Badminton_Systems_Group3.Database
             return dt;
         }
 
-        // Hàm thực thi trả về 1 giá trị duy nhất (Dùng cho SELECT COUNT để check trùng lịch)
+        public DataTable GetData(string query)
+        {
+            return ExecuteQuery(query, null);
+        }
+
         public object ExecuteScalar(string query, SqlParameter[] parameters = null)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -68,8 +77,7 @@ namespace Badminton_Systems_Group3.Database
             }
         }
 
-        // Hàm thực thi INSERT, UPDATE, DELETE (Dùng để lưu đặt sân)
-        public bool ExecuteNonQuery(string query, SqlParameter[] parameters)
+        public bool ExecuteNonQuery(string query, SqlParameter[] parameters = null)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {

@@ -91,85 +91,111 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Margin="0,0,0,15">
-                    <TextBlock Text="Sản phẩm" Foreground="Red" FontSize="22" FontWeight="Bold" Margin="0,0,0,15"/>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="Tìm kiếm:" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <ComboBox Width="277" Height="35" FontSize="16" VerticalContentAlignment="Center"/>
-                    </StackPanel>
+                    <TextBlock Text="Sản phẩm" Foreground="Red" FontSize="22" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center"/>
                 </StackPanel>
-
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="icProducts">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2" VerticalAlignment="Top"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
+                                            <Image Source="{Binding HinhAnh}" Stretch="Uniform" Margin="0,5,0,5"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding TenSP}" FontSize="18" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding DonGia, StringFormat={}{0:N0} VNĐ}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
+                                        <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                        <Button Content="➕ Thêm giỏ hàng" 
+                                Click="btnAddToCart_Click" 
+                                Tag="{Binding}" 
+                                Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                </ScrollViewer>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+
+
                     <UniformGrid Columns="2" VerticalAlignment="Top">
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0001" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/rvvang.png" Stretch="Uniform" Margin="0,5,0,5"/>
                                 </Border>
                                 <TextBlock Text="Revive vàng" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="12,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
-                                <Button Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <Button x:Name="btnThem1" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0" Tag="SP0001" Click="btnThem_Static_Click"/>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0002" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/rvtrang.png" Stretch="Uniform" Margin="0,5,0,5" />
                                 </Border>
                                 <TextBlock Text="Revive trắng" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="12,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
-                                <Button Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <Button x:Name="btnThem2" Click="btnThem_Static_Click" Tag="SP0002" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0003" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/lavie.png" Stretch="Uniform" Margin="0,5,0,5" />
                                 </Border>
                                 <TextBlock Text="Nước Lavie 500ml" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="10,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
-                                <Button Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <Button x:Name="btnThem3" Click="btnThem_Static_Click" Tag="SP0003" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0004" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/quancan.png" Stretch="Uniform" Margin="0,5,0,5" />
                                 </Border>
                                 <TextBlock Text="Quấn cán HBT" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="15,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
-                                <Button Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <Button x:Name="btnThem4" Click="btnThem_Static_Click" Tag="SP0004" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0005" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/cau1.png" Stretch="Uniform" Margin="0,5,0,5"/>
                                 </Border>
                                 <TextBlock Text="Cầu Thành công" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="330,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
-                                <Button Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <Button x:Name="btnThem5" Click="btnThem_Static_Click" Tag="SP0005" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
                             </StackPanel>
                         </Border>
 
-                        <Border BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
+                        <Border x:Name="itemSP0006" BorderBrush="#38A169" BorderThickness="1" Background="White" Margin="5" Padding="5">
                             <StackPanel>
                                 <Border Height="100" Background="#F5F5F5" Margin="0,0,0,5">
                                     <Image Source="/Image/cau2.png" Stretch="Uniform" Margin="0,5,0,5"/>
                                 </Border>
                                 <TextBlock Text="Cầu XSMash" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="330,000 VNĐ" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,2"/>
-                                <TextBlock Text="Kho: 50" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
-                                <Button Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
+                                <TextBlock Text="{Binding SoLuongTon, StringFormat='Kho: {0}'}" FontSize="12" Foreground="DimGray" HorizontalAlignment="Right" Margin="0,0,5,5"/>
+                                <Button x:Name="btnThem6" Click="btnThem_Static_Click" Tag="SP0006" Content="➕ Thêm giỏ hàng" Style="{StaticResource ActionButtonStyle}" Margin="5,0"/>
                             </StackPanel>
                         </Border>
 
@@ -190,7 +216,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                        </Grid.ColumnDefinitions>   
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBlock Text="Số lượng:" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,10,0"/>
 
@@ -201,26 +227,26 @@
                                         <ColumnDefinition Width="22"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBox Text="0" BorderThickness="0" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                    <TextBox x:Name="txtSoluong" Text="0" BorderThickness="0" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
 
                                     <Grid Grid.Column="1" Background="#E0E0E0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
-                                        <RepeatButton Grid.Row="0" Content="▲" FontSize="8" Padding="0" BorderThickness="0" Background="Transparent" Cursor="Hand"/>
-                                        <RepeatButton Grid.Row="1" Content="▼" FontSize="8" Padding="0" BorderThickness="0" Background="Transparent" Cursor="Hand"/>
+                                        <RepeatButton x:Name="btnTang" Grid.Row="0" Content="▲" FontSize="8" Padding="0" BorderThickness="0" Background="Transparent" Cursor="Hand" Click="btnTang_Click"/>
+                                        <RepeatButton x:Name="btnGiam" Grid.Row="1" Content="▼" FontSize="8" Padding="0" BorderThickness="0" Background="Transparent" Cursor="Hand" Click="btnGiam_Click"/>
                                     </Grid>
                                 </Grid>
                             </Border>
 
                         </StackPanel>
 
-                        <Button Grid.Column="1" Content="🗑 Xóa sản phẩm" Style="{StaticResource ActionButtonStyle}" HorizontalAlignment="Right" Padding="15,0"/>
+                        <Button x:Name="btnXoa" Grid.Column="1" Content="🗑 Xóa sản phẩm" Style="{StaticResource ActionButtonStyle}" Padding="15,0" Click="btnXoa_Click" Margin="331,0,0,0"/>
                     </Grid>
                 </StackPanel>
 
-                <DataGrid Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,5,0,15"
+                <DataGrid x:Name="dgHoaDon" SelectionChanged="dgHoaDon_SelectionChanged" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,5,0,15"
                           Background="LightGray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="15">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
@@ -241,9 +267,9 @@
                 <StackPanel Grid.Row="2">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
                         <TextBlock Text="Tổng tiền: " FontSize="22" FontWeight="Bold" Width="566"/>
-                        <TextBlock Text="0 VNĐ" FontSize="22" FontWeight="Bold" Foreground="Red"/>
+                        <TextBlock x:Name="lblTong" Text="0 VNĐ" FontSize="22" FontWeight="Bold" Foreground="Red"/>
                     </StackPanel>
-                    <Button Content="THANH TOÁN VÀ IN HÓA ĐƠN 📄" Style="{StaticResource CheckoutButtonStyle}"/>
+                    <Button x:Name="btnThanhToan" Content="THANH TOÁN VÀ IN HÓA ĐƠN 📄" Style="{StaticResource CheckoutButtonStyle}" Click="btnThanhToan_Click"/>
                 </StackPanel>
             </Grid>
         </Grid>
@@ -276,7 +302,7 @@
                     </Viewbox>
                 </RadioButton>
 
- 
+
                 <RadioButton x:Name="btnThongTin" Grid.Column="2" Style="{StaticResource MenuButtonStyle}" GroupName="BottomMenu" Click="btnThongTin_Click" >
                     <Viewbox Margin="10">
                         <StackPanel Orientation="Vertical">

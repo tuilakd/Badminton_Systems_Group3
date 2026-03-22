@@ -1,6 +1,6 @@
 ﻿using Badminton_Systems_Group3.Database;
 using Badminton_Systems_Group3.DTO;
-using Microsoft.Data.SqlClient;
+using System.Data.SqlClient;
 using System;
 using System.Data;
 
@@ -97,55 +97,22 @@ namespace Badminton_Systems_Group3.DAL
         public DataRow? GetThongTinKhachDatSanChuaThanhToan(string maSan, DateTime ngayDat)
         {
             string query = @"
-        SELECT TOP 1 k.HoTen, k.SDT, d.MaDatSan, d.GioBD, d.GioKT, d.ThanhTien 
-        FROM datsan d
-        JOIN khachhang k ON d.MaKH = k.MaKH
-        WHERE d.MaSan = @maSan 
-          AND CAST(d.NgayDat AS DATE) = @ngayDat
-          AND d.TrangThai = N'Đã đặt'
-        ORDER BY d.GioBD"; 
+                SELECT TOP 1 k.HoTen, k.SDT, d.MaDatSan, d.GioBD, d.GioKT, d.ThanhTien 
+                FROM datsan d
+                JOIN khachhang k ON d.MaKH = k.MaKH
+                WHERE d.MaSan = @maSan 
+                  AND CAST(d.NgayDat AS DATE) = @ngayDat
+                  AND d.TrangThai = N'Đã đặt'
+                ORDER BY d.GioBD"; 
 
-            SqlParameter[] parameters = {
-        new SqlParameter("@maSan", maSan),
-        new SqlParameter("@ngayDat", ngayDat.Date)
-    };
+                SqlParameter[] parameters = {
+            new SqlParameter("@maSan", maSan),
+            new SqlParameter("@ngayDat", ngayDat.Date)
+        };
 
             DataTable dt = db.ExecuteQuery(query, parameters);
             return dt.Rows.Count > 0 ? dt.Rows[0] : null;
         }
-        public DataRow? GetThongTinKhachDatSan(string maSan, DateTime ngay, DateTime batDau, DateTime ketThuc)
-        {
-            string query = @"SELECT k.HoTen, k.SDT, d.MaDatSan, d.ThanhTien 
-                             FROM datsan d 
-                             JOIN khachhang k ON d.MaKH = k.MaKH 
-                             WHERE d.MaSan = @maSan 
-                             AND CAST(d.NgayDat AS DATE) = @ngay
-                             AND d.GioBD = @start 
-                             AND d.GioKT = @end";
-
-            SqlParameter[] parameters = {
-                new SqlParameter("@maSan", maSan),
-                new SqlParameter("@ngay", ngay.Date),
-                new SqlParameter("@start", SqlDbType.Time) { Value = batDau.TimeOfDay },
-                new SqlParameter("@end", SqlDbType.Time) { Value = ketThuc.TimeOfDay }
-            };
-
-            DataTable dt = db.ExecuteQuery(query, parameters);
-
-            return dt.Rows.Count > 0 ? dt.Rows[0] : null;
-        }
-        public DataTable GetAllBookingSchedule()
-        {
-            string query = @"SELECT d.MaDatSan,d.MaSan, s.TenSan, d.TrangThai, kh.HoTen, kh.SDT, 
-                            d.NgayDat, d.GioBD, d.GioKT
-                     FROM datsan d
-                     JOIN san s ON d.MaSan = s.MaSan
-                     JOIN khachhang kh ON d.MaKH = kh.MaKH
-                     ORDER BY d.NgayDat DESC, d.GioBD ASC";
-
-            return db.ExecuteQuery(query);
-        }
-
         public bool KiemTraTrungGio(BookingDTO booking)
         {
             string query = @"SELECT COUNT(*) FROM datsan 
@@ -154,7 +121,7 @@ namespace Badminton_Systems_Group3.DAL
                              AND (@giobd < GioKT AND @giokt > GioBD)
                              AND TrangThai <> N'Đã hủy'";
 
-            SqlParameter[] parameters = {
+                SqlParameter[] parameters = {
                 new SqlParameter("@masan", booking.MaSan),
                 new SqlParameter("@ngaydat", booking.NgayDat.Date),
                 new SqlParameter("@giobd", SqlDbType.Time) { Value = booking.GioBatDau },
@@ -173,19 +140,6 @@ namespace Badminton_Systems_Group3.DAL
                      AND (@giobd < GioKT AND @giokt > GioBD)
                      AND TrangThai <> N'Đã hủy'
                      AND MaDatSan <> @ma"; // loại chính nó
-
-            SqlParameter[] parameters = {
-        new SqlParameter("@masan", booking.MaSan),
-        new SqlParameter("@ngaydat", booking.NgayDat.Date),
-        new SqlParameter("@giobd", SqlDbType.Time) { Value = booking.GioBatDau },
-        new SqlParameter("@giokt", SqlDbType.Time) { Value = booking.GioKetThuc },
-        new SqlParameter("@ma", maDatSan)
-    };
-
-            object result = db.ExecuteScalar(query, parameters);
-
-            return result != null && Convert.ToInt32(result) > 0;
-        }
 
         public DataTable GetSanDaDat(DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
         {

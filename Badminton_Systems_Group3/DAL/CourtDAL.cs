@@ -11,6 +11,7 @@ namespace Badminton_Systems_Group3.DAL
     {
         private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QuanLySanCau;Integrated Security=True;TrustServerCertificate=True";
 
+        private DatabaseHelper db = new DatabaseHelper();
         public List<CourtDTO> GetAll()
         {
             List<CourtDTO> list = new List<CourtDTO>();
@@ -97,6 +98,17 @@ namespace Badminton_Systems_Group3.DAL
                 cmd.Parameters.AddWithValue("@MaSan", maSan);
                 return cmd.ExecuteNonQuery() > 0;
             }
+        }
+
+        public DataTable LayDanhSachSan(string filter = "")
+        {
+            string query = "SELECT MaSan, TenSan, TrangThai, GiaThue FROM san";
+
+            if (!string.IsNullOrEmpty(filter) && filter != "Tất cả")
+            {
+                query += $" WHERE TrangThai = N'{filter}'";
+            }
+            return db.ExecuteQuery(query);
         }
     }
 }

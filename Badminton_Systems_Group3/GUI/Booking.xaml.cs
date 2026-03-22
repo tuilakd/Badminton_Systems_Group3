@@ -33,7 +33,7 @@ namespace Badminton_Systems_Group3.GUI
         }
 
         // ================= UI =================
-        private void UpdateUI(string maSan, string status)
+        private void UpdateUI(string maSan, bool isBusy)
         {
             var txt = FindName("txtStatus_" + maSan) as TextBlock;
             var btn = FindName("btn_" + maSan) as Button;
@@ -86,7 +86,6 @@ namespace Badminton_Systems_Group3.GUI
                 UpdateUI(ma, status);
             }
         }
-     
 
         // ================= LỌC SÂN =================
         private void LocSan()
@@ -125,7 +124,6 @@ namespace Badminton_Systems_Group3.GUI
             }
         }
 
-        // ================= CLICK CHUNG =================
         private void SB0001_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button btn || btn.Tag == null) return;
@@ -137,7 +135,7 @@ namespace Badminton_Systems_Group3.GUI
 
             if (coBooking)
             {
-                LoadThongTin(); // load dữ liệu khách chưa thanh toán
+                LoadThongTin(); 
             }
             else
             {
@@ -148,7 +146,6 @@ namespace Badminton_Systems_Group3.GUI
             }
         }
 
-        // ================= LOAD THÔNG TIN =================
         private void LoadThongTin()
         {
             if (string.IsNullOrEmpty(maSanDangChon) || dpNgayDat.SelectedDate == null)
@@ -180,7 +177,6 @@ namespace Badminton_Systems_Group3.GUI
         }
 
         // ================= TÍNH TIỀN =================
-        // Sửa lại hàm CapNhatTien()
         private void CapNhatTien()
         {
             // 1. Kiểm tra mã sân có đang được chọn hay không
@@ -219,7 +215,7 @@ namespace Badminton_Systems_Group3.GUI
             lblTamTinh.Text = string.Format("{0:N0} VNĐ", tongTien);
         }
 
-        // Sửa lại hàm DatSan() để gán giá thuê thật trước khi lưu
+        // ================= ĐẶT SÂN =================
         private void DatSan()
         {
             // 1. Kiểm tra đầu vào cơ bản
@@ -280,7 +276,6 @@ namespace Badminton_Systems_Group3.GUI
             MessageBox.Show(result.message);
         }
 
-        // ================= NÚT XÁC NHẬN =================
         private void btnXacNhan_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(maSanDangChon))
@@ -317,7 +312,6 @@ namespace Badminton_Systems_Group3.GUI
             }
         }
 
-        // ================= FORM =================
         private void ResetForm()
         {
             txtTenKH.Clear();
@@ -356,7 +350,6 @@ namespace Badminton_Systems_Group3.GUI
             LocSan();
         }
 
-        // ================= HỖ TRỢ =================
         private bool TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT)
         {
             gioBD = TimeSpan.Zero;

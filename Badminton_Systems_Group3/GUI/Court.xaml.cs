@@ -54,15 +54,36 @@ namespace Badminton_Systems_Group3.GUI
 
         private void dgSanBai_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (dgSanBai.SelectedItem == null) return;
+
+            string maSan = "", tenSan = "", trangThai = "", giaThue = "";
+
             if (dgSanBai.SelectedItem is CourtDTO selectedSB)
             {
-                txtMaSan.Text = selectedSB.MaSan;
-                txtTenSan.Text = selectedSB.TenSan;
-                cboTrangThai.Text = selectedSB.TrangThai; 
-                txtGiaThue.Text = selectedSB.GiaThue.ToString();
-
-                txtMaSan.IsEnabled = false;
+                maSan = selectedSB.MaSan;
+                tenSan = selectedSB.TenSan;
+                trangThai = selectedSB.TrangThai;
+                giaThue = selectedSB.GiaThue.ToString();
             }
+            else if (dgSanBai.SelectedItem is DataRowView rowView)
+            {
+                maSan = rowView["MaSan"].ToString();
+                tenSan = rowView["TenSan"].ToString();
+                trangThai = rowView["TrangThai"].ToString();
+                giaThue = rowView["GiaThue"].ToString();
+            }
+
+            if (trangThai == "Đã đặt" || trangThai == "Trống")
+            {
+                trangThai = "Đang hoạt động";
+            }
+
+            txtMaSan.Text = maSan;
+            txtTenSan.Text = tenSan;
+            cboTrangThai.Text = trangThai;
+            txtGiaThue.Text = giaThue;
+
+            txtMaSan.IsEnabled = false;
         }
 
         private void btnThem_Click(object sender, RoutedEventArgs e)

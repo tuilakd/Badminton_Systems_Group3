@@ -66,7 +66,7 @@
                         </Grid.Clip>
                         <Image Source="/Image/logo.png" Stretch="UniformToFill"/>
                     </Grid>
-                    <TextBlock Text="BADMINTON HUB" FontSize="65" FontWeight="Black" Foreground="White" FontFamily="Cooper Black" VerticalAlignment="Center"/>
+                    <TextBlock Text="GR3 BADMINTON" FontSize="65" FontWeight="Black" Foreground="White" FontFamily="Cooper Black" VerticalAlignment="Center"/>
                 </StackPanel>
 
                 <Border Grid.Row="1" Style="{StaticResource LoginCardStyle}" Width="750" Padding="40,30,40,40" VerticalAlignment="Top" HorizontalAlignment="Center">

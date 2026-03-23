@@ -288,7 +288,7 @@
     </TextBlock>
 </StackPanel>
 
-                        <Button x:Name="btnXacNhan" Content="XÁC NHẬN ĐẶT SÂN" Style="{StaticResource ConfirmButtonStyle}" Click="btnXacNhan_Click"/>
+                        <Button x:Name="btnXacNhan" Content=" ĐẶT SÂN" Style="{StaticResource ConfirmButtonStyle}" Click="btnXacNhan_Click"/>
                     </StackPanel>
                 </Border>
             </Viewbox>

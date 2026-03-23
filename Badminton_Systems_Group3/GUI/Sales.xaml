@@ -247,7 +247,7 @@
                 </StackPanel>
 
                 <DataGrid x:Name="dgHoaDon" SelectionChanged="dgHoaDon_SelectionChanged" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,5,0,15"
-                          Background="LightGray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="15">
+                          Background="LightGray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="16">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="FontWeight" Value="Bold"/>

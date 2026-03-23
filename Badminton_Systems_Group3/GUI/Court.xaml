@@ -68,7 +68,7 @@
         <Border Grid.Row="0" Background="#024D2A" Padding="20,15">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Quản lý sân bãi" Foreground="White" FontSize="32" FontWeight="Bold"/>
-                <TextBlock Text=" 🏸" Foreground="White" FontSize="32" Margin="10,0,0,0"/>
+                <TextBlock Text=" 🏸" Foreground="White" FontSize="32" Margin="10,0,0,0" Width="49"/>
             </StackPanel>
         </Border>
 
@@ -125,7 +125,7 @@
                 <StackPanel Grid.Row="0" Margin="0,0,0,15">
                     <TextBlock Text="Danh sách sân bãi" Foreground="Red" FontSize="22" FontWeight="Bold" Margin="0,0,0,15"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="Hiển thị:" FontSize="18" Width="83" Height="21"/>
+                        <TextBlock Text="Hiển thị:" FontSize="18" Width="83" Height="21" FontWeight="Bold"/>
                         <ComboBox x:Name="cboHienThi" Width="434" Height="35" VerticalContentAlignment="Center" FontSize="16" SelectionChanged="cboHienThi_SelectionChanged" >
                             <ComboBoxItem Content="Đang hoạt động" IsSelected="True"/>
                             <ComboBoxItem Content="Bảo trì"/>

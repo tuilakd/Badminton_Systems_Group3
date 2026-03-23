@@ -19,8 +19,7 @@ namespace Badminton_Systems_Group3.DAL
             List<CourtDTO> list = new List<CourtDTO>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                string query = "SELECT * FROM San";
-                SqlCommand cmd = new SqlCommand(query, conn);
+                string query = "SELECT MaSan, TenSan, CASE WHEN TrangThai IN (N'Đã đặt', N'Trống') THEN N'Đang hoạt động' ELSE TrangThai END AS TrangThai, GiaThue FROM san"; SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -29,7 +28,7 @@ namespace Badminton_Systems_Group3.DAL
                     {
                         MaSan = reader["MaSan"]?.ToString() ?? "",
                         TenSan = reader["TenSan"]?.ToString() ?? "",
-                        TrangThai = reader["TrangThai"]?.ToString() ?? "Trống",
+                        TrangThai = reader["TrangThai"]?.ToString() ?? "Đang hoạt động",
 
                         GiaThue = reader["GiaThue"] != DBNull.Value ? Convert.ToDouble(reader["GiaThue"]) : 0
                     });
@@ -110,6 +109,7 @@ namespace Badminton_Systems_Group3.DAL
             {
                 query += $" WHERE TrangThai = N'{filter}'";
             }
+
             return db.ExecuteQuery(query);
         }
     }

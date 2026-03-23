@@ -167,7 +167,7 @@
                         </Grid>
                     </Border>
 
-                    <Button x:Name="btnBaoCao" Content="BÁO CÁO DOANH SỐ" Style="{StaticResource ReportButtonStyle}" Height="44" Click="btnBaoCao_Click"/>
+                    <Button x:Name="btnBaoCao" Content="BÁO CÁO DOANH SỐ" Style="{StaticResource ReportButtonStyle}" Height="44" Click="btnBaoCao_Click" FontSize="22"/>
                 </StackPanel>
             </Viewbox>
 
@@ -180,7 +180,7 @@
                 <StackPanel Grid.Row="0" Margin="0,0,0,15">
                     <TextBlock Text="Bảng giao dịch" Foreground="Red" FontSize="22" FontWeight="Bold" Margin="0,0,0,15"/>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="Loại hóa đơn:" FontSize="18" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                        <TextBlock Text="Loại hóa đơn:" FontSize="18" VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,10,0"/>
 
                         <ComboBox x:Name="cboLoaiHoaDon" Width="283" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="0,0,15,0"/>
 
@@ -189,7 +189,7 @@
                 </StackPanel>
 
                 <DataGrid x:Name="dgvDoanhThu" AutoGenerateColumns="False" CanUserAddRows="False" 
-                          Background="LightGray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="15" Margin="0,95,0,0" Grid.RowSpan="2">
+                          Background="LightGray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="16" Margin="0,95,0,0" Grid.RowSpan="2">
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="FontWeight" Value="Bold"/>

@@ -95,22 +95,22 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Mã KH -->
-                    <TextBlock Grid.Row="0" Text="Mã KH:" VerticalAlignment="Center" FontSize="15" Margin="0,10"/>
+                    <TextBlock Grid.Row="0" Text="Mã KH:" VerticalAlignment="Center" FontSize="16" Margin="0,10" FontWeight="Bold"/>
                     <TextBox x:Name="txtMaKH" Grid.Row="0" Grid.Column="1"
              Height="32" Margin="5,8"
-             VerticalContentAlignment="Center"/>
+             VerticalContentAlignment="Center" FontSize="16"/>
 
                     <!-- Họ tên -->
-                    <TextBlock Grid.Row="1" Text="Họ tên:" VerticalAlignment="Center" FontSize="15" Margin="0,10"/>
+                    <TextBlock Grid.Row="1" Text="Họ tên:" VerticalAlignment="Center" FontSize="16" Margin="0,10" FontWeight="Bold"/>
                     <TextBox x:Name="txtHoTen" Grid.Row="1" Grid.Column="1"
              Height="32" Margin="5,8"
-             VerticalContentAlignment="Center"/>
+             VerticalContentAlignment="Center" FontSize="16"/>
 
                     <!-- SĐT -->
-                    <TextBlock Grid.Row="2" Text="SĐT:" VerticalAlignment="Center" FontSize="15" Margin="0,10"/>
+                    <TextBlock Grid.Row="2" Text="SĐT:" VerticalAlignment="Center" FontSize="16" Margin="0,10" FontWeight="Bold"/>
                     <TextBox x:Name="txtSDT" Grid.Row="2" Grid.Column="1"
              Height="32" Margin="5,8"
-             VerticalContentAlignment="Center"/>
+             VerticalContentAlignment="Center" FontSize="16"/>
                 </Grid>
 
                 <Button Content="➕ Thêm" Style="{StaticResource ActionButtonStyle}" Click="btnThem_Click"/>
@@ -132,7 +132,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="txtTimKiem" Height="35" VerticalContentAlignment="Center" FontSize="14" Margin="0,10,133,10" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="txtTimKiem" Height="35" VerticalContentAlignment="Center" FontSize="16" Margin="0,10,133,10" Grid.ColumnSpan="2" />
 
                     <Button x:Name="btnTimKiem" Content="Tìm kiếm 🔍" Style="{StaticResource ActionButtonStyle}" Margin="341,8,0,8" Grid.ColumnSpan="2" Click="btnTimKiem_Click" />
                 </Grid>
@@ -148,7 +148,7 @@
           GridLinesVisibility="All"
           ColumnWidth="*"
           SelectionChanged="dataGrid_SelectionChanged"
-          SelectionUnit="FullRow">
+          SelectionUnit="FullRow" FontSize="16">
 
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">

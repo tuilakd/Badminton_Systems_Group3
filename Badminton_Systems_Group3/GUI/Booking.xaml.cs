@@ -137,7 +137,7 @@ namespace Badminton_Systems_Group3.GUI
             {
                 ResetForm();
                 EnableForm();
-                btnXacNhan.Content = "ĐẶT SÂN";
+                btnXacNhan.Content = "XÁC NHẬN ĐẶT SÂN";
                 CapNhatTien();
             }
         }

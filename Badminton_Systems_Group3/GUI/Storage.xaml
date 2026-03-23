@@ -95,7 +95,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <DataGrid x:Name="dgvKho" Grid.Row="0" AutoGenerateColumns="False" CanUserAddRows="False" 
-                          Background="Gray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="15" SelectionChanged="dgvKho_SelectionChanged" >
+                          Background="Gray" HeadersVisibility="Column" GridLinesVisibility="All" FontSize="16" SelectionChanged="dgvKho_SelectionChanged" >
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="HorizontalContentAlignment" Value="Center"/>

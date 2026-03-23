@@ -8,7 +8,7 @@ namespace Badminton_Systems_Group3.DAL
 {
     public class ClientDAL
     {
-        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QuanLySanCau;Integrated Security=True;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
         public List<ClientDTO> GetAll()
         {
             List<ClientDTO> list = new List<ClientDTO>();
@@ -47,7 +47,6 @@ namespace Badminton_Systems_Group3.DAL
                 string query = "INSERT INTO khachhang (MaKH, HoTen, SDT) VALUES (@MaKH, @HoTen, @SDT)";
                 SqlCommand cmd = new SqlCommand(query, conn);
 
-                // DEBUG xem giá trị thật
                 MessageBox.Show("'" + kh.MaKH + "'");
 
                 cmd.Parameters.AddWithValue("@MaKH", kh.MaKH);
@@ -64,13 +63,11 @@ namespace Badminton_Systems_Group3.DAL
             {
                 conn.Open();
 
-                // Xóa bảng con trước
                 string q1 = "DELETE FROM datsan WHERE MaKH=@MaKH";
                 SqlCommand cmd1 = new SqlCommand(q1, conn);
                 cmd1.Parameters.AddWithValue("@MaKH", maKH);
                 cmd1.ExecuteNonQuery();
 
-                // Xóa khách
                 string q2 = "DELETE FROM khachhang WHERE MaKH=@MaKH";
                 SqlCommand cmd2 = new SqlCommand(q2, conn);
                 cmd2.Parameters.AddWithValue("@MaKH", maKH);
@@ -102,7 +99,6 @@ namespace Badminton_Systems_Group3.DAL
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                // Chỉ để lại điều kiện lọc theo MaKH
                 string query = @"
             SELECT kh.MaKH, kh.HoTen, kh.SDT, ds.MaDatSan, ds.TrangThai
             FROM khachhang kh
@@ -110,7 +106,6 @@ namespace Badminton_Systems_Group3.DAL
             WHERE kh.MaKH LIKE @kw";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
-                // Thêm dấu % để tìm gần đúng, hoặc bỏ % đi nếu muốn gõ chính xác 100% mã mới tìm ra
                 cmd.Parameters.AddWithValue("@kw", "%" + keyword + "%");
 
                 conn.Open();

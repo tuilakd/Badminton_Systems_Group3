@@ -104,7 +104,6 @@ namespace Badminton_Systems_Group3.GUI
             }
         }
 
-        // ================= LỌC SÂN =================
         private void LocSan()
         {
             if (dpNgayDat.SelectedDate == null) return;
@@ -115,13 +114,11 @@ namespace Badminton_Systems_Group3.GUI
                 return;
             }
 
-            // 1. Lấy danh sách các sân đã có người đặt trong khung giờ này
             DataTable dt = bus.GetSanDaDat(dpNgayDat.SelectedDate.Value, gioBD, gioKT);
             var busyList = dt.AsEnumerable().Select(r => r["MaSan"]?.ToString() ?? "").ToList();
 
-            // 2. Lấy toàn bộ thông tin sân để check trạng thái "Bảo trì"
             CourtDAL courtDAL = new CourtDAL();
-            var allCourts = courtDAL.GetAll(); // Giả sử bạn có hàm GetAll trả về List<CourtDTO>
+            var allCourts = courtDAL.GetAll();
 
             foreach (var ma in dsSan)
             {
@@ -148,11 +145,13 @@ namespace Badminton_Systems_Group3.GUI
             maSanDangChon = btn.Tag.ToString()!;
             DateTime ngay = dpNgayDat.SelectedDate ?? DateTime.Today;
 
-            bool coBooking = bus.KiemTraSanDaDat(maSanDangChon, ngay);
+            if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT)) return;
+
+            bool coBooking = bus.KiemTraSanDaDat(maSanDangChon, ngay, gioBD, gioKT);
 
             if (coBooking)
             {
-                LoadThongTin(); 
+                LoadThongTin(gioBD, gioKT);
             }
             else
             {
@@ -163,12 +162,12 @@ namespace Badminton_Systems_Group3.GUI
             }
         }
 
-        private void LoadThongTin()
+        private void LoadThongTin(TimeSpan gioBatDau, TimeSpan gioKetThuc)
         {
-            if (string.IsNullOrEmpty(maSanDangChon) || dpNgayDat.SelectedDate == null)
-                return;
+            if (string.IsNullOrEmpty(maSanDangChon) || dpNgayDat.SelectedDate == null) return;
 
-            DataRow dr = dal.GetThongTinKhachDatSanChuaThanhToan(maSanDangChon, dpNgayDat.SelectedDate.Value);
+            DataRow dr = dal.GetThongTinKhachDatSanChuaThanhToan(maSanDangChon, dpNgayDat.SelectedDate.Value, gioBatDau, gioKetThuc);
+
             if (dr == null)
             {
                 MessageBox.Show("Không tìm thấy booking chưa thanh toán!");
@@ -179,13 +178,13 @@ namespace Badminton_Systems_Group3.GUI
             txtTenKH.Text = dr["HoTen"].ToString();
             txtSDT.Text = dr["SDT"].ToString();
 
-            TimeSpan gioBD = (TimeSpan)dr["GioBD"];
-            TimeSpan gioKT = (TimeSpan)dr["GioKT"];
+            TimeSpan gioBD_DB = (TimeSpan)dr["GioBD"];
+            TimeSpan gioKT_DB = (TimeSpan)dr["GioKT"];
 
-            SetComboBoxTime(cboGioBD, gioBD);
-            SetComboBoxTime(cboGioKT, gioKT);
+            SetComboBoxTime(cboGioBD, gioBD_DB);
+            SetComboBoxTime(cboGioKT, gioKT_DB);
 
-            lblTongGio.Text = $"{(gioKT - gioBD).TotalHours} giờ";
+            lblTongGio.Text = $"{(gioKT_DB - gioBD_DB).TotalHours} giờ";
             decimal thanhTien = Convert.ToDecimal(dr["ThanhTien"]);
             lblTamTinh.Text = string.Format("{0:N0} VNĐ", thanhTien);
 
@@ -193,13 +192,10 @@ namespace Badminton_Systems_Group3.GUI
             DisableForm();
         }
 
-        // ================= TÍNH TIỀN =================
         private void CapNhatTien()
         {
-            // 1. Kiểm tra mã sân có đang được chọn hay không
             if (string.IsNullOrEmpty(maSanDangChon)) return;
 
-            // 2. Lấy thời gian từ ComboBox, nếu không hợp lệ thì reset nhãn hiển thị
             if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
             {
                 lblTongGio.Text = "0 giờ";
@@ -207,35 +203,27 @@ namespace Badminton_Systems_Group3.GUI
                 return;
             }
 
-            // 3. Lấy thông tin sân từ Database để lấy giá thuê thực tế
             CourtDAL courtDAL = new CourtDAL();
             var court = courtDAL.GetByMaSan(maSanDangChon);
 
-            // 4. Xử lý ép kiểu an toàn: Chuyển từ double sang decimal để tính tiền chính xác
-            // Sử dụng Convert.ToDecimal để tránh lỗi InvalidCastException nếu dữ liệu không khớp
             decimal giaThue = 0;
             if (court != null)
             {
                 giaThue = Convert.ToDecimal(court.GiaThue);
             }
 
-            // 5. Tính toán số giờ và tổng tiền
             double tongSoGio = (gioKT - gioBD).TotalHours;
 
-            // Đảm bảo số giờ không âm (phòng trường hợp logic TryGetTime bị sót)
             if (tongSoGio < 0) tongSoGio = 0;
 
             decimal tongTien = (decimal)tongSoGio * giaThue;
 
-            // 6. Cập nhật giao diện (UI)
             lblTongGio.Text = $"{tongSoGio} giờ";
             lblTamTinh.Text = string.Format("{0:N0} VNĐ", tongTien);
         }
 
-        // ================= ĐẶT SÂN =================
         private void DatSan()
         {
-            // 1. Kiểm tra đầu vào cơ bản
             if (dpNgayDat.SelectedDate == null || string.IsNullOrEmpty(maSanDangChon))
             {
                 MessageBox.Show("Vui lòng chọn ngày và sân trước khi đặt!");
@@ -248,7 +236,6 @@ namespace Badminton_Systems_Group3.GUI
                 return;
             }
 
-            // 2. Lấy thông tin sân từ database để lấy GIÁ THUÊ thực tế
             CourtDAL courtDAL = new CourtDAL();
             var court = courtDAL.GetByMaSan(maSanDangChon);
 
@@ -258,7 +245,6 @@ namespace Badminton_Systems_Group3.GUI
                 return;
             }
 
-            // 3. Khởi tạo đối tượng DTO và gán dữ liệu
             BookingDTO booking = new BookingDTO
             {
                 MaSan = maSanDangChon,
@@ -267,29 +253,22 @@ namespace Badminton_Systems_Group3.GUI
                 NgayDat = dpNgayDat.SelectedDate.Value,
                 GioBatDau = gioBD,
                 GioKetThuc = gioKT,
-                // Ép kiểu an toàn từ database, nếu null thì mặc định là 0
                 GiaThue = court.GiaThue != null ? Convert.ToDecimal(court.GiaThue) : 0
             };
 
-            // 4. Tính toán thành tiền dựa trên số giờ và giá thuê
             booking.TinhThanhTien();
 
-            // 5. Gọi lớp BUS để xử lý nghiệp vụ (Kiểm tra trùng lịch, Lưu khách hàng, Lưu đơn đặt)
             var result = bus.ThucHienDatSan(booking);
 
-            // 6. Xử lý sau khi đặt thành công
             if (result.success)
             {
-                // Cập nhật trạng thái sân sang "Đã đặt" để hiển thị màu Đỏ trên giao diện
                 court.TrangThai = "Đã đặt";
                 courtDAL.Update(court);
 
-                // Làm mới form và tải lại danh sách sân để cập nhật màu sắc UI
                 ResetForm();
                 LocSan();
             }
 
-            // Hiển thị thông báo cho người dùng (Thành công hoặc lỗi từ BUS)
             MessageBox.Show(result.message);
         }
 
@@ -305,19 +284,29 @@ namespace Badminton_Systems_Group3.GUI
 
             if (content == "THANH TOÁN")
             {
-                var drTemp = dal.GetThongTinKhachDatSanChuaThanhToan(maSanDangChon, dpNgayDat.SelectedDate ?? DateTime.Today);
+                if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT)) return;
+
+                var drTemp = dal.GetThongTinKhachDatSanChuaThanhToan(maSanDangChon, dpNgayDat.SelectedDate ?? DateTime.Today, gioBD, gioKT);
+
                 if (drTemp == null) return;
 
                 string maDS = drTemp["MaDatSan"]?.ToString() ?? "";
                 string sdtKhach = drTemp["SDT"]?.ToString() ?? "";
                 decimal tien = Convert.ToDecimal(drTemp["ThanhTien"]);
 
-                // Gọi hàm BUS (đảm bảo hàm này trong BUS nhận: string, string, decimal)
                 var result = bus.ThanhToan(maDS, sdtKhach, tien);
 
                 MessageBox.Show(result.message);
                 if (result.success)
                 {
+                    CourtDAL courtDAL = new CourtDAL();
+                    var court = courtDAL.GetByMaSan(maSanDangChon);
+                    if (court != null)
+                    {
+                        court.TrangThai = "Trống"; 
+                        courtDAL.Update(court);    
+                    }
+
                     ResetForm();
                     LocSan();
                 }

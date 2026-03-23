@@ -1,4 +1,4 @@
-﻿using Badminton_Systems_Group3.BUS; // Cần thiết để dùng BookingBUS
+﻿using Badminton_Systems_Group3.BUS;
 using System;
 using System.Data;
 using System.Windows;
@@ -9,20 +9,19 @@ namespace Badminton_Systems_Group3.GUI
 {
     public partial class BookingSchedule : Window
     {
-        // Khai báo biến bus ở cấp độ lớp để tất cả các hàm đều dùng được
         private readonly BookingBUS bus = new BookingBUS();
 
         public BookingSchedule()
         {
             InitializeComponent();
-            LoadData(); // Gọi hàm nạp dữ liệu ngay khi mở cửa sổ
+            LoadData(); 
         }
 
         private void LoadData()
         {
             try
             {
-                // Gọi hàm lấy toàn bộ lịch đặt từ lớp BUS
+                
                 DataTable dt = bus.LayLichDatSanFull();
 
                 if (dt != null && dgLichDat != null)
@@ -59,7 +58,7 @@ namespace Badminton_Systems_Group3.GUI
             try
             {
                 string trangThai = (cbTrangThai.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Tất cả";
-                string keyword = txtTen.Text.Trim(); // dùng chung cho tất cả
+                string keyword = txtTen.Text.Trim(); 
                 DateTime? ngay = dpNgay.SelectedDate;
 
                 DataTable dt = bus.SearchBooking(trangThai, keyword, ngay);
@@ -133,7 +132,7 @@ namespace Badminton_Systems_Group3.GUI
                 if (!kq.success)
                 {
                     MessageBox.Show(kq.message);
-                    LoadData(); // rollback nếu lỗi
+                    LoadData(); 
                 }
             }
             catch (Exception ex)
@@ -146,25 +145,24 @@ namespace Badminton_Systems_Group3.GUI
         {
             if (dgLichDat.SelectedItem == null)
             {
-                MessageBox.Show("Chọn lịch cần sửa!");
+                MessageBox.Show("Vui lòng chọn một lịch đặt trên bảng để thay đổi!", "Nhắc nhở", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            DataRowView row = (DataRowView)dgLichDat.SelectedItem;
+            System.Data.DataRowView row = (System.Data.DataRowView)dgLichDat.SelectedItem;
 
-            string maDatSan = row["MaDatSan"].ToString();
-            string maSan = row["MaSan"].ToString();
+            string maDS = row["MaDatSan"].ToString();
+            string maSan = row["MaSan"].ToString(); // LẤY THÊM MÃ SÂN Ở ĐÂY
+            DateTime ngayCu = Convert.ToDateTime(row["NgayDat"]);
+            TimeSpan gioBDCu = TimeSpan.Parse(row["GioBD"].ToString());
+            TimeSpan gioKTCu = TimeSpan.Parse(row["GioKT"].ToString());
 
-            DateTime ngay = Convert.ToDateTime(row["NgayDat"]);
-            TimeSpan bd = TimeSpan.Parse(row["GioBD"].ToString());
-            TimeSpan kt = TimeSpan.Parse(row["GioKT"].ToString());
+            ChangeBooking popup = new ChangeBooking (maDS, maSan, ngayCu, gioBDCu, gioKTCu);
 
-            var kq = bus.UpdateBooking(maDatSan, ngay, bd, kt, maSan);
-
-            MessageBox.Show(kq.message);
-
-            if (kq.success)
+            if (popup.ShowDialog() == true)
+            {
                 LoadData();
+            }
         }
 
         private void cbTrangThai_SelectionChanged(object sender, SelectionChangedEventArgs e)

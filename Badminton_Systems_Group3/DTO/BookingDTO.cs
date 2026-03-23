@@ -14,7 +14,6 @@ namespace Badminton_Systems_Group3.DTO
         public TimeSpan GioKetThuc { get; set; }
         public string TrangThai { get; set; } = "Đã đặt";
 
-        // Lấy từ bảng 'san'
         public decimal GiaThue { get; set; } = 0;
         public decimal ThanhTien { get; set; }
 

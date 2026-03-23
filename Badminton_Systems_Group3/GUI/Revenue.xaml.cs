@@ -63,8 +63,6 @@ namespace Badminton_Systems_Group3.GUI
         {
             try
             {
-                // Gọi BUS lấy số tiền và gán vào các TextBlock. 
-                // Lưu ý: Đảm bảo trong file XAML bạn đã đặt x:Name cho 3 TextBlock này.
                 txtTongDoanhThu.Text = string.Format("{0:N0} VNĐ", bus.GetDoanhThu("Tong"));
                 txtHomNay.Text = string.Format("{0:N0} VNĐ", bus.GetDoanhThu("HomNay"));
                 txtThangNay.Text = string.Format("{0:N0} VNĐ", bus.GetDoanhThu("ThangNay"));
@@ -113,16 +111,13 @@ namespace Badminton_Systems_Group3.GUI
             string tuNgay = dpTuNgay.SelectedDate.HasValue ? dpTuNgay.SelectedDate.Value.ToString("yyyy-MM-dd") : "";
             string denNgay = dpDenNgay.SelectedDate.HasValue ? dpDenNgay.SelectedDate.Value.ToString("yyyy-MM-dd") : "";
 
-            // 2. Lấy loại hóa đơn (Dùng .Text là cách an toàn nhất)
             string loaiHD = cboLoaiHoaDon.Text.Trim();
 
-            // Nếu chưa chọn gì thì mặc định là lấy tất cả
             if (string.IsNullOrEmpty(loaiHD))
             {
                 loaiHD = "Tất cả";
             }
 
-            // 3. Gọi hàm tải lại bảng dữ liệu
             LoadDanhSachGiaoDich(tuNgay, denNgay, loaiHD);
         }
 

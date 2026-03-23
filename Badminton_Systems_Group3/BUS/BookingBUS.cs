@@ -77,12 +77,7 @@ namespace Badminton_Systems_Group3.BUS
 
             try
             {
-                // 2. Chuẩn hóa mã khách hàng từ số điện thoại
                 string maKH = "KH" + sdt.Trim().Replace(" ", "");
-
-                // 3. Gọi DAL để thực hiện Transaction (bao gồm: Tạo mã HD tự tăng, 
-                //    Lưu hóa đơn, Lưu chi tiết, Cập nhật trạng thái datsan và san)
-                // LƯU Ý: Không tạo mã HD tại đây vì DAL đã có logic tự tăng HD0001, HD0002...
                 bool ok = dal.ThanhToan(maDatSan, maKH, (double)tongTien);
 
                 if (!ok)
@@ -92,7 +87,6 @@ namespace Badminton_Systems_Group3.BUS
             }
             catch (Exception ex)
             {
-                // Ghi log lỗi để kiểm tra sau này
                 System.Diagnostics.Debug.WriteLine("Lỗi BUS ThanhToan: " + ex.Message);
                 return (false, "Lỗi hệ thống: " + ex.Message);
             }
@@ -127,19 +121,14 @@ namespace Badminton_Systems_Group3.BUS
             bool ok = dal.UpdateBooking(maDatSan, ngay, bd, kt);
 
             return ok
-                ? (true, "Sửa thành công!")
-                : (false, "Sửa thất bại!");
+                ? (true, "Thay đổi lịch thành công!")
+                : (false, "Thay đổi lịch thất bại!");
         }
         public DataTable LayLichDatSanFull()
         {
             return dal.GetAllBookingSchedule();
         }
-        // ================= KIỂM TRA SÂN =================
-        public bool KiemTraSanDaDat(string maSan, DateTime ngay)
-        {
-            var dt = dal.GetThongTinKhachDatSanChuaThanhToan(maSan, ngay);
-            return dt != null; 
-        }
+       
         public decimal TinhTien(TimeSpan start, TimeSpan end, decimal giaMoiGio = 120000)
         {
             var duration = end - start;
@@ -148,6 +137,12 @@ namespace Badminton_Systems_Group3.BUS
         public DataTable SearchBooking(string trangThai, string keyword, DateTime? ngay)
         {
             return dal.SearchBooking(trangThai, keyword, ngay);
+        }
+
+        public bool KiemTraSanDaDat(string maSan, DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
+        {
+            var dt = dal.GetThongTinKhachDatSanChuaThanhToan(maSan, ngay, gioBD, gioKT);
+            return dt != null;
         }
     }
 }

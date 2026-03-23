@@ -154,18 +154,12 @@ namespace Badminton_Systems_Group3.GUI
         {
             try
             {
-                // 1. Lấy từ khóa
                 string keyword = txtTimKiem.Text.Trim();
 
-                // [MẸO KIỂM TRA]: Bật hộp thoại này lên để xem nút có nhận lệnh không
-                // Nếu bấm nút mà không hiện hộp thoại này -> Bạn làm sai Bước 1
-                // MessageBox.Show("Bạn vừa tìm từ khóa: " + keyword); 
 
-                // 2. Gọi BUS để tìm kiếm
                 List<ClientDTO> ketQua = bus.Search(keyword);
 
-                // 3. Cập nhật bảng (Dùng đúng tên dataGrid của bạn)
-                dataGrid.ItemsSource = null; // Xóa dữ liệu cũ đi trước cho chắc
+                dataGrid.ItemsSource = null; 
                 dataGrid.ItemsSource = ketQua;
             }
             catch (Exception ex)

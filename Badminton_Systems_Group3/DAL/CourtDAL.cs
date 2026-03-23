@@ -3,13 +3,15 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using System.Text;
- 
+using System.Data; 
+using Badminton_Systems_Group3.Database; 
+
 
 namespace Badminton_Systems_Group3.DAL
 {
     internal class CourtDAL
     {
-        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QuanLySanCau;Integrated Security=True;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
 
         private DatabaseHelper db = new DatabaseHelper();
         public List<CourtDTO> GetAll()
@@ -17,7 +19,7 @@ namespace Badminton_Systems_Group3.DAL
             List<CourtDTO> list = new List<CourtDTO>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                string query = "SELECT * FROM San"; // Tên bảng của bạn có thể là 'San' hoặc 'Courts'
+                string query = "SELECT * FROM San";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();

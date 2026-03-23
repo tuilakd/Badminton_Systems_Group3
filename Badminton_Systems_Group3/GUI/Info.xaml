@@ -33,7 +33,7 @@
             <StackPanel Grid.Row="1" HorizontalAlignment="Center" Margin="0,5,0,20">
                 <TextBlock Text="🏸" FontSize="40" HorizontalAlignment="Center" Margin="0,0,0,10"/>
                 <TextBlock Text="BADMINTON HUB" Foreground="#212121" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
-                <TextBlock Text="Nền tảng quản lý dịch vụ thể thao cầu lông" Foreground="#616161" FontSize="14" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                <TextBlock Text="Hệ thống quản lý dịch vụ thể thao cầu lông" Foreground="#616161" FontSize="14" HorizontalAlignment="Center" Margin="0,5,0,0"/>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
                     <TextBlock Text="Phiên bản: 1.0" Foreground="#757575" Margin="0,0,15,0"/>

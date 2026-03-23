@@ -71,7 +71,7 @@
                     </Grid.Clip>
                     <Image Source="/Image/logo.png" Stretch="UniformToFill"/>
                 </Grid>
-                <TextBlock Text="GR3 BADMINTON" FontSize="48" FontWeight="Black" Foreground="White" FontFamily="Cooper Black" VerticalAlignment="Center" Margin="0 15 0 0"/>
+                <TextBlock Text="BADMINTON HUB" FontSize="48" FontWeight="Black" Foreground="White" FontFamily="Cooper Black" VerticalAlignment="Center" Margin="0 15 0 0"/>
             </StackPanel>
         </Viewbox>
 

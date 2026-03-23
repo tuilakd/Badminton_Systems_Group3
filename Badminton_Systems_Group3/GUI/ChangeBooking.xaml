@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Badminton_Systems_Group3.GUI.ChangeBooking"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Thay đổi lịch đặt" Height="350" Width="400" 
+        Title="Thay đổi lịch đặt" Height="297" Width="400" 
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <StackPanel Margin="20">
         <TextBlock Text="CẬP NHẬT LỊCH ĐẶT SÂN" FontSize="20" FontWeight="Bold" Foreground="#024D2A" HorizontalAlignment="Center" Margin="0,0,0,20"/>
@@ -72,6 +72,6 @@
         </Grid>
 
         <Button x:Name="btnLuu" Content="XÁC NHẬN THAY ĐỔI" Click="btnLuu_Click" 
-                Height="40" Background="#1A8CD8" Foreground="White" FontSize="16" FontWeight="Bold" Cursor="Hand"/>
+                Height="40" Background="#024D2A" Foreground="White" FontSize="16" FontWeight="Bold" Cursor="Hand"/>
     </StackPanel>
 </Window>

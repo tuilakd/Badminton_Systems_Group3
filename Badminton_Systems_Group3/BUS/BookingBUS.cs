@@ -121,7 +121,7 @@ namespace Badminton_Systems_Group3.BUS
                 GioKetThuc = kt
             };
 
-            if (dal.KiemTraTrungGio(temp))
+            if (dal.KiemTraTrungGioUpdate(temp, maDatSan))
                 return (false, "Trùng giờ!");
 
             bool ok = dal.UpdateBooking(maDatSan, ngay, bd, kt);
@@ -138,7 +138,7 @@ namespace Badminton_Systems_Group3.BUS
         public bool KiemTraSanDaDat(string maSan, DateTime ngay)
         {
             var dt = dal.GetThongTinKhachDatSanChuaThanhToan(maSan, ngay);
-            return dt != null; 
+            return dt != null;
         }
         public decimal TinhTien(TimeSpan start, TimeSpan end, decimal giaMoiGio = 120000)
         {

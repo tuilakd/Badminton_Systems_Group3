@@ -28,7 +28,16 @@ namespace Badminton_Systems_Group3.GUI
         }
         private void LoadData()
         {
-            dgSanBai.ItemsSource = bus.GetAll();
+            var list = bus.GetAll();
+            foreach (var item in list)
+            {
+                // Logic: Nếu không phải Bảo trì thì mặc định hiểu là Đang hoạt động
+                if (item.TrangThai != "Bảo trì")
+                {
+                    item.TrangThai = "Đang hoạt động";
+                }
+            }
+            dgSanBai.ItemsSource = list;
         }
         private void btnThongTin_Click(object sender, RoutedEventArgs e)
         {
@@ -58,8 +67,11 @@ namespace Badminton_Systems_Group3.GUI
             {
                 txtMaSan.Text = selectedSB.MaSan;
                 txtTenSan.Text = selectedSB.TenSan;
-                cboTrangThai.Text = selectedSB.TrangThai; 
                 txtGiaThue.Text = selectedSB.GiaThue.ToString();
+
+                // Chuẩn hóa trạng thái trước khi gán vào ComboBox
+                string chuanHoaStatus = selectedSB.TrangThai == "Bảo trì" ? "Bảo trì" : "Đang hoạt động";
+                cboTrangThai.Text = chuanHoaStatus;
 
                 txtMaSan.IsEnabled = false;
             }
@@ -168,12 +180,21 @@ namespace Badminton_Systems_Group3.GUI
 
         private void cboHienThi_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(dgSanBai != null && cboHienThi != null && cboHienThi.SelectedItem != null)
-    {
+            if (dgSanBai != null && cboHienThi != null && cboHienThi.SelectedItem != null)
+            {
                 ComboBoxItem item = (ComboBoxItem)cboHienThi.SelectedItem;
                 string filter = item.Content.ToString();
 
                 DataTable dt = bus.LayDanhSachSan(filter);
+
+                // Duyệt qua từng dòng trong DataTable để sửa hiển thị
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (row["TrangThai"].ToString() != "Bảo trì")
+                    {
+                        row["TrangThai"] = "Đang hoạt động";
+                    }
+                }
 
                 dgSanBai.ItemsSource = dt.DefaultView;
             }

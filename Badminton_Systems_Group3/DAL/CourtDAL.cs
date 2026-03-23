@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using System.Text;
- 
+using Badminton_Systems_Group3.Database;
+using System.Data;
+
 
 namespace Badminton_Systems_Group3.DAL
 {

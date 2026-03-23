@@ -33,57 +33,74 @@ namespace Badminton_Systems_Group3.GUI
         }
 
         // ================= UI =================
-        private void UpdateUI(string maSan, bool isBusy)
+        private void UpdateUI(string maSan, string statusVatLy)
         {
-            var txt = FindName("txtStatus_" + maSan) as TextBlock;
+            var txtStatus = FindName("txtStatus_" + maSan) as TextBlock;
             var btn = FindName("btn_" + maSan) as Button;
+            var txtGia = FindName("txtGia_" + maSan) as TextBlock;
 
-            if (txt == null || btn == null) return;
+            if (txtStatus == null || btn == null) return;
 
-            // Reset mặc định trước khi check
+            // 1. CẬP NHẬT GIÁ THUÊ TỪ DATABASE (Để hiện 130k, 150k... thay vì 120k cố định)
+            CourtDAL courtDAL = new CourtDAL();
+            var court = courtDAL.GetByMaSan(maSan);
+            if (court != null && txtGia != null)
+            {
+                txtGia.Text = string.Format("{0:N0}/h", court.GiaThue);
+            }
+
+            btn.Tag = maSan;
             btn.IsEnabled = true;
 
-            if (status == "Bảo trì")
+            // 2. PHÂN LOẠI TRẠNG THÁI HIỂN THỊ
+            if (statusVatLy == "Bảo trì")
             {
-                txt.Text = "BẢO TRÌ";
-                txt.Foreground = Brushes.Orange; // Chữ màu vàng cam cho dễ nhìn
-
+                txtStatus.Text = "BẢO TRÌ";
+                txtStatus.Foreground = Brushes.Orange;
                 btn.Content = "Bảo trì";
-                btn.Background = Brushes.Yellow; // Nút màu vàng
-                btn.Foreground = Brushes.Black;  // Chữ đen trên nền vàng
-                btn.IsEnabled = false;           // Khóa nút không cho bấm
+                btn.Background = Brushes.Yellow;
+                btn.Foreground = Brushes.Black;
+                btn.IsEnabled = false; // Khóa sân bảo trì
             }
-            else if (status == "Đã đặt")
+            else
             {
-                txt.Text = "ĐÃ ĐẶT";
-                txt.Foreground = Brushes.Red;
+                // Nếu sân Đang hoạt động, kiểm tra xem ngày hiện tại đã có ai đặt chưa
+                DateTime ngayChon = dpNgayDat.SelectedDate ?? DateTime.Today;
+                bool daCoLich = bus.KiemTraSanDaDat(maSan, ngayChon);
 
-                btn.Content = "THANH TOÁN";
-                btn.Background = Brushes.Red;
-                btn.Foreground = Brushes.White;
-            }
-            else // Trạng thái TRỐNG
-            {
-                txt.Text = "TRỐNG";
-                txt.Foreground = Brushes.Green;
-
-                btn.Content = "Đặt sân";
-                btn.Background = Brushes.Green;
-                btn.Foreground = Brushes.White;
+                if (daCoLich)
+                {
+                    txtStatus.Text = "ĐÃ ĐẶT";
+                    txtStatus.Foreground = Brushes.Red;
+                    btn.Content = "THANH TOÁN";
+                    btn.Background = Brushes.Red;
+                    btn.Foreground = Brushes.White;
+                }
+                else
+                {
+                    txtStatus.Text = "TRỐNG";
+                    txtStatus.Foreground = Brushes.Green;
+                    btn.Content = "Đặt sân";
+                    btn.Background = Brushes.Green;
+                    btn.Foreground = Brushes.White;
+                }
             }
         }
 
         private void LoadSanMacDinh()
         {
             CourtDAL courtDAL = new CourtDAL();
-            var allCourts = courtDAL.GetAll();
+            var allCourts = courtDAL.GetAll(); // Lấy toàn bộ danh sách sân từ DB
 
             foreach (var ma in dsSan)
             {
                 var court = allCourts.FirstOrDefault(c => c.MaSan == ma);
-                // Nếu sân đang bảo trì thì truyền "Bảo trì", ngược lại là "Trống"
-                string status = (court != null && court.TrangThai == "Bảo trì") ? "Bảo trì" : "Trống";
-                UpdateUI(ma, status);
+                if (court != null)
+                {
+                    // Truyền trực tiếp Trạng thái từ DB (Đang hoạt động / Bảo trì)
+                    // Logic hiển thị màu sắc sẽ do UpdateUI quyết định dựa trên lịch đặt
+                    UpdateUI(ma, court.TrangThai);
+                }
             }
         }
 

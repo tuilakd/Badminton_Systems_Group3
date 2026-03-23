@@ -101,7 +101,7 @@
                                 </Border>
                                 <Grid Margin="0,0,0,5">
                                     <TextBlock Text="Sân 01" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    <TextBlock x:Name="txtGia_SB0001" Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
                                 <TextBlock x:Name="txtStatus_SB0001" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
                                 <Button x:Name="btn_SB0001" Tag="SB0001" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
@@ -115,7 +115,7 @@
                                 </Border>
                                 <Grid Margin="0,0,0,5">
                                     <TextBlock Text="Sân 02" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    <TextBlock x:Name="txtGia_SB0002" Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
                                 <TextBlock x:Name="txtStatus_SB0002" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
                                 <Button x:Name="btn_SB0002" Tag="SB0002" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
@@ -129,7 +129,7 @@
                                 </Border>
                                 <Grid Margin="0,0,0,5">
                                     <TextBlock Text="Sân 03" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    <TextBlock x:Name="txtGia_SB0003" Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
                                 <TextBlock x:Name="txtStatus_SB0003" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
                                 <Button x:Name="btn_SB0003" Tag="SB0003" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
@@ -143,7 +143,7 @@
                                 </Border>
                                 <Grid Margin="0,0,0,5">
                                     <TextBlock Text="Sân 04" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    <TextBlock x:Name="txtGia_SB0004" Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
                                 <TextBlock x:Name="txtStatus_SB0004" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
                                 <Button x:Name="btn_SB0004" Tag="SB0004" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
@@ -157,7 +157,7 @@
                                 </Border>
                                 <Grid Margin="0,0,0,5">
                                     <TextBlock Text="Sân 05" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    <TextBlock x:Name="txtGia_SB0005" Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
                                 <TextBlock x:Name="txtStatus_SB0005" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
                                 <Button x:Name="btn_SB0005" Tag="SB0005" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
@@ -171,7 +171,7 @@
                                 </Border>
                                 <Grid Margin="0,0,0,5">
                                     <TextBlock Text="Sân 06" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    <TextBlock x:Name="txtGia_SB0006" Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
                                 <TextBlock x:Name="txtStatus_SB0006" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
                                 <Button x:Name="btn_SB0006" Tag="SB0006" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
@@ -185,7 +185,7 @@
                                 </Border>
                                 <Grid Margin="0,0,0,5">
                                     <TextBlock Text="Sân 07" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    <TextBlock x:Name="txtGia_SB0007" Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
                                 <TextBlock x:Name="txtStatus_SB0007" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
                                 <Button x:Name="btn_SB0007" Tag="SB0007" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>
@@ -199,7 +199,7 @@
                                 </Border>
                                 <Grid Margin="0,0,0,5">
                                     <TextBlock Text="Sân 08" FontSize="18" FontWeight="Bold" HorizontalAlignment="Left"/>
-                                    <TextBlock Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                                    <TextBlock x:Name="txtGia_SB0008" Text="120k/h" FontSize="14" Foreground="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
                                 <TextBlock x:Name="txtStatus_SB0008" Text="TRỐNG" FontSize="15" FontWeight="Bold" Foreground="#38A169" Margin="0,0,0,10"/>
                                 <Button x:Name="btn_SB0008" Tag="SB0008" Content="Đặt sân" Style="{StaticResource ActionButtonStyle}" Click="SB0001_Click"/>

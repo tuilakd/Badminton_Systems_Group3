@@ -146,7 +146,7 @@
                         <DataGridTextColumn Header="Mã sân" Width="1*" Binding="{Binding MaSan}"/>
                         <DataGridTextColumn Header="Tên sân" Width="2*" Binding="{Binding TenSan}"/>
                         <DataGridTextColumn Header="Trạng thái" Width="1.5*" Binding="{Binding TrangThai}"/>
-                        <DataGridTextColumn Header="Giá thuê" Width="1.5*" Binding="{Binding GiaThue}"/>
+                        <DataGridTextColumn Header="Giá thuê (VND/h)" Width="1.5*" Binding="{Binding GiaThue}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

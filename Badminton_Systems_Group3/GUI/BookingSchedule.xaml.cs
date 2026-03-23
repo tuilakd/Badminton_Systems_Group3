@@ -53,17 +53,34 @@ namespace Badminton_Systems_Group3.GUI
             }
         }
 
+        private void ThucHienTimKiem()
+        {
+            try
+            {
+                string trangThai = "Tất cả";
+                if (cbTrangThai.SelectedItem is ComboBoxItem item)
+                {
+                    trangThai = item.Content?.ToString() ?? "Tất cả";
+                }
+
+                string keyword = txtTen.Text.Trim();
+
+                DateTime? ngay = dpNgay.SelectedDate;
+
+                DataTable dt = bus.SearchBooking(trangThai, keyword, ngay);
+                dgLichDat.ItemsSource = dt.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tìm kiếm: " + ex.Message);
+            }
+        }
+
         private void BtnSearch_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                string trangThai = (cbTrangThai.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Tất cả";
-                string keyword = txtTen.Text.Trim(); 
-                DateTime? ngay = dpNgay.SelectedDate;
-
-                DataTable dt = bus.SearchBooking(trangThai, keyword, ngay);
-
-                dgLichDat.ItemsSource = dt.DefaultView;
+                ThucHienTimKiem();
             }
             catch (Exception ex)
             {
@@ -132,7 +149,7 @@ namespace Badminton_Systems_Group3.GUI
             System.Data.DataRowView row = (System.Data.DataRowView)dgLichDat.SelectedItem;
 
             string maDS = row["MaDatSan"].ToString();
-            string maSan = row["MaSan"].ToString(); // LẤY THÊM MÃ SÂN Ở ĐÂY
+            string maSan = row["MaSan"].ToString(); 
             DateTime ngayCu = Convert.ToDateTime(row["NgayDat"]);
             TimeSpan gioBDCu = TimeSpan.Parse(row["GioBD"].ToString());
             TimeSpan gioKTCu = TimeSpan.Parse(row["GioKT"].ToString());
@@ -142,6 +159,30 @@ namespace Badminton_Systems_Group3.GUI
             if (popup.ShowDialog() == true)
             {
                 LoadData();
+            }
+        }
+
+        private void cbTrangThai_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.IsLoaded) 
+            {
+                ThucHienTimKiem();
+            }
+        }
+
+        private void dpNgay_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.IsLoaded)
+            {
+                ThucHienTimKiem();
+            }
+        }
+
+        private void txtTen_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (this.IsLoaded)
+            {
+                ThucHienTimKiem();
             }
         }
     }

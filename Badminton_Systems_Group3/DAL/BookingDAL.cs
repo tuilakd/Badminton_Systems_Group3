@@ -171,46 +171,35 @@ namespace Badminton_Systems_Group3.DAL
         public DataTable SearchBooking(string trangThai, string keyword, DateTime? ngay)
         {
             string query = @"
-                SELECT 
-                    ds.MaDatSan,
-                    s.TenSan,
-                    ds.TrangThai,
-                    kh.HoTen,
-                    kh.SDT,
-                    ds.NgayDat,
-                    ds.GioBD,
-                    ds.GioKT
+                SELECT ds.MaDatSan, s.TenSan, ds.TrangThai, kh.HoTen, kh.SDT, ds.NgayDat, ds.GioBD, ds.GioKT
                 FROM datsan ds
-                JOIN khachhang kh ON ds.MaKH = kh.MaKH
-                JOIN san s ON ds.MaSan = s.MaSan
+                INNER JOIN khachhang kh ON ds.MaKH = kh.MaKH
+                INNER JOIN san s ON ds.MaSan = s.MaSan
                 WHERE 1=1 ";
 
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             if (!string.IsNullOrEmpty(trangThai) && trangThai != "Tất cả")
             {
-                query += " AND ds.TrangThai = @TrangThai";
+                query += " AND ds.TrangThai = @TrangThai ";
                 parameters.Add(new SqlParameter("@TrangThai", trangThai));
             }
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                query += @" AND (
-            kh.HoTen LIKE @kw 
-            OR kh.SDT LIKE @kw
-            OR s.TenSan LIKE @kw
-        )";
-                parameters.Add(new SqlParameter("@kw", "%" + keyword + "%"));
+                query += " AND ds.MaDatSan LIKE @Keyword ";
+                parameters.Add(new SqlParameter("@Keyword", "%" + keyword + "%"));
             }
 
             if (ngay.HasValue)
             {
-                query += " AND CAST(ds.NgayDat AS DATE) = @Ngay";
+                query += " AND CAST(ds.NgayDat AS DATE) = @Ngay ";
                 parameters.Add(new SqlParameter("@Ngay", ngay.Value.Date));
             }
 
             query += " ORDER BY ds.NgayDat DESC, ds.GioBD ASC";
 
+            Database.DatabaseHelper db = new Database.DatabaseHelper();
             return db.ExecuteQuery(query, parameters.ToArray());
         }
         public bool HuyLich(string maDatSan)

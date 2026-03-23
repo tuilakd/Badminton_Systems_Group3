@@ -79,12 +79,12 @@
                 <TextBlock Grid.Column="0" Text="Trạng thái:" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <ComboBox x:Name="cbTrangThai" Grid.Column="1" Height="35"
                           VerticalContentAlignment="Center" FontSize="16"
-                          SelectedIndex="0" Margin="0,1,32,1">
+                          SelectedIndex="0" Margin="0,1,32,1" SelectionChanged="cbTrangThai_SelectionChanged" >
                     <ComboBoxItem Content="Tất cả"/>
                     <ComboBoxItem Content="Đã đặt"/>
                     <ComboBoxItem Content="Đã thanh toán"/>
                 </ComboBox>
-                <TextBox x:Name="txtTen" Grid.Column="1" Height="35" Margin="173,1,71,1" VerticalContentAlignment="Center" FontSize="16" Grid.ColumnSpan="2"/>
+                <TextBox x:Name="txtTen" Grid.Column="1" Height="35" Margin="173,1,71,1" VerticalContentAlignment="Center" FontSize="16" Grid.ColumnSpan="2" TextChanged="txtTen_TextChanged"/>
 
                 <Button x:Name="btnSearch" Grid.Column="2" Height="35" Margin="154,1,31,1" Background="#E0E0E0" Click="BtnSearch_Click">
                     <TextBlock Text="🔍" FontSize="18" VerticalAlignment="Center"/>
@@ -103,7 +103,7 @@
                         <TextBlock Text="Thay đổi lịch" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
                     </StackPanel>
                 </Button>
-                <DatePicker x:Name="dpNgay" Grid.Column="2" HorizontalAlignment="Left" Margin="197,0,0,0" VerticalAlignment="Center" Height="35" Width="160" Grid.ColumnSpan="3"/>
+                <DatePicker x:Name="dpNgay" Grid.Column="2" HorizontalAlignment="Left" Margin="197,0,0,0" VerticalAlignment="Center" Height="35" Width="160" Grid.ColumnSpan="3" SelectedDateChanged="dpNgay_SelectedDateChanged"/>
             </Grid>
         </StackPanel>
 

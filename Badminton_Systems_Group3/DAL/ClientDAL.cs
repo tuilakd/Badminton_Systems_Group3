@@ -8,7 +8,7 @@ namespace Badminton_Systems_Group3.DAL
 {
     public class ClientDAL
     {
-        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QuanLySanCau;Integrated Security=True;TrustServerCertificate=True";
         public List<ClientDTO> GetAll()
         {
             List<ClientDTO> list = new List<ClientDTO>();

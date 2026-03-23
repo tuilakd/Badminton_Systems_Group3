@@ -305,9 +305,9 @@ namespace Badminton_Systems_Group3.DAL
             if (resultObj != null && resultObj != DBNull.Value)
             {
                 string currentMa = resultObj.ToString();
-                if (currentMa.Length >= 6)
+                if (!string.IsNullOrEmpty(currentMa) && currentMa.StartsWith("HD"))
                 {
-                    if (int.TryParse(currentMa.Substring(2), out int lastNum))
+                    if (int.TryParse(currentMa.Replace("HD", ""), out int lastNum))
                     {
                         maHDmoi = "HD" + (lastNum + 1).ToString("D4");
                     }

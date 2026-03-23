@@ -41,7 +41,7 @@ namespace Badminton_Systems_Group3.GUI
 
             if (txtStatus == null || btn == null) return;
 
-            // 1. CẬP NHẬT GIÁ THUÊ TỪ DATABASE (Để hiện 130k, 150k... thay vì 120k cố định)
+            // 1. CẬP NHẬT GIÁ THUÊ TỪ DATABASE
             CourtDAL courtDAL = new CourtDAL();
             var court = courtDAL.GetByMaSan(maSan);
             if (court != null && txtGia != null)
@@ -60,13 +60,18 @@ namespace Badminton_Systems_Group3.GUI
                 btn.Content = "Bảo trì";
                 btn.Background = Brushes.Yellow;
                 btn.Foreground = Brushes.Black;
-                btn.IsEnabled = false; // Khóa sân bảo trì
+                btn.IsEnabled = false;
             }
             else
             {
-                // Nếu sân Đang hoạt động, kiểm tra xem ngày hiện tại đã có ai đặt chưa
                 DateTime ngayChon = dpNgayDat.SelectedDate ?? DateTime.Today;
-                bool daCoLich = bus.KiemTraSanDaDat(maSan, ngayChon);
+
+                // LẤY GIỜ TỪ COMBOBOX ĐỂ KIỂM TRA ĐÚNG KHUNG GIỜ ĐANG CHỌN
+                bool daCoLich = false;
+                if (TryGetTimeFromComboBox(out TimeSpan gBD, out TimeSpan gKT))
+                {
+                    daCoLich = bus.KiemTraSanDaDat(maSan, ngayChon, gBD, gKT);
+                }
 
                 if (daCoLich)
                 {
@@ -90,15 +95,13 @@ namespace Badminton_Systems_Group3.GUI
         private void LoadSanMacDinh()
         {
             CourtDAL courtDAL = new CourtDAL();
-            var allCourts = courtDAL.GetAll(); // Lấy toàn bộ danh sách sân từ DB
+            var allCourts = courtDAL.GetAll();
 
             foreach (var ma in dsSan)
             {
                 var court = allCourts.FirstOrDefault(c => c.MaSan == ma);
                 if (court != null)
                 {
-                    // Truyền trực tiếp Trạng thái từ DB (Đang hoạt động / Bảo trì)
-                    // Logic hiển thị màu sắc sẽ do UpdateUI quyết định dựa trên lịch đặt
                     UpdateUI(ma, court.TrangThai);
                 }
             }
@@ -145,7 +148,11 @@ namespace Badminton_Systems_Group3.GUI
             maSanDangChon = btn.Tag.ToString()!;
             DateTime ngay = dpNgayDat.SelectedDate ?? DateTime.Today;
 
-            if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT)) return;
+            if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
+            {
+                MessageBox.Show("Vui lòng chọn khung giờ hợp lệ!");
+                return;
+            }
 
             bool coBooking = bus.KiemTraSanDaDat(maSanDangChon, ngay, gioBD, gioKT);
 
@@ -170,7 +177,7 @@ namespace Badminton_Systems_Group3.GUI
 
             if (dr == null)
             {
-                MessageBox.Show("Không tìm thấy booking chưa thanh toán!");
+                MessageBox.Show("Không tìm thấy booking chưa thanh toán trong khung giờ này!");
                 return;
             }
 
@@ -213,7 +220,6 @@ namespace Badminton_Systems_Group3.GUI
             }
 
             double tongSoGio = (gioKT - gioBD).TotalHours;
-
             if (tongSoGio < 0) tongSoGio = 0;
 
             decimal tongTien = (decimal)tongSoGio * giaThue;
@@ -241,7 +247,7 @@ namespace Badminton_Systems_Group3.GUI
 
             if (court == null)
             {
-                MessageBox.Show("Không tìm thấy thông tin sân trong hệ thống!");
+                MessageBox.Show("Không tìm thấy thông tin sân!");
                 return;
             }
 
@@ -262,9 +268,6 @@ namespace Badminton_Systems_Group3.GUI
 
             if (result.success)
             {
-                court.TrangThai = "Đã đặt";
-                courtDAL.Update(court);
-
                 ResetForm();
                 LocSan();
             }
@@ -288,7 +291,11 @@ namespace Badminton_Systems_Group3.GUI
 
                 var drTemp = dal.GetThongTinKhachDatSanChuaThanhToan(maSanDangChon, dpNgayDat.SelectedDate ?? DateTime.Today, gioBD, gioKT);
 
-                if (drTemp == null) return;
+                if (drTemp == null)
+                {
+                    MessageBox.Show("Dữ liệu thanh toán không hợp lệ!");
+                    return;
+                }
 
                 string maDS = drTemp["MaDatSan"]?.ToString() ?? "";
                 string sdtKhach = drTemp["SDT"]?.ToString() ?? "";
@@ -299,14 +306,6 @@ namespace Badminton_Systems_Group3.GUI
                 MessageBox.Show(result.message);
                 if (result.success)
                 {
-                    CourtDAL courtDAL = new CourtDAL();
-                    var court = courtDAL.GetByMaSan(maSanDangChon);
-                    if (court != null)
-                    {
-                        court.TrangThai = "Trống"; 
-                        courtDAL.Update(court);    
-                    }
-
                     ResetForm();
                     LocSan();
                 }
@@ -361,6 +360,8 @@ namespace Badminton_Systems_Group3.GUI
             gioBD = TimeSpan.Zero;
             gioKT = TimeSpan.Zero;
 
+            if (cboGioBD.SelectedItem == null || cboGioKT.SelectedItem == null) return false;
+
             string strStart = (cboGioBD.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
             string strEnd = (cboGioKT.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
 
@@ -381,7 +382,6 @@ namespace Badminton_Systems_Group3.GUI
         {
             Badminton_Systems_Group3.GUI.Info thongTinWindow = new Badminton_Systems_Group3.GUI.Info();
             thongTinWindow.ShowDialog();
-
             btnThongTin.IsChecked = false;
         }
 

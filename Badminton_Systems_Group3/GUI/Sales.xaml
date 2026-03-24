@@ -258,9 +258,9 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Mã SP" Width="0.8*" Binding="{Binding MaSP}"/>
                         <DataGridTextColumn Header="Tên sản phẩm" Width="2*" Binding="{Binding TenSP}"/>
-                        <DataGridTextColumn Header="Đơn giá" Width="1.2*" Binding="{Binding DonGia}"/>
+                        <DataGridTextColumn Header="Đơn giá (VND)" Width="1.2*" Binding="{Binding DonGia}"/>
                         <DataGridTextColumn Header="Số lượng" Width="1*" Binding="{Binding SoLuong}"/>
-                        <DataGridTextColumn Header="Thành tiền" Width="1.5*" Binding="{Binding ThanhTien}"/>
+                        <DataGridTextColumn Header="Thành tiền (VND)" Width="1.5*" Binding="{Binding ThanhTien}"/>
                     </DataGrid.Columns>
                 </DataGrid>
 

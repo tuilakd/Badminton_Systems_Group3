@@ -205,9 +205,9 @@
                         <DataGridTextColumn Header="Loại hóa đơn" Width="1.2*" Binding="{Binding LoaiHoaDon}"/>
 
                         <DataGridTextColumn Header="Chi tiết" Width="2*" Binding="{Binding ChiTiet}"/>
-                        <DataGridTextColumn Header="Đơn giá/Giá thuê" Width="1.5*" Binding="{Binding DonGia, StringFormat={}{0:N0}}"/>
+                        <DataGridTextColumn Header="Đơn giá/Giá thuê (VND)" Width="1.5*" Binding="{Binding DonGia, StringFormat={}{0:N0}}"/>
                         <DataGridTextColumn Header="Số lượng/Số giờ" Width="0.8*" Binding="{Binding SoLuong}"/>
-                        <DataGridTextColumn Header="Thành tiền" Width="1.5*" Binding="{Binding ThanhTien, StringFormat={}{0:N0}}"/>
+                        <DataGridTextColumn Header="Thành tiền (VND)" Width="1.5*" Binding="{Binding ThanhTien, StringFormat={}{0:N0}}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

@@ -32,7 +32,6 @@ namespace Badminton_Systems_Group3.GUI
             DisableForm();
         }
 
-        // ================= UI =================
         private void UpdateUI(string maSan, string statusVatLy)
         {
             var txtStatus = FindName("txtStatus_" + maSan) as TextBlock;
@@ -41,18 +40,16 @@ namespace Badminton_Systems_Group3.GUI
 
             if (txtStatus == null || btn == null) return;
 
-            // 1. CẬP NHẬT GIÁ THUÊ TỪ DATABASE
             CourtDAL courtDAL = new CourtDAL();
             var court = courtDAL.GetByMaSan(maSan);
             if (court != null && txtGia != null)
             {
-                txtGia.Text = string.Format("{0:N0}/h", court.GiaThue);
+                txtGia.Text = string.Format("{0:N0} VND/giờ", court.GiaThue);
             }
 
             btn.Tag = maSan;
             btn.IsEnabled = true;
 
-            // 2. PHÂN LOẠI TRẠNG THÁI HIỂN THỊ
             if (statusVatLy == "Bảo trì")
             {
                 txtStatus.Text = "BẢO TRÌ";
@@ -66,7 +63,6 @@ namespace Badminton_Systems_Group3.GUI
             {
                 DateTime ngayChon = dpNgayDat.SelectedDate ?? DateTime.Today;
 
-                // LẤY GIỜ TỪ COMBOBOX ĐỂ KIỂM TRA ĐÚNG KHUNG GIỜ ĐANG CHỌN
                 bool daCoLich = false;
                 if (TryGetTimeFromComboBox(out TimeSpan gBD, out TimeSpan gKT))
                 {

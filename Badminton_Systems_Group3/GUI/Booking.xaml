@@ -239,7 +239,9 @@
 
                             <TextBlock Grid.Row="3" Text="Giờ bắt đầu:" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
                             <ComboBox x:Name="cboGioBD" Grid.Row="3" Grid.Column="1" Height="32" Margin="5" FontSize="16" VerticalContentAlignment="Center" IsEditable="True" Text="11:00 SA" SelectionChanged="cboGioBD_SelectionChanged">
-                                <ComboBoxItem Content="09:00"/>
+                                <ComboBoxItem Content="07:00"/>
+                                    <ComboBoxItem Content="08:00"/>
+                                    <ComboBoxItem Content="09:00"/>
                                     <ComboBoxItem Content="10:00"/>
                                     <ComboBoxItem Content="11:00"/>
                                     <ComboBoxItem Content="12:00"/>

@@ -25,14 +25,6 @@ namespace Badminton_Systems_Group3.GUI
         public Revenue()
         {
             InitializeComponent();
-
-            if (cboLoaiHoaDon != null)
-            {
-                cboLoaiHoaDon.Items.Add(new ComboBoxItem { Content = "Tất cả", IsSelected = true });
-                cboLoaiHoaDon.Items.Add(new ComboBoxItem { Content = "Bán hàng" });
-                cboLoaiHoaDon.Items.Add(new ComboBoxItem { Content = "Đặt sân" });
-            }
-
             LoadThongKe();
             LoadDanhSachGiaoDich();
         }
@@ -124,9 +116,7 @@ namespace Badminton_Systems_Group3.GUI
         private void XuatFileExcel()
         {
             SaveFileDialog sfd = new SaveFileDialog();
-            // 1. Đổi bộ lọc từ .csv sang .xls để Excel tự động chia cột khi gặp dấu Tab
             sfd.Filter = "Excel File (*.xls)|*.xls";
-            // 2. Đổi tên đuôi file mặc định sang .xls
             sfd.FileName = "BaoCaoDoanhThu_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls";
 
             if (sfd.ShowDialog() == true)

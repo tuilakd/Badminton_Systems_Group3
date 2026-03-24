@@ -182,8 +182,13 @@
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="Loại hóa đơn:" FontSize="18" VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,10,0"/>
 
-                        <ComboBox x:Name="cboLoaiHoaDon" Width="283" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="0,0,15,0"/>
-
+                        <ComboBox x:Name="cboLoaiHoaDon" Width="283" Height="36" VerticalContentAlignment="Center" FontSize="16" Margin="0,0,15,0">
+                            <ComboBoxItem Content="Tất cả" IsSelected="True"/>
+                            <ComboBoxItem Content="Đặt sân"/>
+                            <ComboBoxItem Content="Bán hàng"/>
+                        </ComboBox>
+                            
+                        
                         <Button x:Name="btnTimKiem" Click="btnTimKiem_Click" Content="Tìm kiếm 🔍" Style="{StaticResource ActionButtonStyle}" Height="36" Padding="15,0" Margin="0" Width="309"/>
                     </StackPanel>
                 </StackPanel>

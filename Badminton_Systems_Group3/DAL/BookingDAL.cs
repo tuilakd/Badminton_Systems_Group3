@@ -125,7 +125,7 @@ namespace Badminton_Systems_Group3.DAL
                              AND (@giobd < GioKT AND @giokt > GioBD)
                              AND TrangThai <> N'Đã hủy'";
 
-                SqlParameter[] parameters = {
+            SqlParameter[] parameters = {
                 new SqlParameter("@masan", booking.MaSan),
                 new SqlParameter("@ngaydat", booking.NgayDat.Date),
                 new SqlParameter("@giobd", SqlDbType.Time) { Value = booking.GioBatDau },
@@ -159,7 +159,7 @@ namespace Badminton_Systems_Group3.DAL
 
             if (result == null || result == DBNull.Value)
             {
-                return "HD0001"; 
+                return "HD0001";
             }
 
             string currentMa = result?.ToString() ?? "HD0000";
@@ -294,9 +294,9 @@ namespace Badminton_Systems_Group3.DAL
             if (resultObj != null && resultObj != DBNull.Value)
             {
                 string currentMa = resultObj.ToString();
-                if (currentMa.Length >= 6)
+                if (!string.IsNullOrEmpty(currentMa) && currentMa.StartsWith("HD"))
                 {
-                    if (int.TryParse(currentMa.Substring(2), out int lastNum))
+                    if (int.TryParse(currentMa.Replace("HD", ""), out int lastNum))
                     {
                         maHDmoi = "HD" + (lastNum + 1).ToString("D4");
                     }

@@ -32,42 +32,63 @@ namespace Badminton_Systems_Group3.GUI
             DisableForm();
         }
 
-        private void UpdateUI(string maSan, string status)
+        // ================= UI =================
+        private void UpdateUI(string maSan, string statusVatLy)
         {
-            var txt = FindName("txtStatus_" + maSan) as TextBlock;
+            var txtStatus = FindName("txtStatus_" + maSan) as TextBlock;
             var btn = FindName("btn_" + maSan) as Button;
+            var txtGia = FindName("txtGia_" + maSan) as TextBlock;
 
-            if (txt == null || btn == null) return;
+            if (txtStatus == null || btn == null) return;
 
+            // 1. CẬP NHẬT GIÁ THUÊ TỪ DATABASE
+            CourtDAL courtDAL = new CourtDAL();
+            var court = courtDAL.GetByMaSan(maSan);
+            if (court != null && txtGia != null)
+            {
+                txtGia.Text = string.Format("{0:N0}/h", court.GiaThue);
+            }
+
+            btn.Tag = maSan;
             btn.IsEnabled = true;
 
-            if (status == "Bảo trì")
+            // 2. PHÂN LOẠI TRẠNG THÁI HIỂN THỊ
+            if (statusVatLy == "Bảo trì")
             {
-                txt.Text = "BẢO TRÌ";
-                txt.Foreground = Brushes.Orange; 
-
+                txtStatus.Text = "BẢO TRÌ";
+                txtStatus.Foreground = Brushes.Orange;
                 btn.Content = "Bảo trì";
-                btn.Background = Brushes.Yellow; 
-                btn.Foreground = Brushes.Black;  
-                btn.IsEnabled = false;           
+                btn.Background = Brushes.Yellow;
+                btn.Foreground = Brushes.Black;
+                btn.IsEnabled = false;
             }
-            else if (status == "Đã đặt")
+            else
             {
-                txt.Text = "ĐÃ ĐẶT";
-                txt.Foreground = Brushes.Red;
+                DateTime ngayChon = dpNgayDat.SelectedDate ?? DateTime.Today;
 
-                btn.Content = "THANH TOÁN";
-                btn.Background = Brushes.Red;
-                btn.Foreground = Brushes.White;
-            }
-            else 
-            {
-                txt.Text = "TRỐNG";
-                txt.Foreground = Brushes.Green;
+                // LẤY GIỜ TỪ COMBOBOX ĐỂ KIỂM TRA ĐÚNG KHUNG GIỜ ĐANG CHỌN
+                bool daCoLich = false;
+                if (TryGetTimeFromComboBox(out TimeSpan gBD, out TimeSpan gKT))
+                {
+                    daCoLich = bus.KiemTraSanDaDat(maSan, ngayChon, gBD, gKT);
+                }
 
-                btn.Content = "Đặt sân";
-                btn.Background = Brushes.Green;
-                btn.Foreground = Brushes.White;
+                if (daCoLich)
+                {
+                    txtStatus.Text = "ĐÃ ĐẶT";
+                    txtStatus.Foreground = Brushes.Red;
+                    btn.Content = "THANH TOÁN";
+                    btn.Background = Brushes.Red;
+                    btn.Foreground = Brushes.White;
+                }
+                else
+                {
+                    txtStatus.Text = "TRỐNG";
+                    txtStatus.Foreground = Brushes.Green;
+                    btn.Content = "Đặt sân";
+                    btn.Background = Brushes.Green;
+                    btn.Foreground = Brushes.White;
+                }
             }
         }
 
@@ -79,8 +100,10 @@ namespace Badminton_Systems_Group3.GUI
             foreach (var ma in dsSan)
             {
                 var court = allCourts.FirstOrDefault(c => c.MaSan == ma);
-                string status = (court != null && court.TrangThai == "Bảo trì") ? "Bảo trì" : "Trống";
-                UpdateUI(ma, status);
+                if (court != null)
+                {
+                    UpdateUI(ma, court.TrangThai);
+                }
             }
         }
 
@@ -125,7 +148,11 @@ namespace Badminton_Systems_Group3.GUI
             maSanDangChon = btn.Tag.ToString()!;
             DateTime ngay = dpNgayDat.SelectedDate ?? DateTime.Today;
 
-            if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT)) return;
+            if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
+            {
+                MessageBox.Show("Vui lòng chọn khung giờ hợp lệ!");
+                return;
+            }
 
             bool coBooking = bus.KiemTraSanDaDat(maSanDangChon, ngay, gioBD, gioKT);
 
@@ -150,7 +177,7 @@ namespace Badminton_Systems_Group3.GUI
 
             if (dr == null)
             {
-                MessageBox.Show("Không tìm thấy booking chưa thanh toán!");
+                MessageBox.Show("Không tìm thấy booking chưa thanh toán trong khung giờ này!");
                 return;
             }
 
@@ -193,7 +220,6 @@ namespace Badminton_Systems_Group3.GUI
             }
 
             double tongSoGio = (gioKT - gioBD).TotalHours;
-
             if (tongSoGio < 0) tongSoGio = 0;
 
             decimal tongTien = (decimal)tongSoGio * giaThue;
@@ -221,7 +247,7 @@ namespace Badminton_Systems_Group3.GUI
 
             if (court == null)
             {
-                MessageBox.Show("Không tìm thấy thông tin sân trong hệ thống!");
+                MessageBox.Show("Không tìm thấy thông tin sân!");
                 return;
             }
 
@@ -242,9 +268,6 @@ namespace Badminton_Systems_Group3.GUI
 
             if (result.success)
             {
-                court.TrangThai = "Đã đặt";
-                courtDAL.Update(court);
-
                 ResetForm();
                 LocSan();
             }
@@ -268,7 +291,11 @@ namespace Badminton_Systems_Group3.GUI
 
                 var drTemp = dal.GetThongTinKhachDatSanChuaThanhToan(maSanDangChon, dpNgayDat.SelectedDate ?? DateTime.Today, gioBD, gioKT);
 
-                if (drTemp == null) return;
+                if (drTemp == null)
+                {
+                    MessageBox.Show("Dữ liệu thanh toán không hợp lệ!");
+                    return;
+                }
 
                 string maDS = drTemp["MaDatSan"]?.ToString() ?? "";
                 string sdtKhach = drTemp["SDT"]?.ToString() ?? "";
@@ -279,14 +306,6 @@ namespace Badminton_Systems_Group3.GUI
                 MessageBox.Show(result.message);
                 if (result.success)
                 {
-                    CourtDAL courtDAL = new CourtDAL();
-                    var court = courtDAL.GetByMaSan(maSanDangChon);
-                    if (court != null)
-                    {
-                        court.TrangThai = "Trống"; 
-                        courtDAL.Update(court);    
-                    }
-
                     ResetForm();
                     LocSan();
                 }
@@ -341,6 +360,8 @@ namespace Badminton_Systems_Group3.GUI
             gioBD = TimeSpan.Zero;
             gioKT = TimeSpan.Zero;
 
+            if (cboGioBD.SelectedItem == null || cboGioKT.SelectedItem == null) return false;
+
             string strStart = (cboGioBD.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
             string strEnd = (cboGioKT.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
 
@@ -361,7 +382,6 @@ namespace Badminton_Systems_Group3.GUI
         {
             Badminton_Systems_Group3.GUI.Info thongTinWindow = new Badminton_Systems_Group3.GUI.Info();
             thongTinWindow.ShowDialog();
-
             btnThongTin.IsChecked = false;
         }
 

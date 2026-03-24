@@ -35,20 +35,22 @@ namespace Badminton_Systems_Group3.BUS
                 if (dal.KiemTraTrungGio(booking))
                     return (false, "Sân đã có người đặt trong khung giờ này!");
 
+                // Tạo mã khách hàng dựa trên SĐT
                 booking.MaKH = "KH" + booking.SDT.Trim().Replace(" ", "");
 
                 if (!dal.KhachHangTonTai(booking.MaKH))
                 {
                     if (!dal.InsertKhachHang(booking.MaKH, booking.TenKhachHang, booking.SDT))
-                        return (false, "Lỗi lưu khách hàng!");
+                        return (false, "Lỗi lưu thông tin khách hàng mới!");
                 }
 
+                // Tạo mã đặt sân duy nhất
                 booking.MaDatSan = "DS" + DateTime.Now.ToString("ddHHmmss");
 
                 booking.TinhThanhTien();
 
                 if (!dal.InsertBooking(booking))
-                    return (false, "Lưu đặt sân thất bại!");
+                    return (false, "Lưu thông tin đặt sân thất bại!");
 
                 return (true, "Đặt sân thành công!");
             }
@@ -65,7 +67,6 @@ namespace Badminton_Systems_Group3.BUS
 
         public (bool success, string message) ThanhToan(string maDatSan, string sdt, decimal tongTien)
         {
-            // 1. Kiểm tra đầu vào cơ bản
             if (string.IsNullOrEmpty(maDatSan))
                 return (false, "Chưa chọn dữ liệu thanh toán!");
 
@@ -78,34 +79,34 @@ namespace Badminton_Systems_Group3.BUS
             try
             {
                 string maKH = "KH" + sdt.Trim().Replace(" ", "");
+
+                // Thực hiện lưu hóa đơn và cập nhật trạng thái đặt sân sang 'Đã thanh toán'
                 bool ok = dal.ThanhToan(maDatSan, maKH, (double)tongTien);
 
                 if (!ok)
-                    return (false, "Quá trình thanh toán thất bại tại hệ thống dữ liệu!");
+                    return (false, "Quá trình thanh toán thất bại tại lớp dữ liệu!");
 
-                return (true, "Thanh toán thành công và hóa đơn đã được lưu!");
+                return (true, "Thanh toán thành công!");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Lỗi BUS ThanhToan: " + ex.Message);
-                return (false, "Lỗi hệ thống: " + ex.Message);
+                return (false, "Lỗi hệ thống khi thanh toán: " + ex.Message);
             }
         }
+
         public (bool success, string message) HuyLich(string maDatSan)
         {
             if (string.IsNullOrEmpty(maDatSan))
-                return (false, "Chưa chọn lịch!");
+                return (false, "Vui lòng chọn lịch cần hủy!");
 
             bool ok = dal.HuyLich(maDatSan);
-
-            return ok
-                ? (true, "Hủy lịch thành công!")
-                : (false, "Hủy lịch thất bại!");
+            return ok ? (true, "Hủy lịch thành công!") : (false, "Không thể hủy lịch này!");
         }
+
         public (bool success, string message) UpdateBooking(string maDatSan, DateTime ngay, TimeSpan bd, TimeSpan kt, string maSan)
         {
             if (kt <= bd)
-                return (false, "Giờ không hợp lệ!");
+                return (false, "Giờ kết thúc phải lớn hơn giờ bắt đầu!");
 
             BookingDTO temp = new BookingDTO
             {
@@ -116,33 +117,40 @@ namespace Badminton_Systems_Group3.BUS
             };
 
             if (dal.KiemTraTrungGioUpdate(temp, maDatSan))
-                return (false, "Trùng giờ!");
+                return (false, "Sân đã có lịch khác trong khung giờ mới chọn!");
 
             bool ok = dal.UpdateBooking(maDatSan, ngay, bd, kt);
-
-            return ok
-                ? (true, "Thay đổi lịch thành công!")
-                : (false, "Thay đổi lịch thất bại!");
+            return ok ? (true, "Thay đổi lịch thành công!") : (false, "Thay đổi lịch thất bại!");
         }
+
         public DataTable LayLichDatSanFull()
         {
             return dal.GetAllBookingSchedule();
         }
-       
+
+        // ================= KIỂM TRA SÂN =================
+
+        /// <summary>
+        /// Kiểm tra xem một sân cụ thể đã được đặt trong khung giờ nhất định hay chưa
+        /// </summary>
+        public bool KiemTraSanDaDat(string maSan, DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
+        {
+            // Lấy thông tin từ DAL
+            DataRow dr = dal.GetThongTinKhachDatSanChuaThanhToan(maSan, ngay, gioBD, gioKT);
+
+            // Nếu dr khác null nghĩa là đã có người đặt (trả về true)
+            return dr != null;
+        }
+
         public decimal TinhTien(TimeSpan start, TimeSpan end, decimal giaMoiGio = 120000)
         {
-            var duration = end - start;
-            return duration.TotalHours > 0 ? (decimal)duration.TotalHours * giaMoiGio : 0;
+            double duration = (end - start).TotalHours;
+            return duration > 0 ? (decimal)duration * giaMoiGio : 0;
         }
+
         public DataTable SearchBooking(string trangThai, string keyword, DateTime? ngay)
         {
             return dal.SearchBooking(trangThai, keyword, ngay);
-        }
-
-        public bool KiemTraSanDaDat(string maSan, DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
-        {
-            var dt = dal.GetThongTinKhachDatSanChuaThanhToan(maSan, ngay, gioBD, gioKT);
-            return dt != null;
         }
     }
 }

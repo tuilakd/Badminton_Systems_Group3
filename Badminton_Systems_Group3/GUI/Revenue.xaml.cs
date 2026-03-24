@@ -124,8 +124,10 @@ namespace Badminton_Systems_Group3.GUI
         private void XuatFileExcel()
         {
             SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "Excel CSV (*.csv)|*.csv";
-            sfd.FileName = "BaoCaoDoanhThu_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".csv";
+            // 1. Đổi bộ lọc từ .csv sang .xls để Excel tự động chia cột khi gặp dấu Tab
+            sfd.Filter = "Excel File (*.xls)|*.xls";
+            // 2. Đổi tên đuôi file mặc định sang .xls
+            sfd.FileName = "BaoCaoDoanhThu_" + DateTime.Now.ToString("ddMMyyyy_HHmm") + ".xls";
 
             if (sfd.ShowDialog() == true)
             {
@@ -140,23 +142,25 @@ namespace Badminton_Systems_Group3.GUI
 
                     using (StreamWriter sw = new StreamWriter(sfd.FileName, false, new UTF8Encoding(true)))
                     {
-                        sw.WriteLine("Mã HD,Ngày lập,Loại,Chi tiết,Đơn giá,Số lượng,Thành tiền");
+                        sw.WriteLine("Mã HD\tNgày lập\tLoại\tChi tiết\tĐơn giá\tSố lượng\tThành tiền");
 
                         foreach (DataRowView row in view)
                         {
                             string maHD = row["MaHD"].ToString();
                             string ngayLap = Convert.ToDateTime(row["NgayLapHD"]).ToString("dd/MM/yyyy HH:mm");
                             string loai = row["LoaiHoaDon"].ToString();
-                            string chiTiet = row["ChiTiet"].ToString().Replace(",", " ");
+
+                            string chiTiet = row["ChiTiet"].ToString().Replace("\t", " ");
+
                             string donGia = row["DonGia"].ToString();
                             string soLuong = row["SoLuong"].ToString();
                             string thanhTien = row["ThanhTien"].ToString();
 
-                            sw.WriteLine($"{maHD},{ngayLap},{loai},{chiTiet},{donGia},{soLuong},{thanhTien}");
+                            sw.WriteLine($"{maHD}\t{ngayLap}\t{loai}\t{chiTiet}\t{donGia}\t{soLuong}\t{thanhTien}");
                         }
                     }
 
-                    MessageBox.Show("Đã xuất báo cáo và lưu vào CSDL thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Đã xuất báo cáo thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {

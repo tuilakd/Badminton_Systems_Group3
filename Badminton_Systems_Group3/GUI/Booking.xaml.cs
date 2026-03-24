@@ -291,7 +291,7 @@ namespace Badminton_Systems_Group3.GUI
                     LocSan();
                 }
             }
-            else if (content == "ĐẶT SÂN")
+            else if (content == "XÁC NHẬN ĐẶT SÂN")
             {
                 CapNhatTien();
                 DatSan();

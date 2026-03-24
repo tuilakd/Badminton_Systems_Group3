@@ -46,7 +46,9 @@ namespace Badminton_Systems_Group3.DAL
 
             string querySan = @"
                 SELECT h.MaHD, h.NgayLapHD, N'Đặt sân' AS LoaiHoaDon, 
-                       s.TenSan AS ChiTiet, ct.GiaThue AS DonGia, 1 AS SoLuong, ct.ThanhTien
+                       s.TenSan AS ChiTiet, ct.GiaThue AS DonGia, 
+                       DATEDIFF(HOUR, ds.GioBD, ds.GioKT) AS SoLuong, 
+                       (ct.GiaThue * DATEDIFF(HOUR, ds.GioBD, ds.GioKT)) AS ThanhTien
                 FROM hoadon h
                 INNER JOIN chitiethoadon_san ct ON h.MaHD = ct.MaHD
                 INNER JOIN datsan ds ON ct.MaDatSan = ds.MaDatSan

@@ -9,7 +9,7 @@ namespace Badminton_Systems_Group3.DAL
     internal class UserDAL
     {
         private string connectionString =
-        "Data Source=.\\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
+        "Data Source=.\\SQLEXPRESS;Initial Catalog=QL_SanCauLong;Integrated Security=True;TrustServerCertificate=True";
         public bool CheckLogin(UserDTO user)
         {
             bool isValid = false;

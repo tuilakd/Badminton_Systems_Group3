@@ -6,7 +6,7 @@ namespace Badminton_Systems_Group3.Database
 {
     internal class DatabaseHelper
     {
-        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCauLong;Integrated Security=True;TrustServerCertificate=True";
 
         public SqlConnection GetConnection()
         {

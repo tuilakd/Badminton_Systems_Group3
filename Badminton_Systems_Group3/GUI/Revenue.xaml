@@ -94,7 +94,7 @@
         <Border Grid.Row="0" Background="#024D2A" Padding="20,15">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Quản lý Doanh thu" Foreground="White" FontSize="32" FontWeight="Bold"/>
-                <TextBlock Text=" 📊" Foreground="White" FontSize="32" Margin="10,0,0,0"/>
+                <TextBlock Text="📊" Foreground="White" FontSize="32" Margin="10,0,0,0"/>
             </StackPanel>
         </Border>
 
@@ -206,7 +206,7 @@
 
                         <DataGridTextColumn Header="Chi tiết" Width="2*" Binding="{Binding ChiTiet}"/>
                         <DataGridTextColumn Header="Đơn giá/Giá thuê" Width="1.5*" Binding="{Binding DonGia, StringFormat={}{0:N0}}"/>
-                        <DataGridTextColumn Header="Số lượng" Width="0.8*" Binding="{Binding SoLuong}"/>
+                        <DataGridTextColumn Header="Số lượng/Số giờ" Width="0.8*" Binding="{Binding SoLuong}"/>
                         <DataGridTextColumn Header="Thành tiền" Width="1.5*" Binding="{Binding ThanhTien, StringFormat={}{0:N0}}"/>
                     </DataGrid.Columns>
                 </DataGrid>

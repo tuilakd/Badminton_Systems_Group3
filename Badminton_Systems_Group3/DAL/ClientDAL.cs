@@ -8,7 +8,7 @@ namespace Badminton_Systems_Group3.DAL
 {
     public class ClientDAL
     {
-        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCL;Integrated Security=True;TrustServerCertificate=True";
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=QL_SanCauLong;Integrated Security=True;TrustServerCertificate=True";
         public List<ClientDTO> GetAll()
         {
             List<ClientDTO> list = new List<ClientDTO>();
@@ -100,10 +100,10 @@ namespace Badminton_Systems_Group3.DAL
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 string query = @"
-            SELECT kh.MaKH, kh.HoTen, kh.SDT, ds.MaDatSan, ds.TrangThai
-            FROM khachhang kh
-            LEFT JOIN datsan ds ON kh.MaKH = ds.MaKH
-            WHERE kh.MaKH LIKE @kw";
+                SELECT kh.MaKH, kh.HoTen, kh.SDT, ds.MaDatSan, ds.TrangThai
+                FROM khachhang kh
+                LEFT JOIN datsan ds ON kh.MaKH = ds.MaKH
+                WHERE kh.MaKH LIKE @kw";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@kw", "%" + keyword + "%");

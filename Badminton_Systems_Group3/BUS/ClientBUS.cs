@@ -35,7 +35,7 @@ namespace Badminton_Systems_Group3.BUS
         {
             return dal.CheckExist(maKH);
         }
-        
-        
+
+
     }
 }

@@ -198,5 +198,7 @@ namespace Badminton_Systems_Group3.GUI
             window.Show();
             this.Close();
         }
+
+      
     }
 }

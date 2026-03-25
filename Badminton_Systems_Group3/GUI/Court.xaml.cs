@@ -26,12 +26,21 @@ namespace Badminton_Systems_Group3.GUI
             InitializeComponent();
             LoadData();
         }
-        private void LoadData()
+        private void LoadData(string loc = "Tất cả")
         {
             var list = bus.GetAll();
+
+            if (loc == "Đang hoạt động")
+            {
+                list = list.Where(san => san.TrangThai == "Trống" || san.TrangThai == "Đang hoạt động").ToList();
+            }
+            else if (loc == "Bảo trì")
+            {
+                list = list.Where(san => san.TrangThai == "Bảo trì").ToList();
+            }
+
             foreach (var item in list)
             {
-                // Logic: Nếu không phải Bảo trì thì mặc định hiểu là Đang hoạt động
                 if (item.TrangThai != "Bảo trì")
                 {
                     item.TrangThai = "Đang hoạt động";
@@ -198,24 +207,12 @@ namespace Badminton_Systems_Group3.GUI
 
         private void cboHienThi_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dgSanBai != null && cboHienThi != null && cboHienThi.SelectedItem != null)
-            {
-                ComboBoxItem item = (ComboBoxItem)cboHienThi.SelectedItem;
-                string filter = item.Content.ToString();
+            if (dgSanBai == null || cboHienThi.SelectedItem == null) return;
 
-                DataTable dt = bus.LayDanhSachSan(filter);
+            ComboBoxItem item = (ComboBoxItem)cboHienThi.SelectedItem;
+            string filter = item.Content.ToString();
 
-                // Duyệt qua từng dòng trong DataTable để sửa hiển thị
-                foreach (DataRow row in dt.Rows)
-                {
-                    if (row["TrangThai"].ToString() != "Bảo trì")
-                    {
-                        row["TrangThai"] = "Đang hoạt động";
-                    }
-                }
-
-                dgSanBai.ItemsSource = dt.DefaultView;
-            }
+            LoadData(filter);
         }
     }
 }

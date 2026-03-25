@@ -100,6 +100,17 @@ namespace Badminton_Systems_Group3.GUI
 
         private void btnTimKiem_Click(object sender, RoutedEventArgs e)
         {
+            if (dpTuNgay.SelectedDate.HasValue && dpDenNgay.SelectedDate.HasValue)
+            {
+                if (dpTuNgay.SelectedDate.Value > dpDenNgay.SelectedDate.Value)
+                {
+                    MessageBox.Show("Lỗi: 'Từ ngày' không thể lớn hơn 'Đến ngày'. Vui lòng chọn lại!",
+                                    "Cảnh báo",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Warning);
+                    return; 
+                }
+            }
             string tuNgay = dpTuNgay.SelectedDate.HasValue ? dpTuNgay.SelectedDate.Value.ToString("yyyy-MM-dd") : "";
             string denNgay = dpDenNgay.SelectedDate.HasValue ? dpDenNgay.SelectedDate.Value.ToString("yyyy-MM-dd") : "";
 

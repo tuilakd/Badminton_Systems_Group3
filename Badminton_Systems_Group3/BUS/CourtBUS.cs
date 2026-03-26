@@ -35,6 +35,10 @@ namespace Badminton_Systems_Group3.BUS
 
             return dal.LayDanhSachSan(filter);
         }
+        public List<CourtDTO> LayDanhSachSanList(string filter)
+        {
+            return dal.LayDanhSachSanList(filter);
+        }
     }
 
 }

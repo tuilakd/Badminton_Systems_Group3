@@ -112,5 +112,19 @@ namespace Badminton_Systems_Group3.DAL
 
             return db.ExecuteQuery(query);
         }
+        public List<CourtDTO> LayDanhSachSanList(string filter)
+        {
+            List<CourtDTO> all = GetAll();
+
+            if (string.IsNullOrEmpty(filter) || filter == "Tất cả")
+                return all;
+
+            if (filter == "Đang hoạt động")
+            {
+                return all.FindAll(x => x.TrangThai != "Bảo trì");
+            }
+
+            return all.FindAll(x => x.TrangThai == filter);
+        }
     }
 }

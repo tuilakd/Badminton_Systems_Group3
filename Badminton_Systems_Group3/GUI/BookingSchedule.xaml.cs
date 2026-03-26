@@ -90,28 +90,22 @@ namespace Badminton_Systems_Group3.GUI
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Kiểm tra xem người dùng đã chọn dòng nào trên DataGrid chưa
             if (dgLichDat.SelectedItem == null)
             {
                 MessageBox.Show("Vui lòng chọn lịch đặt sân cần hủy!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // 2. Lấy dòng dữ liệu đang được chọn
             DataRowView row = (DataRowView)dgLichDat.SelectedItem;
 
-            // 3. LẤY TRẠNG THÁI CỦA LỊCH ĐẶT (Quan trọng)
-            // Lưu ý: "TrangThai" phải khớp với tên cột trong DataTable của bạn
             string trangThai = row["TrangThai"].ToString();
 
-            // 4. KIỂM TRA LOGIC: Nếu đã thanh toán thì không cho xóa
             if (trangThai == "Đã thanh toán")
             {
                 MessageBox.Show("Không thể hủy lịch đặt sân đã thanh toán!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Error);
-                return; // Dừng hàm tại đây, không chạy xuống phần xóa bên dưới
+                return; 
             }
 
-            // 5. Nếu chưa thanh toán, tiến hành xác nhận và xóa như cũ
             string maDatSan = row["MaDatSan"].ToString();
             var confirm = MessageBox.Show($" bạn chắc chắn muốn hủy lịch đặt {maDatSan}?", "Xác nhận hủy", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
@@ -122,7 +116,7 @@ namespace Badminton_Systems_Group3.GUI
                 if (kq.success)
                 {
                     MessageBox.Show("Hủy lịch thành công!", "Thông báo");
-                    LoadData(); // Load lại bảng để cập nhật dữ liệu mới
+                    LoadData(); 
                 }
                 else
                 {
@@ -196,7 +190,6 @@ namespace Badminton_Systems_Group3.GUI
             {
                 BtnSearch_Click(sender, e);
 
-                // (Tùy chọn) Ngăn tiếng "beep" mặc định của Windows khi nhấn Enter trong TextBox
                 e.Handled = true;
             }
         }

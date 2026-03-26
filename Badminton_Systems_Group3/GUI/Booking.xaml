@@ -260,6 +260,7 @@
 
                             <TextBlock Grid.Row="4" Text="Giờ kết thúc:" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
                             <ComboBox x:Name="cboGioKT" Grid.Row="4" Grid.Column="1" Height="32" Margin="5" FontSize="16" VerticalContentAlignment="Center" IsEditable="True" Text="13:00 CH" SelectionChanged="cboGioKT_SelectionChanged">
+                                    <ComboBoxItem Content="08:00"/>
                                     <ComboBoxItem Content="09:00"/>
                                     <ComboBoxItem Content="10:00"/>
                                     <ComboBoxItem Content="11:00"/>

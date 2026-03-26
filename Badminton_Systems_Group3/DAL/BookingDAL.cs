@@ -141,7 +141,7 @@ namespace Badminton_Systems_Group3.DAL
 
         public DataTable SearchBooking(string trangThai, string keyword, DateTime? ngay)
         {
-            string query = @"SELECT ds.MaDatSan, s.TenSan, ds.TrangThai, kh.HoTen, kh.SDT,
+            string query = @"SELECT ds.MaDatSan, ds.MaSan, s.TenSan, ds.TrangThai, kh.HoTen, kh.SDT,
                              ds.NgayDat, ds.GioBD, ds.GioKT
                              FROM datsan ds
                              JOIN khachhang kh ON ds.MaKH = kh.MaKH

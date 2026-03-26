@@ -103,7 +103,9 @@ namespace Badminton_Systems_Group3.DAL
                 SELECT kh.MaKH, kh.HoTen, kh.SDT, ds.MaDatSan, ds.TrangThai
                 FROM khachhang kh
                 LEFT JOIN datsan ds ON kh.MaKH = ds.MaKH
-                WHERE kh.MaKH LIKE @kw";
+                WHERE kh.MaKH LIKE @kw 
+                   OR kh.HoTen LIKE @kw 
+                   OR kh.SDT LIKE @kw";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@kw", "%" + keyword + "%");

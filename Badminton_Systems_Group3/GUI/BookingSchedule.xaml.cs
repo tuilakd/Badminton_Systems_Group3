@@ -130,7 +130,6 @@ namespace Badminton_Systems_Group3.GUI
         {
             try
             {
-                // Lấy dòng dữ liệu đang sửa
                 DataRowView row = (DataRowView)e.Row.Item;
 
                 string maDatSan = row["MaDatSan"].ToString();

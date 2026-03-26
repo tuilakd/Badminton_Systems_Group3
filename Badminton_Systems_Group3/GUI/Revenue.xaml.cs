@@ -100,26 +100,16 @@ namespace Badminton_Systems_Group3.GUI
 
         private void btnTimKiem_Click(object sender, RoutedEventArgs e)
         {
-            if (dpTuNgay.SelectedDate.HasValue && dpDenNgay.SelectedDate.HasValue)
+            var kiemTraNgay = bus.KiemTraNgayTimKiem(dpTuNgay.SelectedDate, dpDenNgay.SelectedDate);
+            if (!kiemTraNgay.Item1)
             {
-                if (dpTuNgay.SelectedDate.Value > dpDenNgay.SelectedDate.Value)
-                {
-                    MessageBox.Show("Lỗi: 'Từ ngày' không thể lớn hơn 'Đến ngày'. Vui lòng chọn lại!",
-                                    "Cảnh báo",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Warning);
-                    return; 
-                }
+                MessageBox.Show(kiemTraNgay.Item2, "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
+
             string tuNgay = dpTuNgay.SelectedDate.HasValue ? dpTuNgay.SelectedDate.Value.ToString("yyyy-MM-dd") : "";
             string denNgay = dpDenNgay.SelectedDate.HasValue ? dpDenNgay.SelectedDate.Value.ToString("yyyy-MM-dd") : "";
-
-            string loaiHD = cboLoaiHoaDon.Text.Trim();
-
-            if (string.IsNullOrEmpty(loaiHD))
-            {
-                loaiHD = "Tất cả";
-            }
+            string loaiHD = string.IsNullOrEmpty(cboLoaiHoaDon.Text?.Trim()) ? "Tất cả" : cboLoaiHoaDon.Text.Trim();
 
             LoadDanhSachGiaoDich(tuNgay, denNgay, loaiHD);
         }
@@ -132,40 +122,24 @@ namespace Badminton_Systems_Group3.GUI
 
             if (sfd.ShowDialog() == true)
             {
-                try
+                DataView view = (DataView)dgvDoanhThu.ItemsSource;
+                if (view == null || view.Count == 0)
                 {
-                    DataView view = (DataView)dgvDoanhThu.ItemsSource;
-                    if (view == null || view.Count == 0)
-                    {
-                        MessageBox.Show("Không có dữ liệu trong bảng để xuất!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-
-                    using (StreamWriter sw = new StreamWriter(sfd.FileName, false, new UTF8Encoding(true)))
-                    {
-                        sw.WriteLine("Mã HD\tNgày lập\tLoại\tChi tiết\tĐơn giá\tSố lượng\tThành tiền");
-
-                        foreach (DataRowView row in view)
-                        {
-                            string maHD = row["MaHD"].ToString();
-                            string ngayLap = Convert.ToDateTime(row["NgayLapHD"]).ToString("dd/MM/yyyy HH:mm");
-                            string loai = row["LoaiHoaDon"].ToString();
-
-                            string chiTiet = row["ChiTiet"].ToString().Replace("\t", " ");
-
-                            string donGia = row["DonGia"].ToString();
-                            string soLuong = row["SoLuong"].ToString();
-                            string thanhTien = row["ThanhTien"].ToString();
-
-                            sw.WriteLine($"{maHD}\t{ngayLap}\t{loai}\t{chiTiet}\t{donGia}\t{soLuong}\t{thanhTien}");
-                        }
-                    }
-
-                    MessageBox.Show("Đã xuất báo cáo thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Không có dữ liệu trong bảng để xuất!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
-                catch (Exception ex)
+
+                DataTable dtToExport = view.Table;
+
+                var result = bus.XuatFileExcel(dtToExport, sfd.FileName);
+
+                if (result.Item1)
                 {
-                    MessageBox.Show("Lỗi khi xuất file: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(result.Item2, "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show(result.Item2, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

@@ -234,7 +234,7 @@ namespace Badminton_Systems_Group3.GUI
         {
             string action = btnXacNhan.Content?.ToString() ?? "";
 
-            if (action == "ĐẶT SÂN")
+            if (action == "XÁC NHẬN ĐẶT SÂN")
             {
                 DatSan();
                 return;

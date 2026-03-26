@@ -16,7 +16,6 @@ namespace Badminton_Systems_Group3.BUS
             if (string.IsNullOrEmpty(entry.MaSP) || entry.SoLuongNhap <= 0)
                 return "Vui lòng nhập đầy đủ Mã SP và Số lượng hợp lệ!";
 
-            // laNhapMoi = true thì cộng (+), false thì trừ (-) để sửa lỗi nhập nhầm
             int delta = laNhapMoi ? entry.SoLuongNhap : -entry.SoLuongNhap;
 
             if (storageDAL.CapNhatTonKho(entry.MaSP, delta, entry.DonGia))

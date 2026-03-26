@@ -106,7 +106,7 @@ namespace Badminton_Systems_Group3.BUS
                 bool result = dal.ThanhToan(ma, makh, (double)tien);
 
                 return result
-                    ? (true, "Thanh toán thành công!")
+                    ? (true, "Thanh toán $ lưu hóa đơn thành công!")
                     : (false, "Thanh toán thất bại!");
             }
             catch (Exception ex)

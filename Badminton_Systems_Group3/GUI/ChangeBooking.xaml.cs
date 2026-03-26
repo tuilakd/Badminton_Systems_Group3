@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Badminton_Systems_Group3.BUS;
+using Badminton_Systems_Group3.DAL;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -9,22 +11,20 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Badminton_Systems_Group3.BUS;
-
 
 namespace Badminton_Systems_Group3.GUI
 {
     public partial class ChangeBooking : Window
     {
         private string maDatSan;
-        private string maSan; 
+        private string maSan;
         private BookingBUS bus = new BookingBUS();
 
         public ChangeBooking(string maDS, string maSan, DateTime ngayCu, TimeSpan gioBDCu, TimeSpan gioKTCu)
         {
             InitializeComponent();
             this.maDatSan = maDS;
-            this.maSan = maSan; 
+            this.maSan = maSan;
 
             dpNgayMoi.SelectedDate = ngayCu;
             SetComboBoxTime(cboGioBD, gioBDCu);
@@ -33,6 +33,8 @@ namespace Badminton_Systems_Group3.GUI
 
         private void SetComboBoxTime(ComboBox combo, TimeSpan time)
         {
+            if (combo == null || combo.Items == null) return;
+
             foreach (ComboBoxItem item in combo.Items)
             {
                 if (TimeSpan.TryParse(item.Content.ToString(), out TimeSpan itemTime))
@@ -63,17 +65,28 @@ namespace Badminton_Systems_Group3.GUI
                 return;
             }
 
-            var result = bus.UpdateBooking(maDatSan, dpNgayMoi.SelectedDate.Value, gioBD, gioKT, maSan);
+            CourtDAL courtDAL = new CourtDAL();
+            var court = courtDAL.GetByMaSan(maSan);
 
-            if (result.success)
+            decimal gia = court != null ? Convert.ToDecimal(court.GiaThue) : 0;
+
+            var (success, message) = bus.UpdateBooking(
+                maDatSan,
+                dpNgayMoi.SelectedDate.Value,
+                gioBD,
+                gioKT,
+                maSan,
+                gia
+            );
+            if (success)
             {
-                MessageBox.Show(result.message, "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                this.DialogResult = true; 
+                MessageBox.Show(message, "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                this.DialogResult = true;
                 this.Close();
             }
             else
             {
-                MessageBox.Show(result.message, "Báo lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(message, "Báo lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

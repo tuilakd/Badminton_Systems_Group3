@@ -3,7 +3,7 @@ using Badminton_Systems_Group3.DTO;
 using System;
 using System.Data;
 using System.Data.SqlClient;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Collections.Generic;
 
 namespace Badminton_Systems_Group3.DAL
 {
@@ -11,308 +11,257 @@ namespace Badminton_Systems_Group3.DAL
     {
         private readonly DatabaseHelper db = new DatabaseHelper();
 
+        private SqlParameter P(string name, object value)
+            => new SqlParameter(name, value ?? DBNull.Value);
+
+        private SqlParameter PT(string name, SqlDbType type, object value)
+            => new SqlParameter(name, type) { Value = value ?? DBNull.Value };
+
         public bool InsertKhachHang(string maKH, string hoTen, string sdt)
         {
             try
             {
-                string checkQuery = "SELECT COUNT(*) FROM khachhang WHERE SDT = @sdt";
+                var exists = db.ExecuteScalar(
+                    "SELECT COUNT(*) FROM khachhang WHERE SDT = @sdt",
+                    new[] { P("@sdt", sdt) });
 
-                SqlParameter[] checkParams = {
-                    new SqlParameter("@sdt", sdt)
-                };
+                if (Convert.ToInt32(exists) > 0) return true;
 
-                int exists = Convert.ToInt32(db.ExecuteScalar(checkQuery, checkParams));
-
-                if (exists > 0) return true;
-
-                string query = @"INSERT INTO khachhang (MaKH, HoTen, SDT)
-                                 VALUES (@makh, @hoten, @sdt)";
-
-                SqlParameter[] parameters = {
-                    new SqlParameter("@makh", maKH),
-                    new SqlParameter("@hoten", hoTen),
-                    new SqlParameter("@sdt", sdt)
-                };
-
-                return db.ExecuteNonQuery(query, parameters);
+                return db.ExecuteNonQuery(
+                    "INSERT INTO khachhang (MaKH, HoTen, SDT) VALUES (@makh, @hoten, @sdt)",
+                    new[] {
+                        P("@makh", maKH),
+                        P("@hoten", hoTen),
+                        P("@sdt", sdt)
+                    });
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Lỗi InsertKhachHang: " + ex.Message);
-                return false;
-            }
+            catch { return false; }
         }
 
         public bool KhachHangTonTai(string maKH)
         {
-            string query = "SELECT COUNT(*) FROM khachhang WHERE MaKH = @ma";
+            var r = db.ExecuteScalar(
+                "SELECT COUNT(*) FROM khachhang WHERE MaKH = @ma",
+                new[] { P("@ma", maKH) });
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@ma", maKH)
-            };
-
-            object result = db.ExecuteScalar(query, parameters);
-
-            return result != null && Convert.ToInt32(result) > 0;
+            return Convert.ToInt32(r) > 0;
         }
 
-        public bool InsertBooking(BookingDTO booking)
+        public bool InsertBooking(BookingDTO b)
         {
             try
             {
-                string sqlGetGia = "SELECT GiaThue FROM san WHERE MaSan = @maSan";
-                SqlParameter[] pGetGia = { new SqlParameter("@maSan", booking.MaSan) };
-                object giaGoc = db.ExecuteScalar(sqlGetGia, pGetGia);
+                var gia = db.ExecuteScalar(
+                    "SELECT GiaThue FROM san WHERE MaSan = @ma",
+                    new[] { P("@ma", b.MaSan) });
 
-                booking.GiaThue = giaGoc != DBNull.Value ? Convert.ToDecimal(giaGoc) : 0;
-                booking.TinhThanhTien(); 
+                b.GiaThue = gia != DBNull.Value ? Convert.ToDecimal(gia) : 0;
 
-                string query = @"INSERT INTO datsan 
-                (MaDatSan, NgayDat, GioBD, GioKT, TrangThai, MaKH, MaSan, GiaThue, ThanhTien) 
-                VALUES (@mads, @ngay, @giobd, @giokt, @tt, @makh, @masan, @giathue, @thanhtien)";
-
-                SqlParameter[] parameters = {
-                new SqlParameter("@mads", booking.MaDatSan),
-                new SqlParameter("@ngay", booking.NgayDat.Date),
-                new SqlParameter("@giobd", SqlDbType.Time) { Value = booking.GioBatDau },
-                new SqlParameter("@giokt", SqlDbType.Time) { Value = booking.GioKetThuc },
-                new SqlParameter("@tt", booking.TrangThai ?? "Đã đặt"),
-                new SqlParameter("@makh", booking.MaKH),
-                new SqlParameter("@masan", booking.MaSan),
-                new SqlParameter("@giathue", booking.GiaThue),
-                new SqlParameter("@thanhtien", booking.ThanhTien)
-            };
-
-                return db.ExecuteNonQuery(query, parameters);
+                return db.ExecuteNonQuery(
+                    @"INSERT INTO datsan 
+            (MaDatSan, NgayDat, GioBD, GioKT, TrangThai, MaKH, MaSan, GiaThue, ThanhTien)
+            VALUES (@mads, @ngay, @bd, @kt, @tt, @makh, @masan, @gia, @tien)",
+                    new[] {
+                P("@mads", b.MaDatSan),
+                P("@ngay", b.NgayDat.Date),
+                PT("@bd", SqlDbType.Time, b.GioBatDau),
+                PT("@kt", SqlDbType.Time, b.GioKetThuc),
+                P("@tt", b.TrangThai),
+                P("@makh", b.MaKH),
+                P("@masan", b.MaSan),
+                P("@gia", b.GiaThue),
+                P("@tien", b.ThanhTien)
+                    });
             }
-            catch (Exception)
-            {
-                return false;
-            }
+            catch { return false; }
         }
-        public DataRow GetThongTinKhachDatSanChuaThanhToan(string maSan, DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
+
+        public DataRow GetThongTinKhachDatSanChuaThanhToan(string maSan, DateTime ngay, TimeSpan bd, TimeSpan kt)
         {
-            string query = @"
-                SELECT ds.MaDatSan, kh.HoTen, kh.SDT, ds.GioBD, ds.GioKT, ds.ThanhTien
-                FROM datsan ds
-                INNER JOIN khachhang kh ON ds.MaKH = kh.MaKH
-                WHERE ds.MaSan = @MaSan 
-                  AND ds.NgayDat = @Ngay 
+            var dt = db.ExecuteQuery(
+                @"SELECT ds.MaDatSan, kh.HoTen, kh.SDT, ds.GioBD, ds.GioKT, ds.ThanhTien
+                  FROM datsan ds
+                  JOIN khachhang kh ON ds.MaKH = kh.MaKH
+                  WHERE ds.MaSan = @san AND ds.NgayDat = @ngay
                   AND ds.TrangThai = N'Đã đặt'
-                  AND ds.GioBD = @GioBD 
-                  AND ds.GioKT = @GioKT"; 
+                  AND ds.GioBD = @bd AND ds.GioKT = @kt",
+                new[] {
+                    P("@san", maSan),
+                    P("@ngay", ngay),
+                    PT("@bd", SqlDbType.Time, bd),
+                    PT("@kt", SqlDbType.Time, kt)
+                });
 
-            SqlParameter[] parameters = new SqlParameter[]
-            {
-                new SqlParameter("@MaSan", maSan),
-                new SqlParameter("@Ngay", ngay),
-                new SqlParameter("@GioBD", gioBD),
-                new SqlParameter("@GioKT", gioKT)
-            };
-
-            DataTable dt = db.ExecuteQuery(query, parameters);
-            if (dt != null && dt.Rows.Count > 0)
-            {
-                return dt.Rows[0];
-            }
-            return null;
+            return dt != null && dt.Rows.Count > 0 ? dt.Rows[0] : null;
         }
-        public bool KiemTraTrungGio(BookingDTO booking)
+
+        public bool KiemTraTrungGio(BookingDTO b)
         {
-            string query = @"SELECT COUNT(*) FROM datsan 
-                             WHERE MaSan = @masan 
-                             AND CAST(NgayDat AS DATE) = @ngaydat
-                             AND (@giobd < GioKT AND @giokt > GioBD)
-                             AND TrangThai <> N'Đã hủy'";
+            var r = db.ExecuteScalar(
+                @"SELECT COUNT(*) FROM datsan 
+                  WHERE MaSan=@san AND CAST(NgayDat AS DATE)=@ngay
+                  AND (@bd < GioKT AND @kt > GioBD)
+                  AND TrangThai <> N'Đã hủy'",
+                new[] {
+                    P("@san", b.MaSan),
+                    P("@ngay", b.NgayDat.Date),
+                    PT("@bd", SqlDbType.Time, b.GioBatDau),
+                    PT("@kt", SqlDbType.Time, b.GioKetThuc)
+                });
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@masan", booking.MaSan),
-                new SqlParameter("@ngaydat", booking.NgayDat.Date),
-                new SqlParameter("@giobd", SqlDbType.Time) { Value = booking.GioBatDau },
-                new SqlParameter("@giokt", SqlDbType.Time) { Value = booking.GioKetThuc }
-            };
-
-            object result = db.ExecuteScalar(query, parameters);
-
-            return result != null && Convert.ToInt32(result) > 0;
+            return Convert.ToInt32(r) > 0;
         }
 
-        public DataTable GetSanDaDat(DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
+        public DataTable GetSanDaDat(DateTime ngay, TimeSpan bd, TimeSpan kt)
         {
-            string query = @"SELECT DISTINCT MaSan FROM datsan 
-                 WHERE CAST(NgayDat AS DATE) = @ngaydat 
-                 AND (@giobd < GioKT AND @giokt > GioBD) 
-                 AND TrangThai = N'Đã đặt'";
-
-            SqlParameter[] parameters = {
-            new SqlParameter("@ngaydat", ngay.Date),
-            new SqlParameter("@giobd", SqlDbType.Time) { Value = gioBD },
-            new SqlParameter("@giokt", SqlDbType.Time) { Value = gioKT }
-};
-
-            return db.ExecuteQuery(query, parameters);
+            return db.ExecuteQuery(
+                @"SELECT DISTINCT MaSan FROM datsan
+                  WHERE CAST(NgayDat AS DATE)=@ngay
+                  AND (@bd < GioKT AND @kt > GioBD)
+                  AND TrangThai=N'Đã đặt'",
+                new[] {
+                    P("@ngay", ngay.Date),
+                    PT("@bd", SqlDbType.Time, bd),
+                    PT("@kt", SqlDbType.Time, kt)
+                });
         }
+
         public string GetNewMaHD()
         {
-            string query = "SELECT TOP 1 MaHD FROM hoadon ORDER BY MaHD DESC";
-            object result = db.ExecuteScalar(query);
+            var r = db.ExecuteScalar("SELECT TOP 1 MaHD FROM hoadon ORDER BY MaHD DESC");
 
-            if (result == null || result == DBNull.Value)
-            {
-                return "HD0001";
-            }
+            if (r == null || r == DBNull.Value) return "HD0001";
 
-            string currentMa = result?.ToString() ?? "HD0000";
-            int currentNumber = int.Parse(currentMa.Substring(2));
-            int nextNumber = currentNumber + 1;
+            string current = r.ToString();
+            if (current.StartsWith("HD") && int.TryParse(current.Substring(2), out int num))
+                return "HD" + (num + 1).ToString("D4");
 
-            return "HD" + nextNumber.ToString("D4");
+            return "HD0001";
         }
+
         public DataTable SearchBooking(string trangThai, string keyword, DateTime? ngay)
         {
-            string query = @"
-                SELECT 
-                    ds.MaDatSan,
-                    s.TenSan,
-                    ds.TrangThai,
-                    kh.HoTen,
-                    kh.SDT,
-                    ds.NgayDat,
-                    ds.GioBD,
-                    ds.GioKT
-                FROM datsan ds
-                JOIN khachhang kh ON ds.MaKH = kh.MaKH
-                JOIN san s ON ds.MaSan = s.MaSan
-                WHERE 1=1 ";
+            string query = @"SELECT ds.MaDatSan, s.TenSan, ds.TrangThai, kh.HoTen, kh.SDT,
+                             ds.NgayDat, ds.GioBD, ds.GioKT
+                             FROM datsan ds
+                             JOIN khachhang kh ON ds.MaKH = kh.MaKH
+                             JOIN san s ON ds.MaSan = s.MaSan WHERE 1=1";
 
-            List<SqlParameter> parameters = new List<SqlParameter>();
+            var p = new List<SqlParameter>();
 
             if (!string.IsNullOrEmpty(trangThai) && trangThai != "Tất cả")
             {
-                query += " AND ds.TrangThai = @TrangThai";
-                parameters.Add(new SqlParameter("@TrangThai", trangThai));
+                query += " AND ds.TrangThai=@tt";
+                p.Add(P("@tt", trangThai));
             }
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                query += @" AND (
-            kh.HoTen LIKE @kw 
-            OR kh.SDT LIKE @kw
-            OR s.TenSan LIKE @kw
-        )";
-                parameters.Add(new SqlParameter("@kw", "%" + keyword + "%"));
+                query += " AND (kh.HoTen LIKE @kw OR kh.SDT LIKE @kw OR s.TenSan LIKE @kw)";
+                p.Add(P("@kw", "%" + keyword + "%"));
             }
 
             if (ngay.HasValue)
             {
-                query += " AND CAST(ds.NgayDat AS DATE) = @Ngay";
-                parameters.Add(new SqlParameter("@Ngay", ngay.Value.Date));
+                query += " AND CAST(ds.NgayDat AS DATE)=@ngay";
+                p.Add(P("@ngay", ngay.Value.Date));
             }
 
             query += " ORDER BY ds.NgayDat DESC, ds.GioBD ASC";
 
-            return db.ExecuteQuery(query, parameters.ToArray());
+            return db.ExecuteQuery(query, p.ToArray());
         }
-        public bool HuyLich(string maDatSan)
+
+        public bool HuyLich(string ma)
         {
-            string query = "UPDATE datsan SET TrangThai = N'Đã hủy' WHERE MaDatSan = @ma";
-
-            SqlParameter[] parameters = {
-        new SqlParameter("@ma", maDatSan)
-    };
-
-            return db.ExecuteNonQuery(query, parameters);
+            return db.ExecuteNonQuery(
+                "UPDATE datsan SET TrangThai=N'Đã hủy' WHERE MaDatSan=@ma",
+                new[] { P("@ma", ma) });
         }
-        public bool UpdateBooking(string maDatSan, DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
+
+        public bool UpdateBooking(string ma, DateTime ngay, TimeSpan bd, TimeSpan kt, double tien)
         {
-            string query = @"
-                UPDATE datsan 
-                SET NgayDat = @ngay,
-                    GioBD = @bd,
-                    GioKT = @kt
-                WHERE MaDatSan = @ma";
-
-            SqlParameter[] parameters = {
-        new SqlParameter("@ngay", ngay.Date),
-        new SqlParameter("@bd", SqlDbType.Time){ Value = gioBD },
-        new SqlParameter("@kt", SqlDbType.Time){ Value = gioKT },
-        new SqlParameter("@ma", maDatSan)
-    };
-
-            return db.ExecuteNonQuery(query, parameters);
+            return db.ExecuteNonQuery(
+                @"UPDATE datsan 
+          SET NgayDat=@ngay, GioBD=@bd, GioKT=@kt, ThanhTien=@tien 
+          WHERE MaDatSan=@ma",
+                new[] {
+            P("@ngay", ngay.Date),
+            PT("@bd", SqlDbType.Time, bd),
+            PT("@kt", SqlDbType.Time, kt),
+            P("@tien", tien),
+            P("@ma", ma)
+                });
         }
-
-        public DataRow? GetThongTinKhachDatSan(string maSan, DateTime ngay, DateTime batDau, DateTime ketThuc)
+        public decimal GetTongTien(string ma)
         {
-            string query = @"SELECT k.HoTen, k.SDT, d.MaDatSan, d.ThanhTien 
-                             FROM datsan d 
-                             JOIN khachhang k ON d.MaKH = k.MaKH 
-                             WHERE d.MaSan = @maSan 
-                             AND CAST(d.NgayDat AS DATE) = @ngay
-                             AND d.GioBD = @start 
-                             AND d.GioKT = @end";
+            var r = db.ExecuteScalar(
+                "SELECT ThanhTien FROM datsan WHERE MaDatSan=@ma",
+                new[] { P("@ma", ma) });
 
-            SqlParameter[] parameters = {
-                new SqlParameter("@maSan", maSan),
-                new SqlParameter("@ngay", ngay.Date),
-                new SqlParameter("@start", SqlDbType.Time) { Value = batDau.TimeOfDay },
-                new SqlParameter("@end", SqlDbType.Time) { Value = ketThuc.TimeOfDay }
-            };
-
-            DataTable dt = db.ExecuteQuery(query, parameters);
-
-            return dt.Rows.Count > 0 ? dt.Rows[0] : null;
+            return r != null && r != DBNull.Value ? Convert.ToDecimal(r) : 0;
         }
+
+        public DataRow GetThongTinKhachDatSan(string maSan, DateTime ngay, DateTime bd, DateTime kt)
+        {
+            var dt = db.ExecuteQuery(
+                @"SELECT k.HoTen, k.SDT, d.MaDatSan, d.ThanhTien
+                  FROM datsan d
+                  JOIN khachhang k ON d.MaKH = k.MaKH
+                  WHERE d.MaSan=@san AND CAST(d.NgayDat AS DATE)=@ngay
+                  AND d.GioBD=@bd AND d.GioKT=@kt",
+                new[] {
+                    P("@san", maSan),
+                    P("@ngay", ngay.Date),
+                    PT("@bd", SqlDbType.Time, bd.TimeOfDay),
+                    PT("@kt", SqlDbType.Time, kt.TimeOfDay)
+                });
+
+            return dt != null && dt.Rows.Count > 0 ? dt.Rows[0] : null;
+        }
+
         public DataTable GetAllBookingSchedule()
         {
-            string query = @"SELECT d.MaDatSan,d.MaSan, s.TenSan, d.TrangThai, kh.HoTen, kh.SDT, 
-                            d.NgayDat, d.GioBD, d.GioKT
-                     FROM datsan d
-                     JOIN san s ON d.MaSan = s.MaSan
-                     JOIN khachhang kh ON d.MaKH = kh.MaKH
-                     ORDER BY d.NgayDat DESC, d.GioBD ASC";
-
-            return db.ExecuteQuery(query);
+            return db.ExecuteQuery(
+                @"SELECT d.MaDatSan, d.MaSan, s.TenSan, d.TrangThai, kh.HoTen, kh.SDT,
+                  d.NgayDat, d.GioBD, d.GioKT
+                  FROM datsan d
+                  JOIN san s ON d.MaSan = s.MaSan
+                  JOIN khachhang kh ON d.MaKH = kh.MaKH
+                  ORDER BY d.NgayDat DESC, d.GioBD ASC");
         }
-        public bool KiemTraTrungGioUpdate(BookingDTO booking, string maDatSan)
+
+        public string GetTrangThaiBooking(string ma)
         {
-            string query = @"SELECT COUNT(*) FROM datsan 
-                     WHERE MaSan = @masan 
-                     AND CAST(NgayDat AS DATE) = @ngaydat
-                     AND (@giobd < GioKT AND @giokt > GioBD)
-                     AND TrangThai <> N'Đã hủy'
-                     AND MaDatSan <> @ma"; 
+            var r = db.ExecuteScalar(
+                "SELECT TrangThai FROM datsan WHERE MaDatSan=@ma",
+                new[] { P("@ma", ma) });
 
-            SqlParameter[] parameters = {
-        new SqlParameter("@masan", booking.MaSan),
-        new SqlParameter("@ngaydat", booking.NgayDat.Date),
-        new SqlParameter("@giobd", SqlDbType.Time) { Value = booking.GioBatDau },
-        new SqlParameter("@giokt", SqlDbType.Time) { Value = booking.GioKetThuc },
-        new SqlParameter("@ma", maDatSan)
-    };
+            return r?.ToString().Trim() ?? "";
+        }
 
-            object result = db.ExecuteScalar(query, parameters);
+        public bool KiemTraTrungGioUpdate(BookingDTO b, string ma)
+        {
+            var r = db.ExecuteScalar(
+                @"SELECT COUNT(*) FROM datsan 
+                  WHERE MaSan=@san AND CAST(NgayDat AS DATE)=@ngay
+                  AND (@bd < GioKT AND @kt > GioBD)
+                  AND TrangThai <> N'Đã hủy'
+                  AND MaDatSan <> @ma",
+                new[] {
+                    P("@san", b.MaSan),
+                    P("@ngay", b.NgayDat.Date),
+                    PT("@bd", SqlDbType.Time, b.GioBatDau),
+                    PT("@kt", SqlDbType.Time, b.GioKetThuc),
+                    P("@ma", ma)
+                });
 
-            return result != null && Convert.ToInt32(result) > 0;
+            return Convert.ToInt32(r) > 0;
         }
 
         public bool ThanhToan(string maDatSan, string maKH, double tongTien)
         {
-            string queryMax = "SELECT TOP 1 MaHD FROM hoadon ORDER BY MaHD DESC";
-            object resultObj = db.ExecuteScalar(queryMax);
-            string maHDmoi = "HD0001";
-
-            if (resultObj != null && resultObj != DBNull.Value)
-            {
-                string currentMa = resultObj.ToString();
-                if (!string.IsNullOrEmpty(currentMa) && currentMa.StartsWith("HD"))
-                {
-                    if (int.TryParse(currentMa.Replace("HD", ""), out int lastNum))
-                    {
-                        maHDmoi = "HD" + (lastNum + 1).ToString("D4");
-                    }
-                }
-            }
+            string maHD = GetNewMaHD();
 
             using (SqlConnection conn = db.GetConnection())
             {
@@ -321,47 +270,49 @@ namespace Badminton_Systems_Group3.DAL
 
                 try
                 {
-                    SqlCommand updateCmd = new SqlCommand(
-                        "UPDATE datsan SET TrangThai = N'Đã thanh toán' WHERE MaDatSan = @ma", conn, tran);
-                    updateCmd.Parameters.AddWithValue("@ma", maDatSan);
-                    updateCmd.ExecuteNonQuery();
+                    new SqlCommand("UPDATE datsan SET TrangThai=N'Đã thanh toán' WHERE MaDatSan=@ma", conn, tran)
+                    { Parameters = { new SqlParameter("@ma", maDatSan) } }.ExecuteNonQuery();
 
-                    SqlCommand insertHDCmd = new SqlCommand(
-                        @"INSERT INTO hoadon (MaHD, MaKH, NgayLapHD, TongTien) 
-                  VALUES (@hd, @kh, @ngay, @tien)", conn, tran);
-                    insertHDCmd.Parameters.AddWithValue("@hd", maHDmoi);
-                    insertHDCmd.Parameters.AddWithValue("@kh", maKH);
-                    insertHDCmd.Parameters.AddWithValue("@ngay", DateTime.Now);
-                    insertHDCmd.Parameters.AddWithValue("@tien", tongTien);
-                    insertHDCmd.ExecuteNonQuery();
+                    new SqlCommand(
+                        "INSERT INTO hoadon (MaHD, MaKH, NgayLapHD, TongTien) VALUES (@hd,@kh,@ngay,@tien)",
+                        conn, tran)
+                    {
+                        Parameters = {
+                            new SqlParameter("@hd", maHD),
+                            new SqlParameter("@kh", maKH),
+                            new SqlParameter("@ngay", DateTime.Now),
+                            new SqlParameter("@tien", tongTien)
+                        }
+                    }.ExecuteNonQuery();
 
-                    SqlCommand detailCmd = new SqlCommand(
+                    new SqlCommand(
                         @"INSERT INTO chitiethoadon_san (MaHD, MaDatSan, GiaThue, ThanhTien)
-                  SELECT @hd, MaDatSan, 
-                         (SELECT GiaThue FROM san WHERE san.MaSan = datsan.MaSan), 
-                         ThanhTien
-                  FROM datsan WHERE MaDatSan = @maDS", conn, tran);
-                    detailCmd.Parameters.AddWithValue("@hd", maHDmoi);
-                    detailCmd.Parameters.AddWithValue("@maDS", maDatSan);
-                    detailCmd.ExecuteNonQuery();
+                          SELECT @hd, MaDatSan,
+                          (SELECT GiaThue FROM san WHERE san.MaSan=datsan.MaSan),
+                          ThanhTien FROM datsan WHERE MaDatSan=@ma",
+                        conn, tran)
+                    {
+                        Parameters = {
+                            new SqlParameter("@hd", maHD),
+                            new SqlParameter("@ma", maDatSan)
+                        }
+                    }.ExecuteNonQuery();
 
-                    SqlCommand updateSan = new SqlCommand(
-                        @"UPDATE san SET TrangThai = N'Trống' 
-                  WHERE MaSan = (SELECT MaSan FROM datsan WHERE MaDatSan = @maDS)", conn, tran);
-                    updateSan.Parameters.AddWithValue("@maDS", maDatSan);
-                    updateSan.ExecuteNonQuery();
+                    new SqlCommand(
+                        @"UPDATE san SET TrangThai=N'Trống'
+                          WHERE MaSan=(SELECT MaSan FROM datsan WHERE MaDatSan=@ma)",
+                        conn, tran)
+                    { Parameters = { new SqlParameter("@ma", maDatSan) } }.ExecuteNonQuery();
 
                     tran.Commit();
                     return true;
                 }
-                catch (Exception ex)
+                catch
                 {
                     tran.Rollback();
-                    System.Diagnostics.Debug.WriteLine("Lỗi trong quá trình thanh toán: " + ex.Message);
                     return false;
                 }
-            } 
-
+            }
         }
     }
 }

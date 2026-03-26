@@ -76,6 +76,7 @@ namespace Badminton_Systems_Group3.GUI
                 txtMaSan.IsEnabled = false;
             }
         }
+       
 
         private void btnThem_Click(object sender, RoutedEventArgs e)
         {
@@ -180,24 +181,25 @@ namespace Badminton_Systems_Group3.GUI
 
         private void cboHienThi_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dgSanBai != null && cboHienThi != null && cboHienThi.SelectedItem != null)
+            if (dgSanBai == null || cboHienThi.SelectedItem == null) return;
+
+            ComboBoxItem item = (ComboBoxItem)cboHienThi.SelectedItem;
+            string filter = item.Content.ToString();
+
+            // Gọi hàm lọc mới trả về List
+            var list = bus.LayDanhSachSanList(filter);
+
+            // Chuẩn hóa tên hiển thị (Giống hệt logic trong LoadData của bạn)
+            foreach (var sb in list)
             {
-                ComboBoxItem item = (ComboBoxItem)cboHienThi.SelectedItem;
-                string filter = item.Content.ToString();
-
-                DataTable dt = bus.LayDanhSachSan(filter);
-
-                // Duyệt qua từng dòng trong DataTable để sửa hiển thị
-                foreach (DataRow row in dt.Rows)
+                if (sb.TrangThai != "Bảo trì")
                 {
-                    if (row["TrangThai"].ToString() != "Bảo trì")
-                    {
-                        row["TrangThai"] = "Đang hoạt động";
-                    }
+                    sb.TrangThai = "Đang hoạt động";
                 }
-
-                dgSanBai.ItemsSource = dt.DefaultView;
             }
+
+            dgSanBai.ItemsSource = null;
+            dgSanBai.ItemsSource = list;
         }
     }
 }

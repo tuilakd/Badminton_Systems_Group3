@@ -10,105 +10,135 @@ namespace Badminton_Systems_Group3.BUS
     {
         private readonly BookingDAL dal = new BookingDAL();
 
-        public (bool success, string message) ThucHienDatSan(BookingDTO booking)
+        private string TaoMaKH(string sdt)
+            => "KH" + (sdt?.Trim().Replace(" ", "") ?? "");
+
+        private string TaoMaDatSan()
+            => "DS" + DateTime.Now.ToString("ddHHmmss");
+
+        private decimal TinhTien(TimeSpan start, TimeSpan end, decimal gia)
         {
-            if (string.IsNullOrWhiteSpace(booking.MaSan))
-                return (false, "Vui lòng chọn sân!");
+            double h = (end - start).TotalHours;
+            return h > 0 ? (decimal)h * gia : 0;
+        }
 
-            if (string.IsNullOrWhiteSpace(booking.TenKhachHang))
-                return (false, "Vui lòng nhập tên khách!");
+        public decimal TinhTienPublic(TimeSpan start, TimeSpan end, decimal gia)
+        {
+            return TinhTien(start, end, gia);
+        }
 
-            if (string.IsNullOrWhiteSpace(booking.SDT))
-                return (false, "Vui lòng nhập số điện thoại!");
+        private (bool, string) Validate(BookingDTO b)
+        {
+            if (b == null) return (false, "Dữ liệu null!");
+            if (string.IsNullOrWhiteSpace(b.MaSan)) return (false, "Chọn sân!");
+            if (string.IsNullOrWhiteSpace(b.TenKhachHang)) return (false, "Nhập tên!");
+            if (string.IsNullOrWhiteSpace(b.SDT)) return (false, "Nhập SĐT!");
+            if (!b.SDT.All(char.IsDigit) || b.SDT.Length < 9) return (false, "SĐT sai!");
+            if (b.NgayDat.Date < DateTime.Today) return (false, "Ngày sai!");
+            if (b.GioKetThuc <= b.GioBatDau) return (false, "Giờ sai!");
+            if (b.GiaThue <= 0) return (false, "Giá sai!");
+            return (true, "");
+        }
 
-            if (!booking.SDT.All(char.IsDigit) || booking.SDT.Length < 9)
-                return (false, "SĐT không hợp lệ!");
+        private (bool, string) CheckTT(string ma, params string[] invalid)
+        {
+            var tt = dal.GetTrangThaiBooking(ma)?.Trim();
 
-            if (booking.NgayDat.Date < DateTime.Today)
-                return (false, "Ngày đặt không thể ở quá khứ!");
+            if (string.IsNullOrEmpty(tt))
+                return (false, "Không tìm thấy!");
 
-            if (booking.GioKetThuc <= booking.GioBatDau)
-                return (false, "Giờ kết thúc phải lớn hơn giờ bắt đầu!");
+            if (invalid.Any(x => tt.Equals(x, StringComparison.OrdinalIgnoreCase)))
+                return (false, $"Trạng thái '{tt}' không hợp lệ!");
+
+            return (true, "");
+        }
+
+        public (bool, string) ThucHienDatSan(BookingDTO b)
+        {
+            var v = Validate(b);
+            if (!v.Item1) return v;
 
             try
             {
-                if (dal.KiemTraTrungGio(booking))
-                    return (false, "Sân đã có người đặt trong khung giờ này!");
+                if (dal.KiemTraTrungGio(b))
+                    return (false, "Trùng giờ!");
 
-                // Tạo mã khách hàng dựa trên SĐT
-                booking.MaKH = "KH" + booking.SDT.Trim().Replace(" ", "");
+                b.MaKH = TaoMaKH(b.SDT);
 
-                if (!dal.KhachHangTonTai(booking.MaKH))
+                if (!dal.KhachHangTonTai(b.MaKH))
                 {
-                    if (!dal.InsertKhachHang(booking.MaKH, booking.TenKhachHang, booking.SDT))
-                        return (false, "Lỗi lưu thông tin khách hàng mới!");
+                    bool ok = dal.InsertKhachHang(b.MaKH, b.TenKhachHang, b.SDT);
+                    if (!ok) return (false, "Lỗi khách hàng!");
                 }
 
-                // Tạo mã đặt sân duy nhất
-                booking.MaDatSan = "DS" + DateTime.Now.ToString("ddHHmmss");
+                b.MaDatSan = TaoMaDatSan();
+                b.TrangThai = "Đã đặt";
+                b.ThanhTien = TinhTien(b.GioBatDau, b.GioKetThuc, b.GiaThue);
 
-                booking.TinhThanhTien();
+                bool result = dal.InsertBooking(b);
 
-                if (!dal.InsertBooking(booking))
-                    return (false, "Lưu thông tin đặt sân thất bại!");
-
-                return (true, "Đặt sân thành công!");
+                return result
+                    ? (true, "Đặt sân thành công!")
+                    : (false, "Lưu thất bại!");
             }
             catch (Exception ex)
             {
-                return (false, "Lỗi hệ thống: " + ex.Message);
+                return (false, "Lỗi: " + ex.Message);
             }
         }
 
-        public DataTable GetSanDaDat(DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
+        public (bool, string) ThanhToan(string ma, string sdt)
         {
-            return dal.GetSanDaDat(ngay, gioBD, gioKT);
-        }
+            if (string.IsNullOrEmpty(ma)) return (false, "Chưa chọn!");
+            if (string.IsNullOrWhiteSpace(sdt)) return (false, "Thiếu SĐT!");
 
-        public (bool success, string message) ThanhToan(string maDatSan, string sdt, decimal tongTien)
-        {
-            if (string.IsNullOrEmpty(maDatSan))
-                return (false, "Chưa chọn dữ liệu thanh toán!");
-
-            if (string.IsNullOrWhiteSpace(sdt))
-                return (false, "Thiếu số điện thoại khách hàng!");
-
-            if (tongTien <= 0)
-                return (false, "Số tiền thanh toán không hợp lệ!");
+            var c = CheckTT(ma, "Đã thanh toán", "Đã hủy");
+            if (!c.Item1) return c;
 
             try
             {
-                string maKH = "KH" + sdt.Trim().Replace(" ", "");
+                string makh = TaoMaKH(sdt);
+                decimal tien = dal.GetTongTien(ma);
 
-                // Thực hiện lưu hóa đơn và cập nhật trạng thái đặt sân sang 'Đã thanh toán'
-                bool ok = dal.ThanhToan(maDatSan, maKH, (double)tongTien);
+                if (tien <= 0)
+                    return (false, "Tiền không hợp lệ!");
 
-                if (!ok)
-                    return (false, "Quá trình thanh toán thất bại tại lớp dữ liệu!");
+                bool result = dal.ThanhToan(ma, makh, (double)tien);
 
-                return (true, "Thanh toán thành công!");
+                return result
+                    ? (true, "Thanh toán thành công!")
+                    : (false, "Thanh toán thất bại!");
             }
             catch (Exception ex)
             {
-                return (false, "Lỗi hệ thống khi thanh toán: " + ex.Message);
+                return (false, "Lỗi: " + ex.Message);
             }
         }
 
-        public (bool success, string message) HuyLich(string maDatSan)
+        public (bool, string) HuyLich(string ma)
         {
-            if (string.IsNullOrEmpty(maDatSan))
-                return (false, "Vui lòng chọn lịch cần hủy!");
+            if (string.IsNullOrEmpty(ma))
+                return (false, "Chưa chọn!");
 
-            bool ok = dal.HuyLich(maDatSan);
-            return ok ? (true, "Hủy lịch thành công!") : (false, "Không thể hủy lịch này!");
+            var c = CheckTT(ma, "Đã thanh toán", "Đã hủy");
+            if (!c.Item1) return c;
+
+            bool result = dal.HuyLich(ma);
+
+            return result
+                ? (true, "Hủy thành công!")
+                : (false, "Hủy thất bại!");
         }
 
-        public (bool success, string message) UpdateBooking(string maDatSan, DateTime ngay, TimeSpan bd, TimeSpan kt, string maSan)
+        public (bool, string) UpdateBooking(string ma, DateTime ngay, TimeSpan bd, TimeSpan kt, string maSan, decimal gia)
         {
             if (kt <= bd)
-                return (false, "Giờ kết thúc phải lớn hơn giờ bắt đầu!");
+                return (false, "Giờ không hợp lệ!");
 
-            BookingDTO temp = new BookingDTO
+            var c = CheckTT(ma, "Đã thanh toán", "Đã hủy");
+            if (!c.Item1) return c;
+
+            var temp = new BookingDTO
             {
                 MaSan = maSan,
                 NgayDat = ngay,
@@ -116,41 +146,33 @@ namespace Badminton_Systems_Group3.BUS
                 GioKetThuc = kt
             };
 
-            if (dal.KiemTraTrungGioUpdate(temp, maDatSan))
-                return (false, "Sân đã có lịch khác trong khung giờ mới chọn!");
+            if (dal.KiemTraTrungGioUpdate(temp, ma))
+                return (false, "Trùng lịch!");
 
-            bool ok = dal.UpdateBooking(maDatSan, ngay, bd, kt);
-            return ok ? (true, "Thay đổi lịch thành công!") : (false, "Thay đổi lịch thất bại!");
+            decimal tien = TinhTien(bd, kt, gia);
+
+            bool result = dal.UpdateBooking(ma, ngay, bd, kt, (double)tien);
+
+            return result
+                ? (true, "Cập nhật thành công!")
+                : (false, "Cập nhật thất bại!");
         }
 
         public DataTable LayLichDatSanFull()
+            => dal.GetAllBookingSchedule();
+
+        public DataTable GetSanDaDat(DateTime n, TimeSpan bd, TimeSpan kt)
+            => dal.GetSanDaDat(n, bd, kt);
+
+        public bool KiemTraSanDaDat(string s, DateTime n, TimeSpan bd, TimeSpan kt)
+            => dal.GetThongTinKhachDatSanChuaThanhToan(s, n, bd, kt) != null;
+
+        public DataTable SearchBooking(string tt, string kw, DateTime? n)
+            => dal.SearchBooking(tt, kw, n);
+
+        internal object UpdateBooking(string? maDatSan, DateTime ngay, TimeSpan bd, TimeSpan kt, string? maSan)
         {
-            return dal.GetAllBookingSchedule();
-        }
-
-        // ================= KIỂM TRA SÂN =================
-
-        /// <summary>
-        /// Kiểm tra xem một sân cụ thể đã được đặt trong khung giờ nhất định hay chưa
-        /// </summary>
-        public bool KiemTraSanDaDat(string maSan, DateTime ngay, TimeSpan gioBD, TimeSpan gioKT)
-        {
-            // Lấy thông tin từ DAL
-            DataRow dr = dal.GetThongTinKhachDatSanChuaThanhToan(maSan, ngay, gioBD, gioKT);
-
-            // Nếu dr khác null nghĩa là đã có người đặt (trả về true)
-            return dr != null;
-        }
-
-        public decimal TinhTien(TimeSpan start, TimeSpan end, decimal giaMoiGio = 120000)
-        {
-            double duration = (end - start).TotalHours;
-            return duration > 0 ? (decimal)duration * giaMoiGio : 0;
-        }
-
-        public DataTable SearchBooking(string trangThai, string keyword, DateTime? ngay)
-        {
-            return dal.SearchBooking(trangThai, keyword, ngay);
+            throw new NotImplementedException();
         }
     }
 }

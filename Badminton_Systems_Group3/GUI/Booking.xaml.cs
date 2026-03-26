@@ -13,10 +13,9 @@ namespace Badminton_Systems_Group3.GUI
     public partial class Booking : Window
     {
         private string maSanDangChon = "";
-        private string maDatSanDangChon = "";
-
-        private readonly BookingDAL dal = new BookingDAL();
         private readonly BookingBUS bus = new BookingBUS();
+        private readonly CourtDAL courtDAL = new CourtDAL();
+        private readonly BookingDAL bookingDAL = new BookingDAL();
 
         private readonly string[] dsSan =
         {
@@ -28,138 +27,101 @@ namespace Badminton_Systems_Group3.GUI
         {
             InitializeComponent();
             dpNgayDat.SelectedDate = DateTime.Today;
-            LoadSanMacDinh();
+            LoadSan();
             DisableForm();
         }
 
-        // ================= UI =================
-        private void UpdateUI(string maSan, string statusVatLy)
+        private void LoadSan()
         {
-            var txtStatus = FindName("txtStatus_" + maSan) as TextBlock;
+            var all = courtDAL.GetAll();
+
+            foreach (var ma in dsSan)
+            {
+                var court = all.FirstOrDefault(x => x.MaSan == ma);
+                UpdateUI(ma, court?.TrangThai ?? "Trống");
+            }
+        }
+
+        private void UpdateUI(string maSan, string status)
+        {
+            var txt = FindName("txtStatus_" + maSan) as TextBlock;
             var btn = FindName("btn_" + maSan) as Button;
             var txtGia = FindName("txtGia_" + maSan) as TextBlock;
 
-            if (txtStatus == null || btn == null) return;
+            if (txt == null || btn == null) return;
 
-            // 1. CẬP NHẬT GIÁ THUÊ TỪ DATABASE
-            CourtDAL courtDAL = new CourtDAL();
             var court = courtDAL.GetByMaSan(maSan);
             if (court != null && txtGia != null)
-            {
-                txtGia.Text = string.Format("{0:N0}/h", court.GiaThue);
-            }
+                txtGia.Text = $"{court.GiaThue:N0}/h";
 
             btn.Tag = maSan;
-            btn.IsEnabled = true;
 
-            // 2. PHÂN LOẠI TRẠNG THÁI HIỂN THỊ
-            if (statusVatLy == "Bảo trì")
+            if (status == "Bảo trì")
             {
-                txtStatus.Text = "BẢO TRÌ";
-                txtStatus.Foreground = Brushes.Orange;
+                txt.Text = "BẢO TRÌ";
+                txt.Foreground = Brushes.Orange;
                 btn.Content = "Bảo trì";
                 btn.Background = Brushes.Yellow;
-                btn.Foreground = Brushes.Black;
                 btn.IsEnabled = false;
-            }
-            else
-            {
-                DateTime ngayChon = dpNgayDat.SelectedDate ?? DateTime.Today;
-
-                // LẤY GIỜ TỪ COMBOBOX ĐỂ KIỂM TRA ĐÚNG KHUNG GIỜ ĐANG CHỌN
-                bool daCoLich = false;
-                if (TryGetTimeFromComboBox(out TimeSpan gBD, out TimeSpan gKT))
-                {
-                    daCoLich = bus.KiemTraSanDaDat(maSan, ngayChon, gBD, gKT);
-                }
-
-                if (daCoLich)
-                {
-                    txtStatus.Text = "ĐÃ ĐẶT";
-                    txtStatus.Foreground = Brushes.Red;
-                    btn.Content = "THANH TOÁN";
-                    btn.Background = Brushes.Red;
-                    btn.Foreground = Brushes.White;
-                }
-                else
-                {
-                    txtStatus.Text = "TRỐNG";
-                    txtStatus.Foreground = Brushes.Green;
-                    btn.Content = "Đặt sân";
-                    btn.Background = Brushes.Green;
-                    btn.Foreground = Brushes.White;
-                }
-            }
-        }
-
-        private void LoadSanMacDinh()
-        {
-            CourtDAL courtDAL = new CourtDAL();
-            var allCourts = courtDAL.GetAll();
-
-            foreach (var ma in dsSan)
-            {
-                var court = allCourts.FirstOrDefault(c => c.MaSan == ma);
-                if (court != null)
-                {
-                    UpdateUI(ma, court.TrangThai);
-                }
-            }
-        }
-
-        private void LocSan()
-        {
-            if (dpNgayDat.SelectedDate == null) return;
-
-            if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
-            {
-                LoadSanMacDinh();
                 return;
             }
 
-            DataTable dt = bus.GetSanDaDat(dpNgayDat.SelectedDate.Value, gioBD, gioKT);
-            var busyList = dt.AsEnumerable().Select(r => r["MaSan"]?.ToString() ?? "").ToList();
-
-            CourtDAL courtDAL = new CourtDAL();
-            var allCourts = courtDAL.GetAll();
-
-            foreach (var ma in dsSan)
+            if (!TryGetTime(out TimeSpan bd, out TimeSpan kt))
             {
-                var court = allCourts.FirstOrDefault(c => c.MaSan == ma);
-                string currentStatus = "Trống";
-
-                if (court != null && court.TrangThai == "Bảo trì")
-                {
-                    currentStatus = "Bảo trì";
-                }
-                else if (busyList.Contains(ma))
-                {
-                    currentStatus = "Đã đặt";
-                }
-
-                UpdateUI(ma, currentStatus);
-            }
-        }
-
-        private void SB0001_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is not Button btn || btn.Tag == null) return;
-
-            maSanDangChon = btn.Tag.ToString()!;
-            DateTime ngay = dpNgayDat.SelectedDate ?? DateTime.Today;
-
-            if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
-            {
-                MessageBox.Show("Vui lòng chọn khung giờ hợp lệ!");
+                SetTrong(txt, btn);
                 return;
             }
 
-            bool coBooking = bus.KiemTraSanDaDat(maSanDangChon, ngay, gioBD, gioKT);
+            bool daDat = bus.KiemTraSanDaDat(
+                maSan,
+                dpNgayDat.SelectedDate ?? DateTime.Today,
+                bd,
+                kt
+            );
 
-            if (coBooking)
+            if (daDat) SetDaDat(txt, btn);
+            else SetTrong(txt, btn);
+        }
+
+        private void SetDaDat(TextBlock txt, Button btn)
+        {
+            txt.Text = "ĐÃ ĐẶT";
+            txt.Foreground = Brushes.Red;
+            btn.Content = "THANH TOÁN";
+            btn.Background = Brushes.Red;
+        }
+
+        private void SetTrong(TextBlock txt, Button btn)
+        {
+            txt.Text = "TRỐNG";
+            txt.Foreground = Brushes.Green;
+            btn.Content = "ĐẶT SÂN";
+            btn.Background = Brushes.Green;
+        }
+
+        private void ChonSan(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button btn) return;
+
+            maSanDangChon = btn.Tag?.ToString() ?? "";
+
+            if (string.IsNullOrEmpty(maSanDangChon)) return;
+
+            if (!TryGetTime(out TimeSpan bd, out TimeSpan kt))
             {
-                LoadThongTin(gioBD, gioKT);
+                MessageBox.Show("Chọn giờ!");
+                return;
             }
+
+            bool daDat = bus.KiemTraSanDaDat(
+                maSanDangChon,
+                dpNgayDat.SelectedDate ?? DateTime.Today,
+                bd,
+                kt
+            );
+
+            if (daDat)
+                LoadThongTin(bd, kt);
             else
             {
                 ResetForm();
@@ -169,152 +131,162 @@ namespace Badminton_Systems_Group3.GUI
             }
         }
 
-        private void LoadThongTin(TimeSpan gioBatDau, TimeSpan gioKetThuc)
+        private void LoadThongTin(TimeSpan bd, TimeSpan kt)
         {
-            if (string.IsNullOrEmpty(maSanDangChon) || dpNgayDat.SelectedDate == null) return;
+            var dr = bookingDAL.GetThongTinKhachDatSanChuaThanhToan(
+                maSanDangChon,
+                dpNgayDat.SelectedDate ?? DateTime.Today,
+                bd,
+                kt
+            );
 
-            DataRow dr = dal.GetThongTinKhachDatSanChuaThanhToan(maSanDangChon, dpNgayDat.SelectedDate.Value, gioBatDau, gioKetThuc);
+            if (dr == null) return;
 
-            if (dr == null)
-            {
-                MessageBox.Show("Không tìm thấy booking chưa thanh toán trong khung giờ này!");
-                return;
-            }
+            txtTenKH.Text = dr["HoTen"]?.ToString() ?? "";
+            txtSDT.Text = dr["SDT"]?.ToString() ?? "";
 
-            maDatSanDangChon = dr["MaDatSan"].ToString();
-            txtTenKH.Text = dr["HoTen"].ToString();
-            txtSDT.Text = dr["SDT"].ToString();
+            TimeSpan gioBD = dr["GioBD"] != DBNull.Value ? (TimeSpan)dr["GioBD"] : TimeSpan.Zero;
+            TimeSpan gioKT = dr["GioKT"] != DBNull.Value ? (TimeSpan)dr["GioKT"] : TimeSpan.Zero;
 
-            TimeSpan gioBD_DB = (TimeSpan)dr["GioBD"];
-            TimeSpan gioKT_DB = (TimeSpan)dr["GioKT"];
+            SetTime(cboGioBD, gioBD);
+            SetTime(cboGioKT, gioKT);
 
-            SetComboBoxTime(cboGioBD, gioBD_DB);
-            SetComboBoxTime(cboGioKT, gioKT_DB);
+            lblTongGio.Text = $"{(gioKT - gioBD).TotalHours} giờ";
 
-            lblTongGio.Text = $"{(gioKT_DB - gioBD_DB).TotalHours} giờ";
-            decimal thanhTien = Convert.ToDecimal(dr["ThanhTien"]);
-            lblTamTinh.Text = string.Format("{0:N0} VNĐ", thanhTien);
+            decimal tien = dr["ThanhTien"] != DBNull.Value
+                ? Convert.ToDecimal(dr["ThanhTien"])
+                : 0;
 
-            btnXacNhan.Content = "THANH TOÁN";
+            lblTamTinh.Text = $"{tien:N0} VNĐ";
+
             DisableForm();
+            btnXacNhan.Content = "THANH TOÁN";
         }
 
         private void CapNhatTien()
         {
             if (string.IsNullOrEmpty(maSanDangChon)) return;
 
-            if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
+            if (!TryGetTime(out TimeSpan bd, out TimeSpan kt))
             {
                 lblTongGio.Text = "0 giờ";
                 lblTamTinh.Text = "0 VNĐ";
                 return;
             }
 
-            CourtDAL courtDAL = new CourtDAL();
             var court = courtDAL.GetByMaSan(maSanDangChon);
+            decimal gia = court != null ? Convert.ToDecimal(court.GiaThue) : 0;
 
-            decimal giaThue = 0;
-            if (court != null)
-            {
-                giaThue = Convert.ToDecimal(court.GiaThue);
-            }
+            decimal tien = bus.TinhTienPublic(bd, kt, gia);
 
-            double tongSoGio = (gioKT - gioBD).TotalHours;
-            if (tongSoGio < 0) tongSoGio = 0;
-
-            decimal tongTien = (decimal)tongSoGio * giaThue;
-
-            lblTongGio.Text = $"{tongSoGio} giờ";
-            lblTamTinh.Text = string.Format("{0:N0} VNĐ", tongTien);
+            lblTongGio.Text = $"{(kt - bd).TotalHours} giờ";
+            lblTamTinh.Text = $"{tien:N0} VNĐ";
         }
 
         private void DatSan()
         {
-            if (dpNgayDat.SelectedDate == null || string.IsNullOrEmpty(maSanDangChon))
-            {
-                MessageBox.Show("Vui lòng chọn ngày và sân trước khi đặt!");
-                return;
-            }
+            if (!TryGetTime(out TimeSpan bd, out TimeSpan kt)) return;
 
-            if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT))
-            {
-                MessageBox.Show("Khung giờ chọn không hợp lệ!");
-                return;
-            }
-
-            CourtDAL courtDAL = new CourtDAL();
             var court = courtDAL.GetByMaSan(maSanDangChon);
 
-            if (court == null)
-            {
-                MessageBox.Show("Không tìm thấy thông tin sân!");
-                return;
-            }
-
-            BookingDTO booking = new BookingDTO
+            var booking = new BookingDTO
             {
                 MaSan = maSanDangChon,
                 TenKhachHang = txtTenKH.Text.Trim(),
                 SDT = txtSDT.Text.Trim(),
-                NgayDat = dpNgayDat.SelectedDate.Value,
-                GioBatDau = gioBD,
-                GioKetThuc = gioKT,
-                GiaThue = court.GiaThue != null ? Convert.ToDecimal(court.GiaThue) : 0
+                NgayDat = dpNgayDat.SelectedDate ?? DateTime.Today,
+                GioBatDau = bd,
+                GioKetThuc = kt,
+                GiaThue = court != null ? Convert.ToDecimal(court.GiaThue) : 0
             };
-
-            booking.TinhThanhTien();
 
             var result = bus.ThucHienDatSan(booking);
 
-            if (result.success)
+            MessageBox.Show(result.Item2);
+            if (result.Item1)
             {
                 ResetForm();
-                LocSan();
+                LoadSan();
             }
+        }
+        private void btnThongTin_Click(object sender, RoutedEventArgs e)
+        {
+            Badminton_Systems_Group3.GUI.Info thongTinWindow = new Badminton_Systems_Group3.GUI.Info();
+            thongTinWindow.ShowDialog();
 
-            MessageBox.Show(result.message);
+            btnThongTin.IsChecked = false;
+        }
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            BookingSchedule window = new BookingSchedule();
+            window.Show();
+            this.Close();
+        }
+
+        private void RadioButton_Checked_1(object sender, RoutedEventArgs e)
+        {
+            Home window = new Home();
+            window.Show();
+            this.Close();
         }
 
         private void btnXacNhan_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(maSanDangChon))
+            string action = btnXacNhan.Content?.ToString() ?? "";
+
+            if (action == "ĐẶT SÂN")
             {
-                MessageBox.Show("Chọn sân trước!");
+                DatSan();
                 return;
             }
 
-            string content = btnXacNhan.Content.ToString() ?? "";
+            if (!TryGetTime(out TimeSpan bd, out TimeSpan kt)) return;
 
-            if (content == "THANH TOÁN")
+            var dr = bookingDAL.GetThongTinKhachDatSanChuaThanhToan(
+                maSanDangChon,
+                dpNgayDat.SelectedDate ?? DateTime.Today,
+                bd,
+                kt
+            );
+
+            if (dr == null) return;
+
+            var result = bus.ThanhToan(
+                dr["MaDatSan"]?.ToString() ?? "",
+                dr["SDT"]?.ToString() ?? ""
+            );
+
+            MessageBox.Show(result.Item2);
+            if (result.Item1)
             {
-                if (!TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT)) return;
-
-                var drTemp = dal.GetThongTinKhachDatSanChuaThanhToan(maSanDangChon, dpNgayDat.SelectedDate ?? DateTime.Today, gioBD, gioKT);
-
-                if (drTemp == null)
-                {
-                    MessageBox.Show("Dữ liệu thanh toán không hợp lệ!");
-                    return;
-                }
-
-                string maDS = drTemp["MaDatSan"]?.ToString() ?? "";
-                string sdtKhach = drTemp["SDT"]?.ToString() ?? "";
-                decimal tien = Convert.ToDecimal(drTemp["ThanhTien"]);
-
-                var result = bus.ThanhToan(maDS, sdtKhach, tien);
-
-                MessageBox.Show(result.message);
-                if (result.success)
-                {
-                    ResetForm();
-                    LocSan();
-                }
+                ResetForm();
+                LoadSan();
             }
-            else if (content == "ĐẶT SÂN")
-            {
-                CapNhatTien();
-                DatSan();
-            }
+        }
+
+        private bool TryGetTime(out TimeSpan bd, out TimeSpan kt)
+        {
+            bd = TimeSpan.Zero;
+            kt = TimeSpan.Zero;
+
+            if (cboGioBD.SelectedItem == null || cboGioKT.SelectedItem == null)
+                return false;
+
+            return TimeSpan.TryParse(
+                       ((ComboBoxItem)cboGioBD.SelectedItem).Content.ToString(),
+                       out bd)
+                && TimeSpan.TryParse(
+                       ((ComboBoxItem)cboGioKT.SelectedItem).Content.ToString(),
+                       out kt)
+                && kt > bd;
+        }
+
+        private void SetTime(ComboBox cb, TimeSpan t)
+        {
+            var item = cb.Items.Cast<ComboBoxItem>()
+                .FirstOrDefault(x => TimeSpan.Parse(x.Content.ToString()) == t);
+
+            if (item != null) cb.SelectedItem = item;
         }
 
         private void ResetForm()
@@ -323,7 +295,6 @@ namespace Badminton_Systems_Group3.GUI
             txtSDT.Clear();
             lblTamTinh.Text = "0 VNĐ";
             lblTongGio.Text = "0 giờ";
-            maDatSanDangChon = "";
         }
 
         private void EnableForm()
@@ -341,62 +312,20 @@ namespace Badminton_Systems_Group3.GUI
         private void cboGioBD_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CapNhatTien();
-            LocSan();
+            LoadSan();
         }
 
         private void cboGioKT_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CapNhatTien();
-            LocSan();
+            LoadSan();
         }
 
         private void dpNgayDat_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            LocSan();
+            LoadSan();
         }
 
-        private bool TryGetTimeFromComboBox(out TimeSpan gioBD, out TimeSpan gioKT)
-        {
-            gioBD = TimeSpan.Zero;
-            gioKT = TimeSpan.Zero;
-
-            if (cboGioBD.SelectedItem == null || cboGioKT.SelectedItem == null) return false;
-
-            string strStart = (cboGioBD.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
-            string strEnd = (cboGioKT.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
-
-            return TimeSpan.TryParse(strStart, out gioBD) &&
-                   TimeSpan.TryParse(strEnd, out gioKT) &&
-                   gioKT > gioBD;
-        }
-
-        private void SetComboBoxTime(ComboBox combo, TimeSpan time)
-        {
-            var item = combo.Items.Cast<ComboBoxItem>()
-                        .FirstOrDefault(i => TimeSpan.Parse(i.Content.ToString()) == time);
-            if (item != null)
-                combo.SelectedItem = item;
-        }
-
-        private void btnThongTin_Click(object sender, RoutedEventArgs e)
-        {
-            Badminton_Systems_Group3.GUI.Info thongTinWindow = new Badminton_Systems_Group3.GUI.Info();
-            thongTinWindow.ShowDialog();
-            btnThongTin.IsChecked = false;
-        }
-
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            BookingSchedule window = new BookingSchedule();
-            window.Show();
-            this.Close();
-        }
-
-        private void RadioButton_Checked_1(object sender, RoutedEventArgs e)
-        {
-            Home window = new Home();
-            window.Show();
-            this.Close();
-        }
+       
     }
 }

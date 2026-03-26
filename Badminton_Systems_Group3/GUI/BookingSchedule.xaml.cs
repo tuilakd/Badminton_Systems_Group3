@@ -1,9 +1,10 @@
 ﻿using Badminton_Systems_Group3.BUS;
+using Badminton_Systems_Group3.DAL;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Collections.Generic;
 
 namespace Badminton_Systems_Group3.GUI
 {
@@ -102,14 +103,14 @@ namespace Badminton_Systems_Group3.GUI
             {
                 var kq = bus.HuyLich(maDatSan);
 
-                if (kq.success)
+                if (kq.Item1)
                 {
                     MessageBox.Show("Hủy lịch thành công!", "Thông báo");
                     LoadData(); // Load lại bảng để cập nhật dữ liệu mới
                 }
                 else
                 {
-                    MessageBox.Show("Lỗi khi hủy lịch: " + kq.message, "Lỗi");
+                    MessageBox.Show("Lỗi khi hủy lịch: " + kq.Item2, "Lỗi");
                 }
             }
         }
@@ -118,6 +119,7 @@ namespace Badminton_Systems_Group3.GUI
         {
             try
             {
+                // Lấy dòng dữ liệu đang sửa
                 DataRowView row = (DataRowView)e.Row.Item;
 
                 string maDatSan = row["MaDatSan"].ToString();
@@ -127,17 +129,29 @@ namespace Badminton_Systems_Group3.GUI
                 TimeSpan bd = TimeSpan.Parse(row["GioBD"].ToString());
                 TimeSpan kt = TimeSpan.Parse(row["GioKT"].ToString());
 
-                var kq = bus.UpdateBooking(maDatSan, ngay, bd, kt, maSan);
+                CourtDAL courtDAL = new CourtDAL();
+                var court = courtDAL.GetByMaSan(maSan);
 
-                if (!kq.success)
+                decimal giaThue = court != null
+                    ? Convert.ToDecimal(court.GiaThue)
+                    : 0;
+                var (success, message) = bus.UpdateBooking(maDatSan, ngay, bd, kt, maSan, giaThue);
+
+                if (!success)
                 {
-                    MessageBox.Show(kq.message);
-                    LoadData(); 
+                    MessageBox.Show(message);
+                    LoadData();
+                }
+                else
+                {
+                    
+                    LoadData();
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi sửa: " + ex.Message);
+                LoadData(); 
             }
         }
 
@@ -152,7 +166,7 @@ namespace Badminton_Systems_Group3.GUI
             System.Data.DataRowView row = (System.Data.DataRowView)dgLichDat.SelectedItem;
 
             string maDS = row["MaDatSan"].ToString();
-            string maSan = row["MaSan"].ToString(); // LẤY THÊM MÃ SÂN Ở ĐÂY
+            string maSan = row["MaSan"].ToString(); 
             DateTime ngayCu = Convert.ToDateTime(row["NgayDat"]);
             TimeSpan gioBDCu = TimeSpan.Parse(row["GioBD"].ToString());
             TimeSpan gioKTCu = TimeSpan.Parse(row["GioKT"].ToString());
